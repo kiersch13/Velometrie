@@ -1,0 +1,22 @@
+<div class="page-header">
+  <h2>Meine Räder</h2>
+  <button class="btn-primary" (click)="addBike()">+ Rad hinzufügen</button>
+</div>
+
+<div *ngIf="loading" class="loading">Lädt...</div>
+<div *ngIf="error" class="error">{{ error }}</div>
+
+<div *ngIf="!loading && bikes.length === 0 && !error" class="empty-state">
+  Noch keine Räder vorhanden. Füge dein erstes Rad hinzu!
+</div>
+
+<div class="bike-grid">
+  <div class="bike-card" *ngFor="let bike of bikes" (click)="openDetail(bike.id)">
+    <div class="bike-category">{{ bike.kategorie }}</div>
+    <h3>{{ bike.name }}</h3>
+    <div class="kilometerstand">
+      <span class="label">Kilometerstand</span>
+      <span class="value">{{ bike.kilometerstand | number:'1.0-0' }} km</span>
+    </div>
+  </div>
+</div>

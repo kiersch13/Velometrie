@@ -1,0 +1,82 @@
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  color: #1a1a2e;
+}
+
+.bike-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.bike-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  border-left: 4px solid #e55a2b;
+}
+
+.bike-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.13);
+}
+
+.bike-category {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #e55a2b;
+  margin-bottom: 6px;
+}
+
+.bike-card h3 {
+  margin: 0 0 14px;
+  font-size: 1.15rem;
+  color: #1a1a2e;
+}
+
+.kilometerstand {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 12px;
+}
+
+.kilometerstand .label {
+  font-size: 0.78rem;
+  color: #888;
+}
+
+.kilometerstand .value {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.empty-state {
+  text-align: center;
+  color: #888;
+  margin-top: 60px;
+  font-size: 1rem;
+}
+
+.loading, .error {
+  text-align: center;
+  margin-top: 40px;
+  color: #888;
+}
+
+.error { color: #c0392b; }

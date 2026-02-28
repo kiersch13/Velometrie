@@ -1,0 +1,45 @@
+<div class="form-card">
+  <h4>Verschleißteil erfassen</h4>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" [(ngModel)]="part.name" placeholder="z.B. Continentral GP5000" />
+    </div>
+    <div class="form-group">
+      <label>Kategorie</label>
+      <select [(ngModel)]="part.kategorie">
+        <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>Einbau Kilometerstand</label>
+      <input type="number" [(ngModel)]="part.einbauKilometerstand" min="0" />
+    </div>
+    <div class="form-group">
+      <label>Einbau Datum</label>
+      <input type="date" [(ngModel)]="einbauDatumStr" />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>Ausbau Kilometerstand <span class="optional">(optional)</span></label>
+      <input type="number" [(ngModel)]="part.ausbauKilometerstand" min="0" />
+    </div>
+    <div class="form-group">
+      <label>Ausbau Datum <span class="optional">(optional)</span></label>
+      <input type="date" [(ngModel)]="ausbauDatumStr" />
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn-primary" (click)="save()" [disabled]="saving">
+      {{ saving ? 'Speichert...' : 'Speichern' }}
+    </button>
+  </div>
+</div>

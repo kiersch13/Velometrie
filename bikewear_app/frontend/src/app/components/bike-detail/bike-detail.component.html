@@ -1,0 +1,66 @@
+<div *ngIf="loading" class="loading">Lädt...</div>
+<div *ngIf="error" class="error">{{ error }}</div>
+
+<ng-container *ngIf="bike">
+  <div class="back-link" (click)="goBack()">← Zurück zur Übersicht</div>
+
+  <div class="bike-header">
+    <div>
+      <span class="category-badge">{{ bike.kategorie }}</span>
+      <h2>{{ bike.name }}</h2>
+    </div>
+
+    <div class="km-section">
+      <ng-container *ngIf="!editingKm">
+        <span class="km-display">{{ bike.kilometerstand | number:'1.0-0' }} km</span>
+        <button class="btn-secondary" (click)="editingKm = true">Aktualisieren</button>
+      </ng-container>
+      <ng-container *ngIf="editingKm">
+        <input type="number" [(ngModel)]="newKilometerstand" class="km-input" />
+        <button class="btn-primary" (click)="saveKilometerstand()">Speichern</button>
+        <button class="btn-secondary" (click)="editingKm = false">Abbrechen</button>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <h3>Verschleißteile</h3>
+    <button class="btn-primary" (click)="showWearPartForm = !showWearPartForm">
+      {{ showWearPartForm ? 'Abbrechen' : '+ Verschleißteil hinzufügen' }}
+    </button>
+  </div>
+
+  <app-wear-part-form
+    *ngIf="showWearPartForm && bike"
+    [radId]="bike.id"
+    [currentKilometerstand]="bike.kilometerstand"
+    (saved)="onWearPartAdded()">
+  </app-wear-part-form>
+
+  <div *ngIf="wearParts.length === 0 && !showWearPartForm" class="empty-state">
+    Noch keine Verschleißteile erfasst.
+  </div>
+
+  <table *ngIf="wearParts.length > 0" class="wear-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Kategorie</th>
+        <th>Einbau km</th>
+        <th>Einbau Datum</th>
+        <th>Ausbau km</th>
+        <th>Ausbau Datum</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let part of wearParts">
+        <td>{{ part.name }}</td>
+        <td><span class="part-badge">{{ part.kategorie }}</span></td>
+        <td>{{ part.einbauKilometerstand | number:'1.0-0' }} km</td>
+        <td>{{ part.einbauDatum | date:'dd.MM.yyyy' }}</td>
+        <td>{{ part.ausbauKilometerstand ? (part.ausbauKilometerstand | number:'1.0-0') + ' km' : '—' }}</td>
+        <td>{{ part.ausbauDatum ? (part.ausbauDatum | date:'dd.MM.yyyy') : '—' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</ng-container>

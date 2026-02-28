@@ -1,0 +1,37 @@
+<div class="back-link" (click)="cancel()">← Zurück</div>
+<h2>Neues Rad hinzufügen</h2>
+
+<div *ngIf="error" class="error">{{ error }}</div>
+
+<form class="form-card" (ngSubmit)="save()">
+
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input id="name" type="text" [(ngModel)]="bike.name" name="name" placeholder="z.B. Canyon Ultimate" required />
+  </div>
+
+  <div class="form-group">
+    <label for="kategorie">Kategorie</label>
+    <select id="kategorie" [(ngModel)]="bike.kategorie" name="kategorie">
+      <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="km">Aktueller Kilometerstand</label>
+    <input id="km" type="number" [(ngModel)]="bike.kilometerstand" name="kilometerstand" min="0" />
+  </div>
+
+  <div class="form-group">
+    <label for="stravaId">Strava-ID (optional)</label>
+    <input id="stravaId" type="text" [(ngModel)]="bike.stravaId" name="stravaId" placeholder="Strava Rad-ID" />
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn-primary" [disabled]="saving">
+      {{ saving ? 'Speichert...' : 'Rad speichern' }}
+    </button>
+    <button type="button" class="btn-secondary" (click)="cancel()">Abbrechen</button>
+  </div>
+
+</form>
