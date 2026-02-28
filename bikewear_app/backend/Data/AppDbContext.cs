@@ -12,5 +12,16 @@ namespace App.Data
         public DbSet<Bike> Rads { get; set; }
         public DbSet<WearPart> Verschleissteile { get; set; }
         public DbSet<User> Benutzer { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<WearPart>()
+                .HasOne<Bike>()
+                .WithMany()
+                .HasForeignKey(w => w.RadId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }

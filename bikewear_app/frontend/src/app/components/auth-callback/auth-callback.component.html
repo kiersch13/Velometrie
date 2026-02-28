@@ -1,0 +1,27 @@
+<div class="min-h-screen bg-bg-light dark:bg-bg-dark flex items-center justify-center px-4">
+  <div class="card max-w-sm w-full p-8 text-center">
+
+    <!-- Loading state -->
+    <ng-container *ngIf="!error">
+      <div class="flex justify-center mb-4">
+        <lucide-icon name="loader-2" [size]="36" class="text-accent animate-spin" aria-hidden="true"></lucide-icon>
+      </div>
+      <h2 class="text-lg font-semibold text-primary dark:text-text-dark mb-1">Verbinde mit Strava</h2>
+      <p class="text-sm text-gray-400">Einen Moment bitte...</p>
+    </ng-container>
+
+    <!-- Error state -->
+    <ng-container *ngIf="error">
+      <div class="flex justify-center mb-4">
+        <lucide-icon name="x-circle" [size]="36" class="text-error" aria-hidden="true"></lucide-icon>
+      </div>
+      <h2 class="text-lg font-semibold text-primary dark:text-text-dark mb-1">Verbindung fehlgeschlagen</h2>
+      <p class="text-sm text-gray-400 mb-6">{{ error }}</p>
+      <button class="btn-primary" (click)="retry()">
+        <lucide-icon name="arrow-left" [size]="14" aria-hidden="true"></lucide-icon>
+        Zurück zur Startseite
+      </button>
+    </ng-container>
+
+  </div>
+</div>

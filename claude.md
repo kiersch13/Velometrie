@@ -24,9 +24,11 @@ A bike wear-part tracking app. Users track their bikes and the wear parts instal
 | Layer | Technology |
 |---|---|
 | Backend | C# / ASP.NET Core / .NET 10 |
-| Database | EF Core InMemoryDatabase (no persistence, no migrations) |
+| Database | EF Core with SQLite (`bikewear.db`) — auto-migrated on startup via `db.Database.MigrateAsync()` |
 | Frontend | Angular 17 / TypeScript ~5.2 |
-| Auth (current) | Strava ID + AccessToken stored in DB — no JWT, no sessions, no `[Authorize]` guards |
+| Icons | `lucide-angular` — imported via `LucideAngularModule.pick({})`, tree-shakeable |
+| CSS plugins | `@tailwindcss/forms` — polishes default form input appearance |
+| Auth (current) | Strava OAuth 2.0 — `GET /api/auth/strava/redirect-url` + `POST /api/auth/strava/callback`; user stored in DB with AccessToken, RefreshToken, TokenExpiresAt, Vorname; frontend stores user in localStorage |
 
 > Dependency details (NuGet packages, Angular modules) live in `Backend.csproj` and `app.module.ts` respectively — do not duplicate them here.
 
@@ -59,6 +61,7 @@ These are deliberate choices that are **not visible from the code alone**. Follo
 - **Scoped DI** — all services are registered as `Scoped`.
 - **Async throughout** — every service method and controller action must be `async Task<…>`.
 - **Frontend enums are string-typed** and their values must match the C# enum member names exactly.
+- **Full CRUD for domain entities** — `Rad` and `WearPart` must always expose all four CRUD operations (Create, Read, Update, Delete) in both backend (controller + service interface + service implementation) and frontend (service + UI). Partial implementations are considered incomplete. `User` and `StravaGear` are exempt: `User` is lifecycle-managed via Strava OAuth, and `StravaGear` is a transient API wrapper without its own DB table.
 
 ---
 
@@ -78,18 +81,16 @@ These are deliberate choices that are **not visible from the code alone**. Follo
 ### Styling Approach
 - **CSS framework:** Tailwind CSS (not yet installed — see setup note below)
 - **No inline styles** — use Tailwind utility classes only; never `style="..."` attributes
-- **No emojis** anywhere in the UI — use text labels or SVG icons
-- **No external icon libraries** — use simple SVG or Unicode symbols if needed
+- **No emojis** anywhere in the UI
+- **Icons**: use `lucide-angular` — `<lucide-icon name="icon-name" [size]="16">`. Import only used icons in `NgIconsModule.pick({})` in `app.module.ts`. Icon names are kebab-case (e.g. `arrow-left`, `check-circle-2`). Browse at https://lucide.dev/icons/
+- **Font**: Inter via Google Fonts (`<link>` in `index.html`), registered in Tailwind as `fontFamily.sans`
 - **Spacing:** follow the 4/8px grid — prefer Tailwind's default spacing scale (`p-2`, `p-4`, `gap-4`, etc.)
 - **Mobile-first** — write base styles for mobile, extend with `md:` / `lg:` breakpoints
 - **Dark mode:** use Tailwind's `dark:` variant; dark mode is class-based (`class="dark"` on `<html>`)
 
-> **Tailwind setup** (run once from `bikewear_app/frontend/` before using Tailwind classes):
-> ```bash
-> npm install -D tailwindcss postcss autoprefixer
-> npx tailwindcss init
-> ```
-> Then add Tailwind directives to `src/styles.css` and configure `content` paths in `tailwind.config.js`.
+> Tailwind is already installed and configured. `tailwind.config.js` contains the full color palette, custom `boxShadow` tokens (`shadow-card`, `shadow-card-hover`), and Inter font family.
+> `@tailwindcss/forms` is installed — it auto-styles `<input>`, `<select>`, `<textarea>` elements.
+> Reusable class aliases are defined in `@layer components` inside `src/styles.css`: `.btn-primary`, `.btn-secondary`, `.btn-danger`, `.form-input`, `.badge`, `.card`, `.page-title`.
 
 ---
 
@@ -127,13 +128,13 @@ colors: {
 ## [PROJECT] Roadmap & Constraints
 
 **Planned (not yet implemented):**
-- Strava OAuth flow (`stravaId` fields exist as placeholders)
 - Angular route guards / auth checks
-- Swap InMemoryDatabase for SQLite or PostgreSQL
+- Swap SQLite for PostgreSQL when hosting (provider swap only — no service/model changes needed)
 - Automatic `Kilometerstand` sync via Strava webhook
+- Strava token refresh (refresh token is stored, but automatic refresh not yet triggered)
 
 **Hard constraints for agents:**
-- Do **not** add a persistence layer unless explicitly asked.
+- Do **not** swap the database provider unless explicitly asked.
 - Do **not** add auth guards until the OAuth flow is implemented.
 - Do **not** introduce a DTO layer without an explicit prompt.
 - Do **not** change the German domain naming without an explicit prompt.
@@ -163,6 +164,7 @@ A code change is complete when:
 - [ ] All affected API endpoints are consistent between backend controller, service interface, service implementation, and frontend service.
 - [ ] Frontend model interfaces match backend model properties (names and types).
 - [ ] The Roadmap constraints above are not violated.
+- [ ] Domain entities `Rad` and `WearPart` have full CRUD coverage (backend controller + service + frontend service + UI).
 
 ---
 

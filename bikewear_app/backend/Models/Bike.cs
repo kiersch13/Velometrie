@@ -18,6 +18,6 @@ namespace App.Models
         public string Name { get; set; }
         public BikeCategory Kategorie { get; set; }
         public int Kilometerstand { get; set; }
-        public string StravaId { get; set; }
+        public string? StravaId { get; set; }
     }
 }

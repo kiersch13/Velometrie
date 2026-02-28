@@ -6,7 +6,7 @@ export interface WearPart {
   name: string;
   kategorie: WearPartCategory;
   einbauKilometerstand: number;
-  ausbauKilometerstand: number;
+  ausbauKilometerstand: number | null;
   einbauDatum: Date;
-  ausbauDatum: Date;
+  ausbauDatum: Date | null;
 }

@@ -1,0 +1,16 @@
+# Build artifacts — generated inside the container, not needed as input
+bin/
+obj/
+
+# Database files — never bake data into an image
+*.db
+*.db-shm
+*.db-wal
+
+# Git metadata
+.git/
+.gitignore
+
+# IDE files
+.vs/
+*.user

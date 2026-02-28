@@ -1,34 +1,26 @@
-<nav class="flex items-center justify-between bg-primary px-8 h-14 shadow-md">
-  <div class="flex items-center gap-2">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Fahrrad" role="img">
-      <circle cx="5" cy="17" r="3"/><circle cx="19" cy="17" r="3"/>
-      <path d="M5 17L9 5h6l2 5-8 7z"/>
-    </svg>
-    <a routerLink="/bikes" class="text-white font-bold text-lg tracking-wide no-underline">Bikewear</a>
+<nav *ngIf="!isLanding" class="flex items-center justify-between bg-primary px-8 h-16 shadow-md border-b border-white/10">
+  <div class="flex items-center gap-2.5">
+    <lucide-icon name="gauge" [size]="20" class="text-accent" aria-hidden="true"></lucide-icon>
+    <a routerLink="/" class="text-white font-bold text-lg tracking-wide no-underline cursor-pointer">Velometrie</a>
   </div>
-  <div class="flex items-center gap-4">
-    <a routerLink="/bikes" routerLinkActive="border-accent" [routerLinkActiveOptions]="{exact: false}"
-       class="text-white/75 hover:text-white text-sm pb-1 border-b-2 border-transparent transition-colors duration-150">
+  <div class="flex items-center gap-1">
+    <a routerLink="/bikes"
+       routerLinkActive="bg-white/15 text-white"
+       [routerLinkActiveOptions]="{exact: false}"
+       class="text-white/70 hover:text-white hover:bg-white/10 text-sm px-3 py-1.5 rounded-lg transition-colors duration-150">
       Räder
     </a>
-    <a routerLink="/settings" routerLinkActive="text-white" title="Einstellungen"
-       class="text-white/75 hover:text-white transition-colors duration-150" aria-label="Einstellungen">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-           aria-hidden="true">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33
-                 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33
-                 l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1
-                 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65
-                 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0
-                 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21
-                 a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-      </svg>
+    <a routerLink="/settings"
+       routerLinkActive="bg-white/15 text-white"
+       aria-label="Einstellungen"
+       title="Einstellungen"
+       class="text-white/70 hover:text-white hover:bg-white/10 p-1.5 rounded-lg transition-colors duration-150 flex items-center">
+      <lucide-icon name="settings" [size]="18" aria-hidden="true"></lucide-icon>
     </a>
   </div>
 </nav>
 
-<main class="max-w-5xl mx-auto px-6 py-8 bg-bg-light min-h-screen dark:bg-bg-dark dark:text-text-dark">
+<main [class]="isLanding ? '' : 'max-w-5xl mx-auto px-6 py-8 min-h-screen'">
   <router-outlet></router-outlet>
 </main>
+

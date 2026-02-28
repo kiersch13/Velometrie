@@ -1,49 +1,93 @@
-<button class="cursor-pointer text-accent text-sm mb-5 inline-block hover:underline bg-transparent border-0 p-0" (click)="cancel()">
-  ← Zurück
+<button class="btn-secondary text-xs mb-6 border-0 px-0 hover:border-0" (click)="cancel()">
+  <lucide-icon name="arrow-left" [size]="14" aria-hidden="true"></lucide-icon>
+  Zurück
 </button>
-<h2 class="text-2xl font-bold text-primary dark:text-text-dark mb-6">Neues Rad hinzufügen</h2>
 
-<div *ngIf="error" class="text-error mb-4 text-sm">{{ error }}</div>
+<div class="mb-6">
+  <h2 class="page-title">Neues Rad hinzufügen</h2>
+  <p class="text-sm text-gray-400 mt-0.5">Gib deinem Rad einen Namen und eine Kategorie.</p>
+</div>
 
-<form class="bg-white dark:bg-bg-dark rounded-xl p-7 shadow-sm max-w-lg" (ngSubmit)="save()">
+<div *ngIf="error" class="flex items-center gap-2 mb-4 p-3 bg-error/10 border border-error/20 rounded-xl text-error text-sm">
+  <lucide-icon name="alert-circle" [size]="15" aria-hidden="true"></lucide-icon>
+  {{ error }}
+</div>
 
-  <div class="flex flex-col gap-1.5 mb-4">
+<!-- Strava Fahrrad-Import -->
+<div *ngIf="stravaBikesLoading" class="flex items-center gap-2 mb-6 text-sm text-gray-400">
+  <lucide-icon name="loader-2" [size]="14" class="animate-spin" aria-hidden="true"></lucide-icon>
+  Strava-Fahrräder werden geladen...
+</div>
+
+<div *ngIf="!stravaBikesLoading && stravaBikes.length > 0" class="mb-6 max-w-lg">
+  <p class="text-xs font-semibold text-gray-500 dark:text-text-dark mb-2">Von Strava importieren</p>
+  <div class="flex flex-col gap-2">
+    <button
+      *ngFor="let gear of stravaBikes"
+      type="button"
+      (click)="selectStravaBike(gear)"
+      class="flex items-center justify-between w-full px-4 py-3 rounded-xl border text-sm transition-colors"
+      [ngClass]="selectedStravaId === gear.id
+        ? 'border-accent bg-accent/10 text-accent'
+        : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-bg-dark hover:border-accent/50'"
+    >
+      <span class="flex items-center gap-2">
+        <lucide-icon name="bike" [size]="14" aria-hidden="true"></lucide-icon>
+        <span class="font-medium">{{ gear.name }}</span>
+      </span>
+      <span class="text-gray-400">{{ gear.kilometerstandKm | number:'1.0-0' }}&thinsp;km</span>
+    </button>
+  </div>
+  <p *ngIf="selectedStravaId" class="text-xs text-success mt-2 flex items-center gap-1">
+    <lucide-icon name="check-circle-2" [size]="12" aria-hidden="true"></lucide-icon>
+    Formular wurde ausgefüllt – du kannst noch Änderungen vornehmen.
+  </p>
+</div>
+
+<div *ngIf="!stravaBikesLoading && stravaBikesError" class="flex items-start gap-2 mb-4 p-3 bg-warning/10 border border-warning/20 rounded-xl text-warning text-sm max-w-lg">
+  <lucide-icon name="alert-circle" [size]="15" class="mt-0.5 shrink-0" aria-hidden="true"></lucide-icon>
+  <div>
+    <p>{{ stravaBikesError }}</p>
+    <a routerLink="/settings" class="underline text-xs mt-1 inline-block">→ Strava-Verbindung erneuern</a>
+  </div>
+</div>
+
+<form class="card p-7 max-w-lg" (ngSubmit)="save()">
+
+  <div class="flex flex-col gap-1.5 mb-5">
     <label for="name" class="text-xs font-semibold text-gray-500 dark:text-text-dark">Name</label>
-    <input id="name" type="text" [(ngModel)]="bike.name" name="name" placeholder="z.B. Canyon Ultimate" required
-           class="px-3 py-2 border border-gray-200 focus:border-accent rounded-lg text-base outline-none transition-colors duration-150 dark:bg-bg-dark dark:text-text-dark" />
+    <input id="name" type="text" [(ngModel)]="bike.name" name="name"
+           placeholder="z.B. Canyon Ultimate" required class="form-input" />
   </div>
 
-  <div class="flex flex-col gap-1.5 mb-4">
+  <div class="flex flex-col gap-1.5 mb-5">
     <label for="kategorie" class="text-xs font-semibold text-gray-500 dark:text-text-dark">Kategorie</label>
-    <select id="kategorie" [(ngModel)]="bike.kategorie" name="kategorie"
-            class="px-3 py-2 border border-gray-200 focus:border-accent rounded-lg text-base outline-none transition-colors duration-150 dark:bg-bg-dark dark:text-text-dark">
+    <select id="kategorie" [(ngModel)]="bike.kategorie" name="kategorie" class="form-input">
       <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
     </select>
   </div>
 
-  <div class="flex flex-col gap-1.5 mb-4">
+  <div class="flex flex-col gap-1.5 mb-5">
     <label for="km" class="text-xs font-semibold text-gray-500 dark:text-text-dark">Aktueller Kilometerstand</label>
-    <input id="km" type="number" [(ngModel)]="bike.kilometerstand" name="kilometerstand" min="0"
-           class="px-3 py-2 border border-gray-200 focus:border-accent rounded-lg text-base outline-none transition-colors duration-150 dark:bg-bg-dark dark:text-text-dark" />
+    <input id="km" type="number" [(ngModel)]="bike.kilometerstand" name="kilometerstand"
+           min="0" class="form-input" />
   </div>
 
-  <div class="flex flex-col gap-1.5 mb-4">
-    <label for="stravaId" class="text-xs font-semibold text-gray-500 dark:text-text-dark">Strava-ID (optional)</label>
-    <input id="stravaId" type="text" [(ngModel)]="bike.stravaId" name="stravaId" placeholder="Strava Rad-ID"
-           class="px-3 py-2 border border-gray-200 focus:border-accent rounded-lg text-base outline-none transition-colors duration-150 dark:bg-bg-dark dark:text-text-dark" />
+  <div class="flex flex-col gap-1.5 mb-7">
+    <label for="stravaId" class="text-xs font-semibold text-gray-500 dark:text-text-dark">
+      Strava-ID
+      <span class="font-normal text-gray-400 ml-1">(optional)</span>
+    </label>
+    <input id="stravaId" type="text" [(ngModel)]="bike.stravaId" name="stravaId"
+           placeholder="Strava Rad-ID" class="form-input" />
   </div>
 
-  <div class="flex gap-3 mt-6">
-    <button type="submit"
-            class="bg-accent hover:bg-accent/90 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-lg px-4 py-2 text-sm cursor-pointer transition-colors duration-150"
-            [disabled]="saving">
+  <div class="flex gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
+    <button type="submit" class="btn-primary" [disabled]="saving">
+      <lucide-icon *ngIf="saving" name="loader-2" [size]="14" class="animate-spin" aria-hidden="true"></lucide-icon>
       {{ saving ? 'Speichert...' : 'Rad speichern' }}
     </button>
-    <button type="button"
-            class="bg-transparent text-gray-500 border border-gray-300 hover:border-gray-500 hover:text-gray-800 rounded-lg px-4 py-2 text-sm cursor-pointer transition-colors duration-150"
-            (click)="cancel()">
-      Abbrechen
-    </button>
+    <button type="button" class="btn-secondary" (click)="cancel()">Abbrechen</button>
   </div>
 
 </form>

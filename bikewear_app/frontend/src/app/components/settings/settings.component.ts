@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { User } from '../../models/user';
 
 @Component({
   selector: 'app-settings',
@@ -8,32 +7,23 @@ import { User } from '../../models/user';
   styleUrls: ['./settings.component.css']
 })
 export class SettingsComponent {
-  stravaId = '';
-  accessToken = '';
   loading = false;
   error = '';
   success = '';
+  showConfirm = false;
 
   constructor(public authService: AuthService) {}
 
-  connect(): void {
-    if (!this.stravaId.trim() || !this.accessToken.trim()) {
-      this.error = 'Bitte Strava-ID und Access-Token eingeben.';
-      return;
-    }
+  connectWithStrava(): void {
     this.loading = true;
     this.error = '';
-    this.success = '';
-    this.authService.connect(this.stravaId.trim(), this.accessToken.trim()).subscribe({
-      next: () => {
-        this.loading = false;
-        this.success = 'Erfolgreich mit Strava verbunden.';
-        this.stravaId = '';
-        this.accessToken = '';
+    this.authService.getStravaRedirectUrl().subscribe({
+      next: ({ url }) => {
+        window.location.href = url;
       },
       error: () => {
         this.loading = false;
-        this.error = 'Verbindung fehlgeschlagen. Bitte Eingaben prüfen.';
+        this.error = 'Strava-Verbindung konnte nicht gestartet werden. Bitte Backend prüfen und erneut versuchen.';
       }
     });
   }
@@ -42,15 +32,16 @@ export class SettingsComponent {
     this.loading = true;
     this.error = '';
     this.success = '';
+    // disconnect() clears local state immediately — subscribe just waits for backend
     this.authService.disconnect().subscribe({
       next: () => {
         this.loading = false;
-        this.success = 'Strava-Verbindung getrennt.';
-      },
-      error: () => {
-        this.loading = false;
-        this.error = 'Trennung fehlgeschlagen.';
+        this.showConfirm = false;
       }
     });
+  }
+
+  reload(): void {
+    window.location.reload();
   }
 }

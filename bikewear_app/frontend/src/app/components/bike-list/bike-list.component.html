@@ -1,29 +1,56 @@
 <div class="flex justify-between items-center mb-6">
-  <h2 class="text-2xl font-bold text-primary dark:text-text-dark">Meine Räder</h2>
-  <button
-    class="bg-accent hover:bg-accent/90 disabled:opacity-60 text-white font-semibold rounded-lg px-4 py-2 text-sm cursor-pointer transition-colors duration-150"
-    (click)="addBike()">
-    + Rad hinzufügen
+  <div>
+    <h2 class="page-title">Meine Räder</h2>
+    <p class="text-sm text-gray-400 mt-0.5">Verwalte deine Fahrräder und Verschleißteile</p>
+  </div>
+  <button class="btn-primary" (click)="addBike()">
+    <lucide-icon name="plus" [size]="16" aria-hidden="true"></lucide-icon>
+    Rad hinzufügen
   </button>
 </div>
 
-<div *ngIf="loading" class="text-center mt-10 text-gray-500">Lädt...</div>
-<div *ngIf="error" class="text-center mt-10 text-error">{{ error }}</div>
-
-<div *ngIf="!loading && bikes.length === 0 && !error" class="text-center mt-16 text-gray-500">
-  Noch keine Räder vorhanden. Füge dein erstes Rad hinzu!
+<!-- Loading -->
+<div *ngIf="loading" class="flex flex-col items-center justify-center mt-20 text-gray-400 gap-3">
+  <lucide-icon name="loader-2" [size]="36" class="animate-spin" aria-hidden="true"></lucide-icon>
+  <span class="text-sm">Lädt...</span>
 </div>
 
+<!-- Error -->
+<div *ngIf="error" class="flex items-center gap-2 mt-6 p-4 bg-error/10 border border-error/20 rounded-xl text-error text-sm">
+  <lucide-icon name="alert-circle" [size]="16" aria-hidden="true"></lucide-icon>
+  {{ error }}
+</div>
+
+<!-- Empty state -->
+<div *ngIf="!loading && bikes.length === 0 && !error" class="flex flex-col items-center justify-center mt-24 text-gray-400 gap-4">
+  <lucide-icon name="inbox" [size]="48" class="text-gray-300" aria-hidden="true"></lucide-icon>
+  <div class="text-center">
+    <p class="font-semibold text-gray-500">Noch keine Räder</p>
+    <p class="text-sm mt-1">Füge dein erstes Rad hinzu, um loszulegen.</p>
+  </div>
+  <button class="btn-primary" (click)="addBike()">
+    <lucide-icon name="plus" [size]="16" aria-hidden="true"></lucide-icon>
+    Erstes Rad hinzufügen
+  </button>
+</div>
+
+<!-- Bike grid -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
   <div
-    class="bg-white dark:bg-bg-dark rounded-xl p-5 shadow-sm cursor-pointer transition-all duration-150 border-l-4 border-accent hover:-translate-y-1 hover:shadow-md"
+    class="card p-5 cursor-pointer transition-all duration-150 border-l-4 border-accent hover:-translate-y-0.5 hover:shadow-card-hover relative overflow-hidden"
     *ngFor="let bike of bikes"
     (click)="openDetail(bike.id)">
-    <div class="text-xs font-bold uppercase tracking-widest text-accent mb-1">{{ bike.kategorie }}</div>
-    <h3 class="text-lg font-semibold text-primary dark:text-text-dark mt-0 mb-4">{{ bike.name }}</h3>
-    <div class="flex justify-between items-baseline border-t border-gray-100 dark:border-gray-700 pt-3">
-      <span class="text-xs text-gray-400">Kilometerstand</span>
-      <span class="text-base font-bold text-primary dark:text-text-dark">{{ bike.kilometerstand | number:'1.0-0' }} km</span>
+    <div class="absolute top-4 right-4 text-accent/15">
+      <lucide-icon name="bike" [size]="40" aria-hidden="true"></lucide-icon>
+    </div>
+    <span class="badge mb-2">{{ bike.kategorie }}</span>
+    <h3 class="text-base font-semibold text-primary dark:text-text-dark mt-1 mb-4 pr-10">{{ bike.name }}</h3>
+    <div class="flex justify-between items-center border-t border-gray-100 dark:border-gray-700 pt-3">
+      <div class="flex items-center gap-1 text-gray-400">
+        <lucide-icon name="gauge" [size]="13" aria-hidden="true"></lucide-icon>
+        <span class="text-xs">Kilometerstand</span>
+      </div>
+      <span class="text-sm font-bold text-primary dark:text-text-dark">{{ bike.kilometerstand | number:'1.0-0' }} km</span>
     </div>
   </div>
 </div>
