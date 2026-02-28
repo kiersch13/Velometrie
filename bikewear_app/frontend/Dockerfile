@@ -23,11 +23,7 @@ FROM nginx:alpine AS runtime
 # Copy compiled Angular app into Nginx's web root
 COPY --from=build /app/dist/frontend /usr/share/nginx/html
 
-# Copy the config template (contains ${PORT} placeholder)
-COPY nginx.conf /etc/nginx/templates/default.conf.template
+# Copy Nginx config (handles Angular client-side routing)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# At container startup, envsubst replaces ${PORT} with Railway's injected PORT
-# value, writes the result to the active Nginx config, then starts Nginx.
-# Falls back to port 80 if PORT is not set (e.g. local docker-compose).
-ENV PORT=80
-CMD ["/bin/sh", "-c", "envsubst '${PORT}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+EXPOSE 80
