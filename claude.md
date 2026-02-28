@@ -12,7 +12,7 @@
 
 ## [PROJECT] Overview
 
-A bike wear-part tracking app. Users track their bikes and the wear parts installed on each bike (tyres, chains, cassettes, etc.), including install/removal mileage and dates. Planned integration with Strava to sync odometer readings automatically.
+A bike wear-part tracking app. Users track their bikes and the wear parts installed on each bike (tyres, chains, cassettes, etc.), including install/removal mileage and dates. Strava OAuth is implemented; automatic odometer sync via webhook is planned.
 
 - Domain language is **German** (user-facing terms, model properties, enum values).
 - Source for original requirements: `bikewear_app/docs/prompts/startprompt.txt`
@@ -28,7 +28,9 @@ A bike wear-part tracking app. Users track their bikes and the wear parts instal
 | Frontend | Angular 17 / TypeScript ~5.2 |
 | Icons | `lucide-angular` — imported via `LucideAngularModule.pick({})`, tree-shakeable |
 | CSS plugins | `@tailwindcss/forms` — polishes default form input appearance |
-| Auth (current) | Strava OAuth 2.0 — `GET /api/auth/strava/redirect-url` + `POST /api/auth/strava/callback`; user stored in DB with AccessToken, RefreshToken, TokenExpiresAt, Vorname; frontend stores user in localStorage |
+| Auth | Strava OAuth 2.0 — `GET /api/auth/strava/redirect-url` + `POST /api/auth/strava/callback`; user stored in DB with `StravaId`, `AccessToken`, `RefreshToken`, `TokenExpiresAt`, `Vorname`; frontend stores user in `localStorage` |
+| Testing (backend) | xUnit + `Microsoft.EntityFrameworkCore.InMemory` — test project at `bikewear_app/backend.tests/` |
+| Testing (frontend) | Jest (`jest.config.js`) — spec files co-located with services (e.g. `bike.service.spec.ts`) |
 
 > Dependency details (NuGet packages, Angular modules) live in `Backend.csproj` and `app.module.ts` respectively — do not duplicate them here.
 
@@ -46,7 +48,9 @@ npm start
 # → http://localhost:4200
 ```
 
-Frontend calls backend at `http://localhost:5059`. CORS is open to `http://localhost:4200`.
+Frontend calls backend at `http://localhost:5059`. The backend API URL is configured via `environment.apiBaseUrl` in the Angular environment files — never hardcode it.
+
+CORS allowed origins are read from the `AllowedOrigins` config section (overridable via environment variable in production). Local default is `http://localhost:4200`.
 
 ---
 
@@ -57,7 +61,7 @@ These are deliberate choices that are **not visible from the code alone**. Follo
 - **No DTOs** — models are used directly as API contracts. Don't introduce DTOs without a prompt requesting it.
 - **Backend namespace is `App.*`** — not `Backend.*`, even though the project folder is `backend/`.
 - **No EF navigation properties** — `WearPart.RadId` is a manual FK. Joins are done in service code.
-- **No auth middleware yet** — `[Authorize]` attributes and Angular route guards are intentionally absent.
+- **No auth middleware yet** — `[Authorize]` attributes and Angular route guards are intentionally absent (Strava OAuth flow is implemented, but route protection is not).
 - **Scoped DI** — all services are registered as `Scoped`.
 - **Async throughout** — every service method and controller action must be `async Task<…>`.
 - **Frontend enums are string-typed** and their values must match the C# enum member names exactly.
@@ -71,7 +75,7 @@ These are deliberate choices that are **not visible from the code alone**. Follo
 |---|---|
 | Domain model properties | German (`Kilometerstand`, `Einbau/Ausbau`, `Rad`, `Kategorie`) |
 | Infrastructure identifiers | English (`Controller`, `Service`, `DbContext`, `Id`) |
-| C# enums | German values (`Rennrad`, `Gravel`, `Reifen`, `Kassette`, …) |
+| C# enums | German values — `BikeCategory`: `Rennrad`, `Gravel`, `Mountainbike`; `WearPartCategory`: `Reifen`, `Kassette`, `Kettenblatt`, `Kette`, `Sonstiges` |
 | Angular components | kebab-case matching feature name (`bike-list`, `wear-part-form`) |
 
 ---
@@ -79,7 +83,7 @@ These are deliberate choices that are **not visible from the code alone**. Follo
 ## [PROJECT] Frontend Style Guide
 
 ### Styling Approach
-- **CSS framework:** Tailwind CSS (not yet installed — see setup note below)
+- **CSS framework:** Tailwind CSS
 - **No inline styles** — use Tailwind utility classes only; never `style="..."` attributes
 - **No emojis** anywhere in the UI
 - **Icons**: use `lucide-angular` — `<lucide-icon name="icon-name" [size]="16">`. Import only used icons in `NgIconsModule.pick({})` in `app.module.ts`. Icon names are kebab-case (e.g. `arrow-left`, `check-circle-2`). Browse at https://lucide.dev/icons/
@@ -127,15 +131,21 @@ colors: {
 
 ## [PROJECT] Roadmap & Constraints
 
+**Implemented:**
+- Strava OAuth 2.0 login flow (redirect URL + callback)
+- Full CRUD for `Bike` (Create, Read, UpdateKilometerstand) — Delete and full Update are still missing (known gap)
+- Partial CRUD for `WearPart` (Create, Read) — Update and Delete are missing (known gap)
+
 **Planned (not yet implemented):**
-- Angular route guards / auth checks
-- Swap SQLite for PostgreSQL when hosting (provider swap only — no service/model changes needed)
+- Angular route guards (OAuth is done; guards just haven't been added yet)
+- Full CRUD completion for `Bike` (delete, general update) and `WearPart` (update, delete)
 - Automatic `Kilometerstand` sync via Strava webhook
-- Strava token refresh (refresh token is stored, but automatic refresh not yet triggered)
+- Strava token refresh (token is stored, but auto-refresh is not yet triggered)
+- Swap SQLite for PostgreSQL when hosting (provider swap only — no service/model changes needed)
 
 **Hard constraints for agents:**
 - Do **not** swap the database provider unless explicitly asked.
-- Do **not** add auth guards until the OAuth flow is implemented.
+- Do **not** add Angular route guards without an explicit prompt.
 - Do **not** introduce a DTO layer without an explicit prompt.
 - Do **not** change the German domain naming without an explicit prompt.
 
@@ -148,7 +158,11 @@ When working on a feature or fix, follow this loop:
 1. **Understand** — read the relevant existing files before generating anything. Check models, the affected service interface, and the controller.
 2. **Generate** — implement the change following all conventions in this file.
 3. **Verify** — after each file edit, check for compile/lint errors. Fix them before continuing.
-4. **Test** — if a test file exists for the changed unit, update it. If no tests exist and the change is non-trivial, create a minimal test.
+4. **Test** — tests are **required** for every non-trivial backend service method and frontend service. Rules:
+   - Backend: add an xUnit test in `backend.tests/Services/` using an in-memory DB (`UseInMemoryDatabase`). Follow the pattern in `BikeServiceTests.cs`.
+   - Frontend: add or update a Jest spec file co-located with the service (e.g. `bike.service.spec.ts`).
+   - If a test file already covers the changed unit, add cases for the new behaviour.
+   - Tests must pass before the change is considered complete.
 5. **Review** — re-read the generated code against the conventions above. Flag any deviation explicitly.
 6. **Update this file** — if the prompt changes an architectural decision or adds a new convention, update the relevant `[PROJECT]` section.
 
@@ -165,6 +179,8 @@ A code change is complete when:
 - [ ] Frontend model interfaces match backend model properties (names and types).
 - [ ] The Roadmap constraints above are not violated.
 - [ ] Domain entities `Rad` and `WearPart` have full CRUD coverage (backend controller + service + frontend service + UI).
+- [ ] Every new or changed service method has a corresponding test (backend: xUnit; frontend: Jest).
+- [ ] All tests pass (`dotnet test` for backend, `npm test -- --watchAll=false` for frontend).
 
 ---
 
@@ -172,6 +188,8 @@ A code change is complete when:
 
 - Always read the interface (`I*Service.cs`) before editing the implementation.
 - New backend endpoints follow the existing route pattern: `api/[controller]`.
-- New Angular components are generated with `ng generate component components/<name>` conventions (separate folder, 4 files).
-- Never hardcode port numbers in frontend code — they already live in the service files; update there only.
+- New Angular components follow `ng generate component components/<name>` conventions (separate folder, 4 files).
+- Never hardcode port numbers or base URLs in frontend code — use `environment.apiBaseUrl` from the Angular environment files.
 - Keep error handling consistent: controllers return `NotFound()` for missing resources, `BadRequest()` for validation failures.
+- Every new service method must have at least one corresponding test (see Test step in Agent Workflow).
+- Test files live at: backend → `bikewear_app/backend.tests/Services/`; frontend → same directory as the service file.
