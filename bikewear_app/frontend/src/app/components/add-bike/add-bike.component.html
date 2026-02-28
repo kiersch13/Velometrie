@@ -1,37 +1,49 @@
-<div class="back-link" (click)="cancel()">← Zurück</div>
-<h2>Neues Rad hinzufügen</h2>
+<button class="cursor-pointer text-accent text-sm mb-5 inline-block hover:underline bg-transparent border-0 p-0" (click)="cancel()">
+  ← Zurück
+</button>
+<h2 class="text-2xl font-bold text-primary dark:text-text-dark mb-6">Neues Rad hinzufügen</h2>
 
-<div *ngIf="error" class="error">{{ error }}</div>
+<div *ngIf="error" class="text-error mb-4 text-sm">{{ error }}</div>
 
-<form class="form-card" (ngSubmit)="save()">
+<form class="bg-white dark:bg-bg-dark rounded-xl p-7 shadow-sm max-w-lg" (ngSubmit)="save()">
 
-  <div class="form-group">
-    <label for="name">Name</label>
-    <input id="name" type="text" [(ngModel)]="bike.name" name="name" placeholder="z.B. Canyon Ultimate" required />
+  <div class="flex flex-col gap-1.5 mb-4">
+    <label for="name" class="text-xs font-semibold text-gray-500 dark:text-text-dark">Name</label>
+    <input id="name" type="text" [(ngModel)]="bike.name" name="name" placeholder="z.B. Canyon Ultimate" required
+           class="px-3 py-2 border border-gray-200 focus:border-accent rounded-lg text-base outline-none transition-colors duration-150 dark:bg-bg-dark dark:text-text-dark" />
   </div>
 
-  <div class="form-group">
-    <label for="kategorie">Kategorie</label>
-    <select id="kategorie" [(ngModel)]="bike.kategorie" name="kategorie">
+  <div class="flex flex-col gap-1.5 mb-4">
+    <label for="kategorie" class="text-xs font-semibold text-gray-500 dark:text-text-dark">Kategorie</label>
+    <select id="kategorie" [(ngModel)]="bike.kategorie" name="kategorie"
+            class="px-3 py-2 border border-gray-200 focus:border-accent rounded-lg text-base outline-none transition-colors duration-150 dark:bg-bg-dark dark:text-text-dark">
       <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
     </select>
   </div>
 
-  <div class="form-group">
-    <label for="km">Aktueller Kilometerstand</label>
-    <input id="km" type="number" [(ngModel)]="bike.kilometerstand" name="kilometerstand" min="0" />
+  <div class="flex flex-col gap-1.5 mb-4">
+    <label for="km" class="text-xs font-semibold text-gray-500 dark:text-text-dark">Aktueller Kilometerstand</label>
+    <input id="km" type="number" [(ngModel)]="bike.kilometerstand" name="kilometerstand" min="0"
+           class="px-3 py-2 border border-gray-200 focus:border-accent rounded-lg text-base outline-none transition-colors duration-150 dark:bg-bg-dark dark:text-text-dark" />
   </div>
 
-  <div class="form-group">
-    <label for="stravaId">Strava-ID (optional)</label>
-    <input id="stravaId" type="text" [(ngModel)]="bike.stravaId" name="stravaId" placeholder="Strava Rad-ID" />
+  <div class="flex flex-col gap-1.5 mb-4">
+    <label for="stravaId" class="text-xs font-semibold text-gray-500 dark:text-text-dark">Strava-ID (optional)</label>
+    <input id="stravaId" type="text" [(ngModel)]="bike.stravaId" name="stravaId" placeholder="Strava Rad-ID"
+           class="px-3 py-2 border border-gray-200 focus:border-accent rounded-lg text-base outline-none transition-colors duration-150 dark:bg-bg-dark dark:text-text-dark" />
   </div>
 
-  <div class="form-actions">
-    <button type="submit" class="btn-primary" [disabled]="saving">
+  <div class="flex gap-3 mt-6">
+    <button type="submit"
+            class="bg-accent hover:bg-accent/90 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-lg px-4 py-2 text-sm cursor-pointer transition-colors duration-150"
+            [disabled]="saving">
       {{ saving ? 'Speichert...' : 'Rad speichern' }}
     </button>
-    <button type="button" class="btn-secondary" (click)="cancel()">Abbrechen</button>
+    <button type="button"
+            class="bg-transparent text-gray-500 border border-gray-300 hover:border-gray-500 hover:text-gray-800 rounded-lg px-4 py-2 text-sm cursor-pointer transition-colors duration-150"
+            (click)="cancel()">
+      Abbrechen
+    </button>
   </div>
 
 </form>
