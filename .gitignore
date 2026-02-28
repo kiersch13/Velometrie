@@ -1,4 +1,58 @@
-node_modules
-bikewear_app/backend/bin/
-bikewear_app/backend/obj/
+# ── .NET / C# ─────────────────────────────────────────────────────────────────
+# Build output directories (all projects)
+**/bin/
+**/obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.DotSettings.user
+
+# NuGet
+*.nupkg
+*.snupkg
+project.lock.json
+packages/
+
+# Publish / release output
+publish/
+**/publish/
+
+# Coverage results
+TestResults/
+coverage/
+*.coveragexml
+*.coverage
+
+# ── Angular / Node ────────────────────────────────────────────────────────────
+node_modules/
+
+# Angular build cache (CLI internal)
+.angular/
+
+# Compiled output
 bikewear_app/frontend/dist/
+
+# Jest
+**/coverage/
+
+# ── SQLite ────────────────────────────────────────────────────────────────────
+*.db
+*.db-shm
+*.db-wal
+
+# ── OS / editor noise ─────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# ── Local notes (not tracked in git) ──────────────────────────────────────────
+_local/
