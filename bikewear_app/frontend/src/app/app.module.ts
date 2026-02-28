@@ -9,6 +9,7 @@ import { BikeListComponent } from './components/bike-list/bike-list.component';
 import { BikeDetailComponent } from './components/bike-detail/bike-detail.component';
 import { AddBikeComponent } from './components/add-bike/add-bike.component';
 import { WearPartFormComponent } from './components/wear-part-form/wear-part-form.component';
+import { SettingsComponent } from './components/settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { WearPartFormComponent } from './components/wear-part-form/wear-part-for
     BikeListComponent,
     BikeDetailComponent,
     AddBikeComponent,
-    WearPartFormComponent
+    WearPartFormComponent,
+    SettingsComponent
   ],
   imports: [
     BrowserModule,
