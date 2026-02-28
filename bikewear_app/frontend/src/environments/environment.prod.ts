@@ -3,5 +3,5 @@
 // e.g. https://bikewear-backend-production.up.railway.app
 export const environment = {
   production: true,
-  apiBaseUrl: 'RAILWAY_BACKEND_URL',
+  apiBaseUrl: 'https://velometriebackend-production.up.railway.app',
 };
