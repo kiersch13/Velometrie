@@ -1,0 +1,39 @@
+# docker-compose.yml — for running the full app locally with Docker
+#
+# Usage:
+#   docker compose up --build       ← first time or after code changes
+#   docker compose up               ← subsequent runs (uses cached images)
+#   docker compose down             ← stop everything
+#
+# Frontend:  http://localhost:4200
+# Backend:   http://localhost:5059
+
+services:
+
+  backend:
+    build:
+      context: ./bikewear_app/backend
+      dockerfile: Dockerfile
+    ports:
+      - "5059:8080"   # host:container — browse to http://localhost:5059
+    volumes:
+      # Mount a named volume for the SQLite database.
+      # Without this, all your data is lost every time the container restarts.
+      - bikewear-data:/app/data
+    environment:
+      # These override appsettings.json values at runtime
+      - ASPNETCORE_ENVIRONMENT=Development
+      - AllowedOrigins__0=http://localhost:4200
+
+  frontend:
+    build:
+      context: ./bikewear_app/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"     # host:container — browse to http://localhost:4200
+    depends_on:
+      - backend
+
+volumes:
+  # Named volume so your database data persists between container restarts
+  bikewear-data:

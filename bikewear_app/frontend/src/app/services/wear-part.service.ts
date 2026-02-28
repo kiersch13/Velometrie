@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { WearPart } from '../models/wear-part';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WearPartService {
 
-  private apiUrl = 'http://localhost:5059/api/wearpart';
+  private apiUrl = `${environment.apiBaseUrl}/api/wearpart`;
 
   constructor(private http: HttpClient) { }
 

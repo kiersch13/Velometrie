@@ -1,0 +1,6 @@
+# Railway configuration for the frontend service
+# Railway reads this file from the service's root directory
+
+[build]
+builder = "dockerfile"
+dockerfilePath = "./Dockerfile"

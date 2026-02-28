@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of, tap } from 'rxjs';
+import { BehaviorSubject, Observable, of, tap, catchError } from 'rxjs';
 import { User } from '../models/user';
+import { StravaGear } from '../models/strava-gear';
+import { environment } from '../../environments/environment';
 
 const STORAGE_KEY = 'bikewear_user';
 
@@ -10,7 +12,7 @@ const STORAGE_KEY = 'bikewear_user';
 })
 export class AuthService {
 
-  private apiUrl = 'http://localhost:5059/api/auth';
+  private apiUrl = `${environment.apiBaseUrl}/api/auth`;
 
   private _currentUser = new BehaviorSubject<User | null>(this.loadUser());
   readonly currentUser$ = this._currentUser.asObservable();
@@ -25,6 +27,16 @@ export class AuthService {
     return this._currentUser.value !== null;
   }
 
+  getStravaRedirectUrl(): Observable<{ url: string }> {
+    return this.http.get<{ url: string }>(`${this.apiUrl}/strava/redirect-url`);
+  }
+
+  exchangeCode(code: string): Observable<User> {
+    return this.http.post<User>(`${this.apiUrl}/strava/callback`, { code }).pipe(
+      tap(user => this.setUser(user))
+    );
+  }
+
   connect(stravaId: string, accessToken: string): Observable<User> {
     const payload: User = { id: 0, stravaId, accessToken };
     return this.http.post<User>(`${this.apiUrl}/login`, payload).pipe(
@@ -34,27 +46,18 @@ export class AuthService {
 
   disconnect(): Observable<void> {
     const user = this._currentUser.value;
+    // Always clear local state immediately — backend call is best-effort
+    this.setUser(null);
     if (!user) {
-      this.setUser(null);
       return of(undefined as void);
     }
     return this.http.post<void>(`${this.apiUrl}/logout`, user.id).pipe(
-      tap(() => this.setUser(null))
+      catchError(() => of(undefined as void))
     );
   }
 
-  /** @deprecated use connect() instead */
-  login(user: User): Observable<User> {
-    return this.http.post<User>(`${this.apiUrl}/login`, user).pipe(
-      tap(u => this.setUser(u))
-    );
-  }
-
-  /** @deprecated use disconnect() instead */
-  logout(userId: number): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/logout`, userId).pipe(
-      tap(() => this.setUser(null))
-    );
+  getStravaBikes(userId: number): Observable<StravaGear[]> {
+    return this.http.get<StravaGear[]>(`${this.apiUrl}/strava/bikes?userId=${userId}`);
   }
 
   private setUser(user: User | null): void {

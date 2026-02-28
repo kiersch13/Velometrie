@@ -1,0 +1,11 @@
+# Railway configuration for the backend service
+# Railway reads this file from the service's root directory
+
+[build]
+builder = "dockerfile"
+dockerfilePath = "./Dockerfile"
+
+[deploy]
+# Railway will check GET / responds with 200 to confirm the service is healthy
+healthcheckPath = "/"
+healthcheckTimeout = 30

@@ -1,0 +1,111 @@
+# ──────────────────────────────────────────────────────────────
+# CI Pipeline — Bikewear App
+#
+# What this does:
+#   1. backend-test  — builds and runs all C# xUnit tests
+#   2. frontend-test — runs Jest tests + validates the production build
+#   3. docker-build  — builds both Docker images to validate Dockerfiles
+#
+# When it runs:
+#   • Every push to any branch
+#   • Every Pull Request targeting main
+#
+# Deployment:
+#   Railway watches the main branch directly via its GitHub integration.
+#   When your PR is merged and all checks pass, Railway auto-deploys.
+# ──────────────────────────────────────────────────────────────
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+
+  # ────────────────────────────────
+  # Job 1: Backend — build + test
+  # ────────────────────────────────
+  backend-test:
+    name: Backend Tests (.NET)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore NuGet packages
+        run: dotnet restore
+        working-directory: bikewear_app/backend.tests
+
+      - name: Build
+        run: dotnet build --no-restore
+        working-directory: bikewear_app/backend.tests
+
+      - name: Run unit tests
+        run: dotnet test --no-build --verbosity normal
+        working-directory: bikewear_app/backend.tests
+        env:
+          # The Strava client secret is stored as a GitHub Secret.
+          # This env var overrides the value in appsettings.json at runtime.
+          # Set it in: GitHub repo → Settings → Secrets → Actions → New secret
+          # Name: STRAVA_CLIENT_SECRET
+          Strava__ClientSecret: ${{ secrets.STRAVA_CLIENT_SECRET }}
+
+  # ────────────────────────────────
+  # Job 2: Frontend — test + build
+  # ────────────────────────────────
+  frontend-test:
+    name: Frontend Tests (Angular / Jest)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: bikewear_app/frontend/package-lock.json
+
+      - name: Install npm packages
+        run: npm ci
+        working-directory: bikewear_app/frontend
+
+      - name: Run Jest tests
+        run: npm run test:ci
+        working-directory: bikewear_app/frontend
+
+      - name: Build for production
+        # This also validates that the Angular compiler succeeds and
+        # that environment.prod.ts is correctly applied
+        run: npm run build:prod
+        working-directory: bikewear_app/frontend
+
+  # ─────────────────────────────────────────────────────────────
+  # Job 3: Docker — build both images (validates Dockerfiles)
+  # Only runs after both test jobs pass.
+  # Does NOT push images to any registry — just proves they build.
+  # ─────────────────────────────────────────────────────────────
+  docker-build:
+    name: Docker Image Build
+    runs-on: ubuntu-latest
+    needs: [backend-test, frontend-test]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build backend Docker image
+        run: docker build -t bikewear-backend:ci ./bikewear_app/backend
+
+      - name: Build frontend Docker image
+        run: docker build -t bikewear-frontend:ci ./bikewear_app/frontend
