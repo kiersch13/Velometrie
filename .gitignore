@@ -1,1 +1,4 @@
 node_modules
+bikewear_app/backend/bin/
+bikewear_app/backend/obj/
+bikewear_app/frontend/dist/

@@ -1,31 +1,48 @@
-<div *ngIf="loading" class="loading">Lädt...</div>
-<div *ngIf="error" class="error">{{ error }}</div>
+<div *ngIf="loading" class="text-center mt-10 text-gray-500">Lädt...</div>
+<div *ngIf="error" class="text-center mt-10 text-error">{{ error }}</div>
 
 <ng-container *ngIf="bike">
-  <div class="back-link" (click)="goBack()">← Zurück zur Übersicht</div>
+  <button class="cursor-pointer text-accent text-sm mb-5 inline-block hover:underline bg-transparent border-0 p-0" (click)="goBack()">
+    ← Zurück zur Übersicht
+  </button>
 
-  <div class="bike-header">
+  <div class="flex justify-between items-start flex-wrap gap-4 mb-8">
     <div>
-      <span class="category-badge">{{ bike.kategorie }}</span>
-      <h2>{{ bike.name }}</h2>
+      <span class="text-xs font-bold uppercase tracking-widest text-accent">{{ bike.kategorie }}</span>
+      <h2 class="mt-1 text-3xl font-bold text-primary dark:text-text-dark">{{ bike.name }}</h2>
     </div>
 
-    <div class="km-section">
+    <div class="flex items-center gap-2 flex-wrap">
       <ng-container *ngIf="!editingKm">
-        <span class="km-display">{{ bike.kilometerstand | number:'1.0-0' }} km</span>
-        <button class="btn-secondary" (click)="editingKm = true">Aktualisieren</button>
+        <span class="text-2xl font-bold text-primary dark:text-text-dark">{{ bike.kilometerstand | number:'1.0-0' }} km</span>
+        <button
+          class="bg-transparent text-gray-500 border border-gray-300 hover:border-gray-500 hover:text-gray-800 rounded-lg px-4 py-2 text-sm cursor-pointer transition-colors duration-150"
+          (click)="editingKm = true">
+          Aktualisieren
+        </button>
       </ng-container>
       <ng-container *ngIf="editingKm">
-        <input type="number" [(ngModel)]="newKilometerstand" class="km-input" />
-        <button class="btn-primary" (click)="saveKilometerstand()">Speichern</button>
-        <button class="btn-secondary" (click)="editingKm = false">Abbrechen</button>
+        <input type="number" [(ngModel)]="newKilometerstand"
+               class="w-32 px-2 py-1.5 border border-gray-300 focus:border-accent rounded-lg text-base outline-none" />
+        <button
+          class="bg-accent hover:bg-accent/90 text-white font-semibold rounded-lg px-4 py-2 text-sm cursor-pointer transition-colors duration-150"
+          (click)="saveKilometerstand()">
+          Speichern
+        </button>
+        <button
+          class="bg-transparent text-gray-500 border border-gray-300 hover:border-gray-500 hover:text-gray-800 rounded-lg px-4 py-2 text-sm cursor-pointer transition-colors duration-150"
+          (click)="editingKm = false">
+          Abbrechen
+        </button>
       </ng-container>
     </div>
   </div>
 
-  <div class="section-header">
-    <h3>Verschleißteile</h3>
-    <button class="btn-primary" (click)="showWearPartForm = !showWearPartForm">
+  <div class="flex justify-between items-center mb-4">
+    <h3 class="text-xl font-semibold text-primary dark:text-text-dark">Verschleißteile</h3>
+    <button
+      class="bg-accent hover:bg-accent/90 text-white font-semibold rounded-lg px-4 py-2 text-sm cursor-pointer transition-colors duration-150"
+      (click)="showWearPartForm = !showWearPartForm">
       {{ showWearPartForm ? 'Abbrechen' : '+ Verschleißteil hinzufügen' }}
     </button>
   </div>
@@ -37,30 +54,34 @@
     (saved)="onWearPartAdded()">
   </app-wear-part-form>
 
-  <div *ngIf="wearParts.length === 0 && !showWearPartForm" class="empty-state">
+  <div *ngIf="wearParts.length === 0 && !showWearPartForm" class="text-gray-400 mt-5 text-base">
     Noch keine Verschleißteile erfasst.
   </div>
 
-  <table *ngIf="wearParts.length > 0" class="wear-table">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Kategorie</th>
-        <th>Einbau km</th>
-        <th>Einbau Datum</th>
-        <th>Ausbau km</th>
-        <th>Ausbau Datum</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let part of wearParts">
-        <td>{{ part.name }}</td>
-        <td><span class="part-badge">{{ part.kategorie }}</span></td>
-        <td>{{ part.einbauKilometerstand | number:'1.0-0' }} km</td>
-        <td>{{ part.einbauDatum | date:'dd.MM.yyyy' }}</td>
-        <td>{{ part.ausbauKilometerstand ? (part.ausbauKilometerstand | number:'1.0-0') + ' km' : '—' }}</td>
-        <td>{{ part.ausbauDatum ? (part.ausbauDatum | date:'dd.MM.yyyy') : '—' }}</td>
-      </tr>
-    </tbody>
-  </table>
+  <div *ngIf="wearParts.length > 0" class="overflow-x-auto">
+    <table class="w-full border-collapse text-sm">
+      <thead>
+        <tr>
+          <th class="bg-gray-50 dark:bg-gray-800 px-4 py-2.5 text-left font-semibold text-gray-500 border-b-2 border-gray-200">Name</th>
+          <th class="bg-gray-50 dark:bg-gray-800 px-4 py-2.5 text-left font-semibold text-gray-500 border-b-2 border-gray-200">Kategorie</th>
+          <th class="bg-gray-50 dark:bg-gray-800 px-4 py-2.5 text-left font-semibold text-gray-500 border-b-2 border-gray-200">Einbau km</th>
+          <th class="bg-gray-50 dark:bg-gray-800 px-4 py-2.5 text-left font-semibold text-gray-500 border-b-2 border-gray-200">Einbau Datum</th>
+          <th class="bg-gray-50 dark:bg-gray-800 px-4 py-2.5 text-left font-semibold text-gray-500 border-b-2 border-gray-200">Ausbau km</th>
+          <th class="bg-gray-50 dark:bg-gray-800 px-4 py-2.5 text-left font-semibold text-gray-500 border-b-2 border-gray-200">Ausbau Datum</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let part of wearParts" class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+          <td class="px-4 py-2.5 border-b border-gray-100 dark:border-gray-700 text-gray-700 dark:text-text-dark">{{ part.name }}</td>
+          <td class="px-4 py-2.5 border-b border-gray-100 dark:border-gray-700">
+            <span class="bg-gray-100 dark:bg-gray-700 rounded px-2 py-0.5 text-xs text-gray-600 dark:text-text-dark">{{ part.kategorie }}</span>
+          </td>
+          <td class="px-4 py-2.5 border-b border-gray-100 dark:border-gray-700 text-gray-700 dark:text-text-dark">{{ part.einbauKilometerstand | number:'1.0-0' }} km</td>
+          <td class="px-4 py-2.5 border-b border-gray-100 dark:border-gray-700 text-gray-700 dark:text-text-dark">{{ part.einbauDatum | date:'dd.MM.yyyy' }}</td>
+          <td class="px-4 py-2.5 border-b border-gray-100 dark:border-gray-700 text-gray-700 dark:text-text-dark">{{ part.ausbauKilometerstand ? (part.ausbauKilometerstand | number:'1.0-0') + ' km' : '—' }}</td>
+          <td class="px-4 py-2.5 border-b border-gray-100 dark:border-gray-700 text-gray-700 dark:text-text-dark">{{ part.ausbauDatum ? (part.ausbauDatum | date:'dd.MM.yyyy') : '—' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </ng-container>
