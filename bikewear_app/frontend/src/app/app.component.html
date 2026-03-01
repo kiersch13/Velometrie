@@ -1,7 +1,8 @@
 <nav *ngIf="!isLanding" class="flex items-center justify-between bg-primary px-8 h-16 shadow-md border-b border-white/10">
-  <div class="flex items-center gap-2.5">
-    <lucide-icon name="gauge" [size]="20" class="text-accent" aria-hidden="true"></lucide-icon>
-    <a routerLink="/" class="text-white font-bold text-lg tracking-wide no-underline cursor-pointer">Velometrie</a>
+  <div class="flex items-center">
+    <a routerLink="/">
+      <img src="assets/velometrie-logo.png" alt="Velometrie" class="h-8 w-auto">
+    </a>
   </div>
   <div class="flex items-center gap-1">
     <a routerLink="/bikes"

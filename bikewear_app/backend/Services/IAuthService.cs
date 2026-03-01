@@ -11,5 +11,6 @@ namespace App.Services
         string GetStravaRedirectUrl();
         Task<User> StravaCallbackAsync(string code);
         Task<IEnumerable<StravaGear>> GetStravaGearAsync(int userId);
+        Task<string> GetFreshAccessTokenAsync(int userId);
     }
 }

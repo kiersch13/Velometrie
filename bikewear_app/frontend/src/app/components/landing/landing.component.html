@@ -14,9 +14,8 @@
 
   <!-- Floating transparent header -->
   <header class="relative z-10 flex items-center justify-between px-8 py-5">
-    <div class="flex items-center gap-2.5">
-      <lucide-icon name="gauge" [size]="22" class="text-accent" aria-hidden="true"></lucide-icon>
-      <span class="text-white font-bold text-xl tracking-wide">Velometrie</span>
+    <div class="flex items-center">
+      <img src="assets/velometrie-logo.png" alt="Velometrie" class="h-8 w-auto">
     </div>
     <a routerLink="/bikes"
        class="text-white/50 hover:text-white text-sm transition-colors duration-150 cursor-pointer">
@@ -27,15 +26,8 @@
   <!-- Hero content -->
   <div class="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-6">
 
-    <!-- Icon badge -->
-    <div class="mb-6 w-16 h-16 rounded-2xl bg-accent/15 ring-1 ring-accent/30 flex items-center justify-center">
-      <lucide-icon name="gauge" [size]="32" class="text-accent" aria-hidden="true"></lucide-icon>
-    </div>
-
-    <!-- Wordmark -->
-    <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight mb-4">
-      Velometrie
-    </h1>
+    <!-- Logo -->
+    <img src="assets/velometrie-logo.png" alt="Velometrie" class="h-16 md:h-20 lg:h-24 w-auto mb-8">
 
     <!-- Primary tagline -->
     <p class="text-xl md:text-2xl text-white/60 font-light max-w-md mb-4 leading-relaxed">

@@ -145,6 +145,13 @@ namespace App.Services
             return result;
         }
 
+        public async Task<string> GetFreshAccessTokenAsync(int userId)
+        {
+            var user = await _context.Benutzer.FindAsync(userId)
+                ?? throw new InvalidOperationException("Benutzer nicht gefunden.");
+            return await EnsureFreshTokenAsync(user);
+        }
+
         /// <summary>
         /// Returns a valid access token, refreshing it via Strava if it has expired or is about to expire.
         /// </summary>

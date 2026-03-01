@@ -135,11 +135,14 @@ colors: {
 - Strava OAuth 2.0 login flow (redirect URL + callback)
 - Full CRUD for `Bike` (Create, Read, UpdateKilometerstand, UpdateBike, Delete) — backend + frontend + UI
 - Full CRUD for `WearPart` (Create, Read, Update, Delete) — backend + frontend + UI (inline edit form in bike-detail)
+- Strava token refresh via `AuthService.EnsureFreshTokenAsync` (5-min buffer before expiry)
+- Strava webhook: subscription validation (`GET /api/webhook/strava`) + event handler (`POST /api/webhook/strava`)
+  - Activity `create` events: fetches activity from Strava API, increments `Bike.Kilometerstand` by distance in km
+  - Athlete `update` (deauth): clears `AccessToken`, `RefreshToken`, `TokenExpiresAt` for the affected user
+  - Configure `Strava:WebhookVerifyToken` in `appsettings.json` (or env var) before registering the webhook with Strava
 
 **Planned (not yet implemented):**
 - Angular route guards (OAuth is done; guards just haven't been added yet)
-- Automatic `Kilometerstand` sync via Strava webhook
-- Strava token refresh (token is stored, but auto-refresh is not yet triggered)
 - Swap SQLite for PostgreSQL when hosting (provider swap only — no service/model changes needed)
 
 **Hard constraints for agents:**
