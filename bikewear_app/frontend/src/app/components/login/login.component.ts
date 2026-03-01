@@ -29,9 +29,13 @@ export class LoginComponent {
       error: (err) => {
         this.loading = false;
         const msg = err?.error;
-        this.error = typeof msg === 'string' && msg
-          ? msg
-          : 'Anmeldung fehlgeschlagen. Bitte prüfe deine Eingaben.';
+        if (err?.status === 0) {
+          this.error = 'Server nicht erreichbar. Bitte versuche es später erneut.';
+        } else {
+          this.error = typeof msg === 'string' && msg
+            ? msg
+            : 'Anmeldung fehlgeschlagen. Bitte prüfe deine Eingaben.';
+        }
       }
     });
   }
