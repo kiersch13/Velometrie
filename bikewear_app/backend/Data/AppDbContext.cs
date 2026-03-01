@@ -12,6 +12,7 @@ namespace App.Data
         public DbSet<Bike> Rads { get; set; }
         public DbSet<WearPart> Verschleissteile { get; set; }
         public DbSet<User> Benutzer { get; set; }
+        public DbSet<TeilVorlage> Teilvorlagen { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

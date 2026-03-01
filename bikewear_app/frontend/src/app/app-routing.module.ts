@@ -6,6 +6,7 @@ import { BikeDetailComponent } from './components/bike-detail/bike-detail.compon
 import { AddBikeComponent } from './components/add-bike/add-bike.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { AuthCallbackComponent } from './components/auth-callback/auth-callback.component';
+import { TeilBibliothekComponent } from './components/teil-bibliothek/teil-bibliothek.component';
 
 const routes: Routes = [
   { path: '', component: LandingComponent },
@@ -14,6 +15,7 @@ const routes: Routes = [
   { path: 'bikes/add', component: AddBikeComponent },
   { path: 'bikes/:id', component: BikeDetailComponent },
   { path: 'settings', component: SettingsComponent },
+  { path: 'teilbibliothek', component: TeilBibliothekComponent },
 ];
 
 @NgModule({

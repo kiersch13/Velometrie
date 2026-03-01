@@ -3,6 +3,57 @@
   <p class="text-sm text-gray-400 mt-0.5">Verwalte Integrationen und App-Einstellungen.</p>
 </div>
 
+<!-- Erwartete Lebensdauer Card -->
+<div class="card max-w-lg overflow-hidden mb-6">
+
+  <!-- Card header -->
+  <div class="px-6 pt-6 pb-4 border-b border-gray-100 dark:border-gray-700 flex items-center gap-3">
+    <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+      <lucide-icon name="gauge" [size]="18" class="text-primary dark:text-text-dark" aria-hidden="true"></lucide-icon>
+    </div>
+    <div>
+      <h3 class="text-sm font-semibold text-primary dark:text-text-dark">Erwartete Lebensdauer</h3>
+      <p class="text-xs text-gray-400">Km-Schwellwerte pro Verschleißteil-Kategorie</p>
+    </div>
+  </div>
+
+  <div class="px-6 py-5">
+    <div class="space-y-3">
+      <div *ngFor="let cat of lifetimeCategories" class="flex items-center gap-3">
+        <span class="text-sm text-gray-700 dark:text-text-dark w-28 flex-shrink-0">{{ cat }}</span>
+        <div class="flex items-center gap-2 flex-1">
+          <input
+            type="number"
+            [(ngModel)]="lifetimeSettings[cat]"
+            class="form-input flex-1"
+            [attr.aria-label]="cat + ' erwartete Lebensdauer in km'"
+            min="0"
+            step="500"
+          />
+          <span class="text-xs text-gray-400 flex-shrink-0 w-5">km</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 mt-5">
+      <button class="btn-primary" (click)="saveLifetimeSettings()">
+        <lucide-icon name="check" [size]="14" aria-hidden="true"></lucide-icon>
+        Speichern
+      </button>
+      <button class="btn-secondary" (click)="resetLifetimeSettings()">
+        <lucide-icon name="refresh-cw" [size]="14" aria-hidden="true"></lucide-icon>
+        Zurücksetzen
+      </button>
+    </div>
+
+    <div *ngIf="lifetimeSaved"
+         class="mt-3 flex items-center gap-2 text-success text-sm">
+      <lucide-icon name="check-circle-2" [size]="14" aria-hidden="true"></lucide-icon>
+      Gespeichert
+    </div>
+  </div>
+</div>
+
 <!-- Strava Integration Card -->
 <div class="card max-w-lg overflow-hidden">
 

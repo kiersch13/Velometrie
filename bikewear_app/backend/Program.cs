@@ -16,6 +16,7 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IBikeService, BikeService>();
 builder.Services.AddScoped<IWearPartService, WearPartService>();
+builder.Services.AddScoped<ITeilVorlageService, TeilVorlageService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IStravaService, StravaService>();
 builder.Services.AddScoped<IStravaWebhookService, StravaWebhookService>();
@@ -42,6 +43,7 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
+    await App.Data.TeilvorlagenSeeder.SeedAsync(db);
 }
 
 // Configure the HTTP request pipeline.

@@ -1,0 +1,125 @@
+<!-- Page header -->
+<div class="flex justify-between items-start mb-6 flex-wrap gap-4">
+  <div>
+    <h2 class="page-title">Teilebibliothek</h2>
+    <p class="text-sm text-gray-400 mt-0.5">Verschleißteile nach Kategorie und Hersteller durchsuchen</p>
+  </div>
+</div>
+
+<!-- Filter bar -->
+<div class="card p-4 mb-6">
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+    <!-- Bike category -->
+    <div>
+      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Fahrradkategorie</label>
+      <select
+        class="form-input w-full text-sm"
+        [(ngModel)]="selectedFahrradKategorie"
+        (ngModelChange)="onFilterChange()">
+        <option value="">Alle Kategorien</option>
+        <option *ngFor="let k of fahrradKategorien" [value]="k">{{ k }}</option>
+      </select>
+    </div>
+    <!-- Part category -->
+    <div>
+      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Teilekategorie</label>
+      <select
+        class="form-input w-full text-sm"
+        [(ngModel)]="selectedKategorie"
+        (ngModelChange)="onFilterChange()">
+        <option value="">Alle Teile</option>
+        <option *ngFor="let k of kategorien" [value]="k">{{ k }}</option>
+      </select>
+    </div>
+    <!-- Manufacturer -->
+    <div>
+      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Hersteller</label>
+      <select
+        class="form-input w-full text-sm"
+        [(ngModel)]="selectedHersteller"
+        (ngModelChange)="onHerstellerChange()">
+        <option value="">Alle Hersteller</option>
+        <option *ngFor="let h of hersteller" [value]="h">{{ h }}</option>
+      </select>
+    </div>
+  </div>
+  <!-- Active filter summary + clear -->
+  <div *ngIf="hasActiveFilters" class="mt-3 flex items-center gap-2 flex-wrap">
+    <span class="text-xs text-gray-400">Aktive Filter:</span>
+    <span *ngIf="selectedFahrradKategorie" class="badge text-xs">{{ selectedFahrradKategorie }}</span>
+    <span *ngIf="selectedKategorie"        class="badge text-xs">{{ selectedKategorie }}</span>
+    <span *ngIf="selectedHersteller"       class="badge text-xs">{{ selectedHersteller }}</span>
+    <button
+      class="text-xs text-error hover:text-error/80 underline ml-1"
+      (click)="clearFilters()">
+      Filter zurücksetzen
+    </button>
+  </div>
+</div>
+
+<!-- Result count -->
+<p *ngIf="!loading && !error" class="text-xs text-gray-400 mb-4">
+  {{ teile.length }} {{ teile.length === 1 ? 'Ergebnis' : 'Ergebnisse' }}
+</p>
+
+<!-- Loading -->
+<div *ngIf="loading" class="flex flex-col items-center justify-center mt-20 text-gray-400 gap-3">
+  <lucide-icon name="loader-2" [size]="36" class="animate-spin" aria-hidden="true"></lucide-icon>
+  <span class="text-sm">Lädt...</span>
+</div>
+
+<!-- Error -->
+<div *ngIf="error" class="flex items-center gap-2 mt-6 p-4 bg-error/10 border border-error/20 rounded-xl text-error text-sm">
+  <lucide-icon name="alert-circle" [size]="16" aria-hidden="true"></lucide-icon>
+  {{ error }}
+</div>
+
+<!-- Empty state -->
+<div *ngIf="!loading && !error && teile.length === 0"
+     class="flex flex-col items-center justify-center mt-24 text-gray-400 gap-4">
+  <lucide-icon name="inbox" [size]="48" class="text-gray-300" aria-hidden="true"></lucide-icon>
+  <div class="text-center">
+    <p class="font-semibold text-gray-500">Keine Teile gefunden</p>
+    <p class="text-sm mt-1">Versuche andere Filtereinstellungen.</p>
+  </div>
+  <button class="btn-secondary text-xs" (click)="clearFilters()">Filter zurücksetzen</button>
+</div>
+
+<!-- Parts grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" *ngIf="!loading && !error && teile.length > 0">
+  <div
+    *ngFor="let teil of teile"
+    class="card p-5 flex flex-col gap-3 hover:-translate-y-0.5 hover:shadow-card-hover transition-all duration-150">
+
+    <!-- Top row: part category badge + speed badge -->
+    <div class="flex items-start justify-between gap-2">
+      <span class="badge">{{ teil.kategorie }}</span>
+      <span *ngIf="teil.geschwindigkeiten"
+            class="inline-flex items-center gap-1 text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700/60 px-2 py-0.5 rounded-full">
+        <lucide-icon name="zap" [size]="11" aria-hidden="true"></lucide-icon>
+        {{ teil.geschwindigkeiten }}s
+      </span>
+    </div>
+
+    <!-- Name -->
+    <div>
+      <p class="text-base font-semibold text-primary dark:text-text-dark leading-snug">{{ teil.name }}</p>
+      <p *ngIf="teil.gruppe" class="text-xs text-gray-400 mt-0.5">{{ teil.hersteller }} · {{ teil.gruppe }}</p>
+    </div>
+
+    <!-- Compatible bike categories -->
+    <div class="flex flex-wrap gap-1">
+      <span
+        *ngFor="let badge of getBadges(teil.fahrradKategorien)"
+        class="inline-flex items-center gap-0.5 text-xs text-accent/80 bg-accent/10 px-2 py-0.5 rounded-full font-medium">
+        {{ badge }}
+      </span>
+    </div>
+
+    <!-- Description -->
+    <p *ngIf="teil.beschreibung"
+       class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-3 flex-1">
+      {{ teil.beschreibung }}
+    </p>
+  </div>
+</div>

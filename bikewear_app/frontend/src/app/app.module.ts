@@ -18,6 +18,7 @@ import { AddBikeComponent } from './components/add-bike/add-bike.component';
 import { WearPartFormComponent } from './components/wear-part-form/wear-part-form.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { AuthCallbackComponent } from './components/auth-callback/auth-callback.component';
+import { TeilBibliothekComponent } from './components/teil-bibliothek/teil-bibliothek.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { AuthCallbackComponent } from './components/auth-callback/auth-callback.
     AddBikeComponent,
     WearPartFormComponent,
     SettingsComponent,
-    AuthCallbackComponent
+    AuthCallbackComponent,
+    TeilBibliothekComponent
   ],
   imports: [
     BrowserModule,

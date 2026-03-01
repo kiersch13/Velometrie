@@ -1,18 +1,35 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
+import { LifetimeSettingsService } from '../../services/lifetime-settings.service';
+import { LifetimeSettings, defaultLifetimeSettings } from '../../models/lifetime-settings';
+import { WearPartCategory } from '../../models/wear-part-category';
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.css']
 })
-export class SettingsComponent {
+export class SettingsComponent implements OnInit {
   loading = false;
   error = '';
   success = '';
   showConfirm = false;
 
-  constructor(public authService: AuthService) {}
+  lifetimeSettings!: LifetimeSettings;
+  lifetimeCategories: WearPartCategory[] = [
+    WearPartCategory.Reifen,
+    WearPartCategory.Kassette,
+    WearPartCategory.Kettenblatt,
+    WearPartCategory.Kette,
+    WearPartCategory.Sonstiges
+  ];
+  lifetimeSaved = false;
+
+  constructor(public authService: AuthService, private lifetimeService: LifetimeSettingsService) {}
+
+  ngOnInit(): void {
+    this.lifetimeSettings = this.lifetimeService.getSettings();
+  }
 
   connectWithStrava(): void {
     this.loading = true;
@@ -43,5 +60,18 @@ export class SettingsComponent {
 
   reload(): void {
     window.location.reload();
+  }
+
+  saveLifetimeSettings(): void {
+    this.lifetimeService.saveSettings(this.lifetimeSettings);
+    this.lifetimeSaved = true;
+    setTimeout(() => this.lifetimeSaved = false, 2500);
+  }
+
+  resetLifetimeSettings(): void {
+    this.lifetimeSettings = { ...defaultLifetimeSettings };
+    this.lifetimeService.saveSettings(this.lifetimeSettings);
+    this.lifetimeSaved = true;
+    setTimeout(() => this.lifetimeSaved = false, 2500);
   }
 }

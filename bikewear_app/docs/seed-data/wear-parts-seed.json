@@ -1,0 +1,677 @@
+[
+
+  {
+    "name": "Shimano Dura-Ace 12s Kette",
+    "hersteller": "Shimano",
+    "kategorie": "Kette",
+    "gruppe": "Dura-Ace",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Rennrad", "Gravel"],
+    "beschreibung": "Shimano Dura-Ace CN-M9100 12-fach Kette für Rennrad und Gravel. Höchste Schaltpräzision dank Hyperglide+-Technologie."
+  },
+  {
+    "name": "Shimano Ultegra 12s Kette",
+    "hersteller": "Shimano",
+    "kategorie": "Kette",
+    "gruppe": "Ultegra",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Rennrad", "Gravel"],
+    "beschreibung": "Shimano Ultegra CN-M8100 12-fach Kette. Hohe Schaltperformance zu günstigerem Preis als Dura-Ace, kompatibel mit Ultegra und 105 12s Antrieben."
+  },
+  {
+    "name": "Shimano 105 12s Kette",
+    "hersteller": "Shimano",
+    "kategorie": "Kette",
+    "gruppe": "105",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Rennrad", "Gravel"],
+    "beschreibung": "Shimano 105 R7100 12-fach Kette. Zuverlässige Performance für ambitionierte Freizeitfahrer, kompatibel mit allen Shimano 12s Straßenantrieben."
+  },
+  {
+    "name": "Shimano GRX 12s Kette",
+    "hersteller": "Shimano",
+    "kategorie": "Kette",
+    "gruppe": "GRX",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Gravel"],
+    "beschreibung": "Shimano GRX 12-fach Kette, speziell abgestimmt für Gravel-Antriebe der GRX-820er Serie. Resistent gegen Schmutz und Feuchtigkeit."
+  },
+  {
+    "name": "Shimano CN-HG601 Kette 11s",
+    "hersteller": "Shimano",
+    "kategorie": "Kette",
+    "gruppe": "Ultegra",
+    "geschwindigkeiten": 11,
+    "fahrradKategorien": ["Rennrad", "Gravel"],
+    "beschreibung": "Shimano CN-HG601 11-fach Kette für Ultegra und 105 11s Antriebe. Breites Kompatibilitätsspektrum für Rennrad und Gravel."
+  },
+  {
+    "name": "Shimano CN-HG95 Kette 11s",
+    "hersteller": "Shimano",
+    "kategorie": "Kette",
+    "gruppe": "Deore XT",
+    "geschwindigkeiten": 11,
+    "fahrradKategorien": ["Rennrad", "Gravel", "Mountainbike"],
+    "beschreibung": "Shimano CN-HG95 11-fach Kette für MTB und Rennrad. Kompatibel mit Shimano und SRAM 11s Kassetten."
+  },
+  {
+    "name": "Shimano CN-HG10 Kette 10s",
+    "hersteller": "Shimano",
+    "kategorie": "Kette",
+    "gruppe": "Deore",
+    "geschwindigkeiten": 10,
+    "fahrradKategorien": ["Rennrad", "Gravel", "Mountainbike"],
+    "beschreibung": "Shimano CN-HG10 10-fach Kette. Robust und zuverlässig, kompatibel mit allen Shimano 10s Antrieben (Tiagra, Deore, SLX 10s)."
+  },
+
+  {
+    "name": "Shimano Deore XT 12s Kette",
+    "hersteller": "Shimano",
+    "kategorie": "Kette",
+    "gruppe": "Deore XT",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Mountainbike", "Gravel"],
+    "beschreibung": "Shimano CN-M8100 12-fach Kette für Deore XT und XTR MTB-Antriebe. Optimiert für 1×12 MTB-Systeme mit großen Kassetten."
+  },
+  {
+    "name": "Shimano SLX 12s Kette",
+    "hersteller": "Shimano",
+    "kategorie": "Kette",
+    "gruppe": "SLX",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Mountainbike", "Gravel"],
+    "beschreibung": "Shimano CN-M7100 12-fach Kette für SLX MTB-Antriebe. Hervorragendes Preis-Leistungs-Verhältnis für Trail- und XC-Fahren."
+  },
+  {
+    "name": "Shimano Deore 12s Kette",
+    "hersteller": "Shimano",
+    "kategorie": "Kette",
+    "gruppe": "Deore",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Mountainbike"],
+    "beschreibung": "Shimano CN-M6100 12-fach Kette für Deore MTB-Antriebe. Robuste Einsteiger-/Mittelklassekette für alle Geländearten."
+  },
+
+  {
+    "name": "SRAM Red AXS 12s Kette",
+    "hersteller": "SRAM",
+    "kategorie": "Kette",
+    "gruppe": "Red AXS",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Rennrad"],
+    "beschreibung": "SRAM PC-1291 12-fach Kette für Red AXS Antriebe. Hollow-Pin-Technologie für maximale Leichtigkeit, optimiert für AXS Kettenschaltungen."
+  },
+  {
+    "name": "SRAM Force AXS 12s Kette",
+    "hersteller": "SRAM",
+    "kategorie": "Kette",
+    "gruppe": "Force AXS",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Rennrad", "Gravel"],
+    "beschreibung": "SRAM PC-1271 12-fach Kette für Force AXS und Rival AXS Antriebe. Kompatibel mit allen SRAM 12s Straßensortierten Kassetten."
+  },
+  {
+    "name": "SRAM Rival AXS 12s Kette",
+    "hersteller": "SRAM",
+    "kategorie": "Kette",
+    "gruppe": "Rival AXS",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Rennrad", "Gravel"],
+    "beschreibung": "SRAM PC-1231 12-fach Kette für Rival AXS Antriebe. Einstiegsfreundliche Preis-Leistungs-Option für SRAM 12s Rennrad-Setups."
+  },
+  {
+    "name": "SRAM PC-1170 Kette 11s",
+    "hersteller": "SRAM",
+    "kategorie": "Kette",
+    "gruppe": "Force 11s",
+    "geschwindigkeiten": 11,
+    "fahrradKategorien": ["Rennrad", "Gravel"],
+    "beschreibung": "SRAM PC-1170 11-fach Kette für Force/Red 11s Antriebe. PowerLock-Verbindungsglied inklusive, hohe Schaltpräzision."
+  },
+  {
+    "name": "SRAM PC-1130 Kette 11s",
+    "hersteller": "SRAM",
+    "kategorie": "Kette",
+    "gruppe": "Apex 11s",
+    "geschwindigkeiten": 11,
+    "fahrradKategorien": ["Rennrad", "Gravel"],
+    "beschreibung": "SRAM PC-1130 11-fach Kette für SRAM Apex 11s. Breiter Einsatzbereich, solide Qualität für den Alltag."
+  },
+  {
+    "name": "SRAM PC-1031 Kette 10s",
+    "hersteller": "SRAM",
+    "kategorie": "Kette",
+    "gruppe": "Apex 10s",
+    "geschwindigkeiten": 10,
+    "fahrradKategorien": ["Rennrad", "Gravel", "Mountainbike"],
+    "beschreibung": "SRAM PC-1031 10-fach Kette. Verlässliche Allround-Kette für SRAM 10s Antriebe, PowerLock-Verbindungsglied inklusive."
+  },
+
+  {
+    "name": "SRAM XX1 Eagle 12s Kette",
+    "hersteller": "SRAM",
+    "kategorie": "Kette",
+    "gruppe": "XX1 Eagle",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Mountainbike"],
+    "beschreibung": "SRAM PC-XX1 12-fach Eagle Kette. Ultraleichte 1×12 MTB-Kette im Top-Tier Eagle-System, Hollow-Link-Technologie."
+  },
+  {
+    "name": "SRAM X01 Eagle 12s Kette",
+    "hersteller": "SRAM",
+    "kategorie": "Kette",
+    "gruppe": "X01 Eagle",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Mountainbike"],
+    "beschreibung": "SRAM PC-X01 12-fach Eagle Kette für SRAMs X01-Eagle-Antrieb. Sehr leicht, hochwertige Verarbeitung für XC und Trail."
+  },
+  {
+    "name": "SRAM GX Eagle 12s Kette",
+    "hersteller": "SRAM",
+    "kategorie": "Kette",
+    "gruppe": "GX Eagle",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Mountainbike"],
+    "beschreibung": "SRAM PC-GX Eagle 12-fach Kette. Preis-Leistungs-König im Eagle-Ökosystem, kompatibel mit allen Eagle 12s Kassetten."
+  },
+  {
+    "name": "SRAM NX Eagle 12s Kette",
+    "hersteller": "SRAM",
+    "kategorie": "Kette",
+    "gruppe": "NX Eagle",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Mountainbike"],
+    "beschreibung": "SRAM PC-NX Eagle 12-fach Kette. Günstigste Option im Eagle-Ökosystem, robust für Trail und Alltag."
+  },
+
+  {
+    "name": "KMC X12 Kette 12s",
+    "hersteller": "KMC",
+    "kategorie": "Kette",
+    "gruppe": "X12",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Rennrad", "Gravel", "Mountainbike"],
+    "beschreibung": "KMC X12 universelle 12-fach Kette. Kompatibel mit Shimano und SRAM 12s Antrieben, solide Verarbeitung zum fairen Preis."
+  },
+  {
+    "name": "KMC X11 Kette 11s",
+    "hersteller": "KMC",
+    "kategorie": "Kette",
+    "gruppe": "X11",
+    "geschwindigkeiten": 11,
+    "fahrradKategorien": ["Rennrad", "Gravel", "Mountainbike"],
+    "beschreibung": "KMC X11 universelle 11-fach Kette. Hohe Kompatibilität mit Shimano, SRAM und Campagnolo 11s Systemen."
+  },
+  {
+    "name": "KMC X11SL Kette 11s",
+    "hersteller": "KMC",
+    "kategorie": "Kette",
+    "gruppe": "X11SL",
+    "geschwindigkeiten": 11,
+    "fahrradKategorien": ["Rennrad", "Gravel", "Mountainbike"],
+    "beschreibung": "KMC X11SL 11-fach Superintleichte Kette (Silver/Gold). Hohl gebohrte Seitenplatten für minimales Gewicht, für Rennrad und MTB."
+  },
+  {
+    "name": "KMC DLC12 Kette 12s",
+    "hersteller": "KMC",
+    "kategorie": "Kette",
+    "gruppe": "DLC12",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Rennrad", "Gravel", "Mountainbike"],
+    "beschreibung": "KMC DLC12 Diamond-Like-Carbon 12-fach Kette. Härteste Beschichtung für extreme Haltbarkeit und niedrige Reibung, Topmodell von KMC."
+  },
+  {
+    "name": "KMC DLC11 Kette 11s",
+    "hersteller": "KMC",
+    "kategorie": "Kette",
+    "gruppe": "DLC11",
+    "geschwindigkeiten": 11,
+    "fahrradKategorien": ["Rennrad", "Gravel", "Mountainbike"],
+    "beschreibung": "KMC DLC11 Diamond-Like-Carbon 11-fach Kette. Außerordentlich haltbar durch DLC-Beschichtung, besonders für Rennrad-Einsatz optimiert."
+  },
+
+
+  {
+    "name": "Shimano Dura-Ace CS-R9200 12s Kassette",
+    "hersteller": "Shimano",
+    "kategorie": "Kassette",
+    "gruppe": "Dura-Ace",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Rennrad"],
+    "beschreibung": "Shimano Dura-Ace CS-R9200 12-fach Kassette (10-28T, 10-30T, 10-33T, 10-36T). Titan-Sprockets auf CNC-gefröstem Aluminium-Träger für minimales Gewicht."
+  },
+  {
+    "name": "Shimano Ultegra CS-R8100 12s Kassette",
+    "hersteller": "Shimano",
+    "kategorie": "Kassette",
+    "gruppe": "Ultegra",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Rennrad", "Gravel"],
+    "beschreibung": "Shimano Ultegra CS-R8100 12-fach Kassette (10-28T bis 10-36T). Stahl-Sprockets auf Aluminium-Träger, ausgezeichnetes Gewicht-Haltbarkeits-Verhältnis."
+  },
+  {
+    "name": "Shimano 105 CS-R7100 12s Kassette",
+    "hersteller": "Shimano",
+    "kategorie": "Kassette",
+    "gruppe": "105",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Rennrad", "Gravel"],
+    "beschreibung": "Shimano 105 CS-R7100 12-fach Kassette (11-34T, 11-36T). Stahl-Sprockets für hohe Haltbarkeit, kompatibel mit 105 und Ultegra 12s Schaltwerken."
+  },
+  {
+    "name": "Shimano GRX CS-HG800 11s Kassette",
+    "hersteller": "Shimano",
+    "kategorie": "Kassette",
+    "gruppe": "GRX",
+    "geschwindigkeiten": 11,
+    "fahrradKategorien": ["Gravel"],
+    "beschreibung": "Shimano GRX CS-HG800 11-fach Kassette (11-34T, 11-42T). Speziell für Gravel ausgelegt mit weit gespreizten Übersetzungen für steile Anstiege."
+  },
+  {
+    "name": "Shimano CS-HG701 11s Kassette",
+    "hersteller": "Shimano",
+    "kategorie": "Kassette",
+    "gruppe": "Ultegra 11s",
+    "geschwindigkeiten": 11,
+    "fahrradKategorien": ["Rennrad", "Gravel"],
+    "beschreibung": "Shimano CS-HG701 11-fach Kassette (11-28T, 11-30T, 11-32T, 11-34T). Kompatibel mit Ultegra und 105 11s, bewährte Hyperglide-Schalttechnik."
+  },
+  {
+    "name": "Shimano Deore XT CS-M8100 12s Kassette",
+    "hersteller": "Shimano",
+    "kategorie": "Kassette",
+    "gruppe": "Deore XT",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Mountainbike", "Gravel"],
+    "beschreibung": "Shimano Deore XT CS-M8100 12-fach Kassette (10-45T, 10-51T). Mikro-Spline-Antrieb für 1×12 MTB-Systeme, Titan-Ritzel auf Aluminium-Träger."
+  },
+  {
+    "name": "Shimano CS-HG500 10s Kassette",
+    "hersteller": "Shimano",
+    "kategorie": "Kassette",
+    "gruppe": "Deore",
+    "geschwindigkeiten": 10,
+    "fahrradKategorien": ["Rennrad", "Gravel", "Mountainbike"],
+    "beschreibung": "Shimano CS-HG500 10-fach Kassette (11-28T, 11-32T, 11-34T, 11-36T). Robuste Stahl-Kassette für breiten Einsatz, kompatibel mit HG-Naben."
+  },
+  {
+    "name": "Shimano CS-HG400 9s Kassette",
+    "hersteller": "Shimano",
+    "kategorie": "Kassette",
+    "gruppe": "Alivio",
+    "geschwindigkeiten": 9,
+    "fahrradKategorien": ["Mountainbike"],
+    "beschreibung": "Shimano CS-HG400 9-fach Kassette (11-34T, 11-36T). Einstiegsklasse für MTB, extrem robust und günstig zu ersetzen."
+  },
+
+  {
+    "name": "SRAM Red XG-1290 12s Kassette",
+    "hersteller": "SRAM",
+    "kategorie": "Kassette",
+    "gruppe": "Red AXS",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Rennrad"],
+    "beschreibung": "SRAM Red XG-1290 12-fach Kassette (10-28T, 10-33T, 10-36T). Titan/Stahl-Ritzel auf XDR-Freilauf, bestes Material für Rennrad-Profis und Amateure."
+  },
+  {
+    "name": "SRAM Force XG-1270 12s Kassette",
+    "hersteller": "SRAM",
+    "kategorie": "Kassette",
+    "gruppe": "Force AXS",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Rennrad", "Gravel"],
+    "beschreibung": "SRAM Force XG-1270 12-fach Kassette (10-28T, 10-33T, 10-36T). Stahl-Ritzel auf XDR-Freilauf, kompatibel mit Red und Force AXS Schaltwerken."
+  },
+  {
+    "name": "SRAM Rival XG-1250 12s Kassette",
+    "hersteller": "SRAM",
+    "kategorie": "Kassette",
+    "gruppe": "Rival AXS",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Rennrad", "Gravel"],
+    "beschreibung": "SRAM Rival XG-1250 12-fach Kassette (10-30T, 10-36T). Günstiger Einstieg ins AXS-Ökosystem, XDR-Freilauf kompatibel mit allen SRAM 12s Road-Schaltwerken."
+  },
+
+  {
+    "name": "SRAM XX1 Eagle XG-1299 12s Kassette",
+    "hersteller": "SRAM",
+    "kategorie": "Kassette",
+    "gruppe": "XX1 Eagle",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Mountainbike"],
+    "beschreibung": "SRAM XX1 Eagle XG-1299 12-fach Kassette (10-52T). Flaggschiff-Kassette mit Titan- und Carbon-Ritzeln, XD-Freilauf, unter 300 g."
+  },
+  {
+    "name": "SRAM X01 Eagle XG-1295 12s Kassette",
+    "hersteller": "SRAM",
+    "kategorie": "Kassette",
+    "gruppe": "X01 Eagle",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Mountainbike"],
+    "beschreibung": "SRAM X01 Eagle XG-1295 12-fach Kassette (10-50T). Aluminium-Träger mit Stahl-Ritzeln auf XD-Freilauf, optimale Balance zwischen Gewicht und Haltbarkeit."
+  },
+  {
+    "name": "SRAM GX Eagle XG-1275 12s Kassette",
+    "hersteller": "SRAM",
+    "kategorie": "Kassette",
+    "gruppe": "GX Eagle",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Mountainbike"],
+    "beschreibung": "SRAM GX Eagle XG-1275 12-fach Kassette (10-50T, 10-52T). Stahl auf Stahl, XD-Freilauf, hervorragendes Preis-Leistungs-Verhältnis für Trail-Fahren."
+  },
+
+  {
+    "name": "SunRace CSMS8 12s Kassette",
+    "hersteller": "SunRace",
+    "kategorie": "Kassette",
+    "gruppe": "CSMS8",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Mountainbike"],
+    "beschreibung": "SunRace CSMS8 12-fach Kassette (10-50T, 10-52T). Günstige Alternative zu Shimano/SRAM Eagle, kompatibel mit Micro-Spline und XD-Freläufen."
+  },
+  {
+    "name": "SunRace CSMX80 11s Kassette",
+    "hersteller": "SunRace",
+    "kategorie": "Kassette",
+    "gruppe": "CSMX80",
+    "geschwindigkeiten": 11,
+    "fahrradKategorien": ["Mountainbike", "Gravel"],
+    "beschreibung": "SunRace CSMX80 11-fach breite Kassette (11-42T, 11-46T). Geeignet für MTB und Gravel-Bikes mit weiter Übersetzungsspreizung."
+  },
+
+
+  {
+    "name": "Shimano Dura-Ace FC-R9200 Kettenblatt",
+    "hersteller": "Shimano",
+    "kategorie": "Kettenblatt",
+    "gruppe": "Dura-Ace",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Rennrad"],
+    "beschreibung": "Shimano Dura-Ace FC-R9200 Kettenblatt (50/34T, 52/36T, 53/39T). CNC-gefröstes Aluminium-Kettenblatt mit optimierter Rampen- und Reibungsgeometrie für 12s."
+  },
+  {
+    "name": "Shimano Ultegra FC-R8100 Kettenblatt",
+    "hersteller": "Shimano",
+    "kategorie": "Kettenblatt",
+    "gruppe": "Ultegra",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Rennrad", "Gravel"],
+    "beschreibung": "Shimano Ultegra FC-R8100 Kettenblatt (50/34T, 52/36T). Aluminium, kompatibel mit Ultegra R8100 Kurbel, Hyperglide+ für präzises Schalten."
+  },
+  {
+    "name": "Shimano 105 FC-R7100 Kettenblatt",
+    "hersteller": "Shimano",
+    "kategorie": "Kettenblatt",
+    "gruppe": "105",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Rennrad", "Gravel"],
+    "beschreibung": "Shimano 105 FC-R7100 Kettenblatt (50/34T, 52/36T). Einstieg in die 12s-Welt, Aluminium, direkte Kompatibilität mit Shimano 12s Road-Ketten."
+  },
+  {
+    "name": "Shimano GRX FC-RX820 Kettenblatt",
+    "hersteller": "Shimano",
+    "kategorie": "Kettenblatt",
+    "gruppe": "GRX",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Gravel"],
+    "beschreibung": "Shimano GRX FC-RX820 Kettenblatt (40T, 42T, 46/30T). Speziell für Gravel-Einsatz mit breitem Übersetzungsbereich, Spider-Kompatibilität mit GRX-Kurbeln."
+  },
+  {
+    "name": "Shimano Deore XT FC-M8100 Kettenblatt",
+    "hersteller": "Shimano",
+    "kategorie": "Kettenblatt",
+    "gruppe": "Deore XT",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Mountainbike", "Gravel"],
+    "beschreibung": "Shimano Deore XT FC-M8100 Single-Kettenblatt (28T–38T). Narrow-Wide-Profil für sicheren Kettenhalt im 1×12-Antrieb, Stahl oder Aluminium."
+  },
+
+  {
+    "name": "SRAM Red AXS Kettenblatt",
+    "hersteller": "SRAM",
+    "kategorie": "Kettenblatt",
+    "gruppe": "Red AXS",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Rennrad"],
+    "beschreibung": "SRAM Red AXS Kettenblatt (46/33T, 48/35T, 50/37T). CNC-Aluminium, X-SYNC 2-Technologie für fehlerlosen Kettenlauf, kompatibel mit Red AXS Kurbeln."
+  },
+  {
+    "name": "SRAM Force AXS Kettenblatt",
+    "hersteller": "SRAM",
+    "kategorie": "Kettenblatt",
+    "gruppe": "Force AXS",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Rennrad", "Gravel"],
+    "beschreibung": "SRAM Force AXS Kettenblatt (43/30T, 46/33T, 48/35T). Kompatibel mit Force AXS Powermeter und Kurbeln, X-SYNC 2-Kettenzähne."
+  },
+  {
+    "name": "SRAM Eagle Kettenblatt",
+    "hersteller": "SRAM",
+    "kategorie": "Kettenblatt",
+    "gruppe": "GX Eagle",
+    "geschwindigkeiten": 12,
+    "fahrradKategorien": ["Mountainbike"],
+    "beschreibung": "SRAM Eagle X-SYNC 2 Single-Kettenblatt (28T–38T). Schmal-Breit-Profil für zuverlässigen Kettenhalt ohne Kettenführung, für alle Eagle-Kurbeln."
+  },
+
+  {
+    "name": "Wolf Tooth Drop-Stop Kettenblatt",
+    "hersteller": "Wolf Tooth",
+    "kategorie": "Kettenblatt",
+    "gruppe": "Drop-Stop",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Mountainbike", "Gravel"],
+    "beschreibung": "Wolf Tooth Drop-Stop Single-Kettenblatt (28T–52T). Patentiertes Schmal-Breit-Profil für Kettenhalt ohne Führer, CNC-Aluminium, kompatibel mit zahlreichen Kurbeln."
+  },
+  {
+    "name": "Wolf Tooth Elliptical Kettenblatt",
+    "hersteller": "Wolf Tooth",
+    "kategorie": "Kettenblatt",
+    "gruppe": "Elliptical",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Mountainbike", "Gravel"],
+    "beschreibung": "Wolf Tooth Elliptical (ovales) Kettenblatt. Reduziert Pedaldruck-Peaks für effizienteres Treten, besonders vorteilhaft bei technischen Anstiegen am MTB."
+  },
+  {
+    "name": "Wolf Tooth 1x Road Kettenblatt",
+    "hersteller": "Wolf Tooth",
+    "kategorie": "Kettenblatt",
+    "gruppe": "1x Road",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Rennrad", "Gravel"],
+    "beschreibung": "Wolf Tooth 1×12 Road/Gravel Kettenblatt (38T–50T). Drop-Stop-Profil für 1×-Umbau auf Rennrad und Gravel, kompatibel mit Direct-Mount-Kurbeln."
+  },
+
+
+  {
+    "name": "Continental Grand Prix 5000 Reifen",
+    "hersteller": "Continental",
+    "kategorie": "Reifen",
+    "gruppe": "Grand Prix",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Rennrad"],
+    "beschreibung": "Continental Grand Prix 5000 (700×23/25/28/32C). Referenz unter Rennradreifen: niedriger Rollwiderstand durch BlackChili-Compound, Breaker-Pannenschutz."
+  },
+  {
+    "name": "Continental Grand Prix 5000 TL Reifen",
+    "hersteller": "Continental",
+    "kategorie": "Reifen",
+    "gruppe": "Grand Prix",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Rennrad"],
+    "beschreibung": "Continental Grand Prix 5000 TL (700×28/32C). Tubeless-Version des GP5000: noch niedrigerer Rollwiderstand, besonderes Pannenschutz durch keine Felgenband-Druckverlust-Risiken."
+  },
+  {
+    "name": "Vittoria Corsa Pro Reifen",
+    "hersteller": "Vittoria",
+    "kategorie": "Reifen",
+    "gruppe": "Corsa",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Rennrad"],
+    "beschreibung": "Vittoria Corsa Pro (700×25/28/30C). Graphen-2.0-Compound für optimales Grip-Rollwiderstand-Verhältnis. Tubeless-ready, leicht und pannensicher."
+  },
+  {
+    "name": "Pirelli P Zero Race Reifen",
+    "hersteller": "Pirelli",
+    "kategorie": "Reifen",
+    "gruppe": "P Zero",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Rennrad"],
+    "beschreibung": "Pirelli P Zero Race (700×23/25/26/28C). Smartevo-Compound für maximale Geschwindigkeit, SmartEVO Belt für Pannenschutz. Hervorragende Wet-Performance."
+  },
+  {
+    "name": "Schwalbe Pro One TLE Reifen",
+    "hersteller": "Schwalbe",
+    "kategorie": "Reifen",
+    "gruppe": "Pro One",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Rennrad"],
+    "beschreibung": "Schwalbe Pro One TLE (700×25/28/30/32C). Tubeless-Easy, One Star Grip-Compound, Vectran Breaker-Pannenschutz. Sehr geschmeidiger Lauf auf Asphalt."
+  },
+  {
+    "name": "Michelin Power Cup Reifen",
+    "hersteller": "Michelin",
+    "kategorie": "Reifen",
+    "gruppe": "Power",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Rennrad"],
+    "beschreibung": "Michelin Power Cup 2 (700×25/28C). Profi-Rennreifen mit Race Compound für maximalen Grip, X-Miles-Technologie für höhere Pannensicherheit."
+  },
+
+  {
+    "name": "Continental Terra Speed Reifen",
+    "hersteller": "Continental",
+    "kategorie": "Reifen",
+    "gruppe": "Terra",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Gravel"],
+    "beschreibung": "Continental Terra Speed (700×35/40C, 650B×47C). Schneller Gravel-Reifen mit fein strukturiertem Profil für Schotter und feuchte Wege. Tubeless-ready."
+  },
+  {
+    "name": "Continental Terra Trail Reifen",
+    "hersteller": "Continental",
+    "kategorie": "Reifen",
+    "gruppe": "Terra",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Gravel"],
+    "beschreibung": "Continental Terra Trail (700×40/45C, 650B×47/50C). Aggressiveres Profil für technisches Gravel-Terrain, hohe Pannensicherheit durch BlackChili Compound."
+  },
+  {
+    "name": "Pirelli Cinturato Gravel M Reifen",
+    "hersteller": "Pirelli",
+    "kategorie": "Reifen",
+    "gruppe": "Cinturato Gravel",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Gravel"],
+    "beschreibung": "Pirelli Cinturato Gravel M (700×40/45C). Mittelgrobens Profil für gemischte Bedingungen (Mixed), SpeedGRIP-Compound, tubeless-ready, hervorragende Nassgriffigkeit."
+  },
+  {
+    "name": "Vittoria Terreno Dry Reifen",
+    "hersteller": "Vittoria",
+    "kategorie": "Reifen",
+    "gruppe": "Terreno",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Gravel"],
+    "beschreibung": "Vittoria Terreno Dry (700×38/40C, 650B×47C). Schnell rollendes Gravel-Profil für trockene Bedingungen und Schotter, Graphen-2.0-Compound, TLR."
+  },
+  {
+    "name": "Vittoria Terreno Mix Reifen",
+    "hersteller": "Vittoria",
+    "kategorie": "Reifen",
+    "gruppe": "Terreno",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Gravel"],
+    "beschreibung": "Vittoria Terreno Mix (700×38/40C). All-Around-Gravel-Reifen für gemischte Bedingungen, kombiniert Grip auf Schmutz mit gutem Rollverhalten auf Asphalt."
+  },
+  {
+    "name": "Schwalbe G-One Speed Reifen",
+    "hersteller": "Schwalbe",
+    "kategorie": "Reifen",
+    "gruppe": "G-One",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Gravel"],
+    "beschreibung": "Schwalbe G-One Speed (700×30/35/40C, 650B×40C). Schnellster Schwalbe-Gravel-Reifen: feines Wabenprofil für niedrigen Rollwiderstand bei gutem Grip."
+  },
+  {
+    "name": "Rene Herse Bon Jon Pass Reifen",
+    "hersteller": "Rene Herse",
+    "kategorie": "Reifen",
+    "gruppe": "Bon Jon Pass",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Gravel"],
+    "beschreibung": "Rene Herse Bon Jon Pass (650B×48C). Ultra-leichter, supple handmade Gravel-Reifen. Feines Profil für Schotter und Feldwege, überragendes Fahrgefühl."
+  },
+  {
+    "name": "WTB Riddler Reifen",
+    "hersteller": "WTB",
+    "kategorie": "Reifen",
+    "gruppe": "Riddler",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Gravel", "Mountainbike"],
+    "beschreibung": "WTB Riddler (700×37/45C, 29×2.4). Vielseitiger Gravel-/XC-Reifen mit mittlerem Profil, schnell auf Schotter und kompaktem Untergrund, tubeless-kompatibel."
+  },
+  {
+    "name": "Challenge Gravel Grinder Race Reifen",
+    "hersteller": "Challenge",
+    "kategorie": "Reifen",
+    "gruppe": "Gravel Grinder",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Gravel"],
+    "beschreibung": "Challenge Gravel Grinder Race (700×36/38C). Handgefertigter Race-Gravel-Reifen mit feinem Profil, supple Karkasse für exzellenten Grip und niedriges Gewicht."
+  },
+
+  {
+    "name": "Maxxis Aspen Reifen",
+    "hersteller": "Maxxis",
+    "kategorie": "Reifen",
+    "gruppe": "Aspen",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Mountainbike"],
+    "beschreibung": "Maxxis Aspen (29×2.10/2.25, 27.5×2.10). Ultra-leichter Cross-Country-Reifen mit niedrigem Rollwiderstand, EXO-Schutz, Tubeless-ready. Ideal für XCO/XCM-Racing."
+  },
+  {
+    "name": "Maxxis Ikon Reifen",
+    "hersteller": "Maxxis",
+    "kategorie": "Reifen",
+    "gruppe": "Ikon",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Mountainbike"],
+    "beschreibung": "Maxxis Ikon (29×2.20/2.35, 27.5×2.20/2.35). Schnell rollender XC/Trail-Reifen mit mittelhohem Profil für guten Grip auf locker-festem Untergrund, 3C-Compound."
+  },
+  {
+    "name": "Schwalbe Racing Ray Reifen",
+    "hersteller": "Schwalbe",
+    "kategorie": "Reifen",
+    "gruppe": "Racing Ray",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Mountainbike"],
+    "beschreibung": "Schwalbe Racing Ray (29×2.25, 27.5×2.25). Leichter XC-Vorderreifen mit Bite-Stollen für zuverlässige Führung bei minimalem Gewicht, TLE Addix Speed."
+  },
+  {
+    "name": "Schwalbe Racing Ralph Reifen",
+    "hersteller": "Schwalbe",
+    "kategorie": "Reifen",
+    "gruppe": "Racing Ralph",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Mountainbike"],
+    "beschreibung": "Schwalbe Racing Ralph (29×2.25, 27.5×2.25). XC-Hinterreifen mit niedrigem Rollwiderstand und gutem Grip auf festem Untergrund, perfekte Ergänzung zum Racing Ray."
+  },
+  {
+    "name": "Continental Race King Reifen",
+    "hersteller": "Continental",
+    "kategorie": "Reifen",
+    "gruppe": "Race King",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Mountainbike"],
+    "beschreibung": "Continental Race King (29×2.2, 27.5×2.2). Vielseitiger XC-Reifen für intermediären Untergrund, BlackChili-Compound, ProTection-Pannenschutz, TL-ready."
+  },
+  {
+    "name": "Specialized Ground Control Reifen",
+    "hersteller": "Specialized",
+    "kategorie": "Reifen",
+    "gruppe": "Ground Control",
+    "geschwindigkeiten": null,
+    "fahrradKategorien": ["Mountainbike"],
+    "beschreibung": "Specialized Ground Control (29×2.1/2.35, 27.5×2.1/2.35). Allround-XC/Trail-Reifen mit mittelhohem Profil für mixed Conditions, GRID-Karkasse, tubeless-kompatibel."
+  }
+]

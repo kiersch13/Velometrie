@@ -4,6 +4,7 @@ import { Bike } from '../../models/bike';
 import { WearPart } from '../../models/wear-part';
 import { BikeService } from '../../services/bike.service';
 import { WearPartService } from '../../services/wear-part.service';
+import { LifetimeSettingsService } from '../../services/lifetime-settings.service';
 
 @Component({
   selector: 'app-bike-detail',
@@ -27,7 +28,8 @@ export class BikeDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private bikeService: BikeService,
-    private wearPartService: WearPartService
+    private wearPartService: WearPartService,
+    private lifetimeService: LifetimeSettingsService
   ) {}
 
   ngOnInit(): void {
@@ -124,5 +126,37 @@ export class BikeDetailComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/bikes']);
+  }
+
+  isInstalled(part: WearPart): boolean {
+    return part.ausbauKilometerstand == null && part.ausbauDatum == null;
+  }
+
+  getGefahreneKm(part: WearPart): number {
+    if (part.ausbauKilometerstand != null) {
+      return Math.max(0, part.ausbauKilometerstand - part.einbauKilometerstand);
+    }
+    return Math.max(0, (this.bike?.kilometerstand ?? part.einbauKilometerstand) - part.einbauKilometerstand);
+  }
+
+  getExpectedReplacementKm(part: WearPart): number {
+    return part.einbauKilometerstand + this.lifetimeService.getLifetime(part.kategorie);
+  }
+
+  getLifetimePercent(part: WearPart): number {
+    const lifetime = this.lifetimeService.getLifetime(part.kategorie);
+    if (lifetime <= 0) return 0;
+    return this.getGefahreneKm(part) / lifetime;
+  }
+
+  getStatusBarClass(part: WearPart): string {
+    if (!this.isInstalled(part)) {
+      return 'bg-error/40';
+    }
+    const pct = this.getLifetimePercent(part);
+    if (pct >= 0.8) {
+      return 'bg-warning/70';
+    }
+    return 'bg-success/50';
   }
 }
