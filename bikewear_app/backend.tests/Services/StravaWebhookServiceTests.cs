@@ -95,14 +95,16 @@ public class StravaWebhookServiceTests
     public async Task HandleEventAsync_Deauth_ClearsTokens()
     {
         using var db = CreateDb();
-        db.Benutzer.Add(new User
+        var user = new User
         {
             StravaId = "42",
             AccessToken = "old-access",
             RefreshToken = "old-refresh",
             TokenExpiresAt = DateTimeOffset.UtcNow.AddHours(1).ToUnixTimeSeconds()
-        });
+        };
+        db.Benutzer.Add(user);
         await db.SaveChangesAsync();
+        var userId = user.Id; // capture before deauth clears StravaId
 
         var svc = BuildService(db,
             new FakeHttpClientFactory(new FakeHandler(new HttpResponseMessage(HttpStatusCode.OK))));
@@ -115,10 +117,13 @@ public class StravaWebhookServiceTests
             Updates = new Dictionary<string, string> { { "authorized", "false" } }
         });
 
-        var user = await db.Benutzer.FirstAsync(u => u.StravaId == "42");
-        Assert.Equal(string.Empty, user.AccessToken);
-        Assert.Null(user.RefreshToken);
-        Assert.Null(user.TokenExpiresAt);
+        // Reload by PK — StravaId has been cleared to null
+        var updated = await db.Benutzer.FindAsync(userId);
+        Assert.NotNull(updated);
+        Assert.Null(updated!.StravaId);
+        Assert.Null(updated.AccessToken);
+        Assert.Null(updated.RefreshToken);
+        Assert.Null(updated.TokenExpiresAt);
     }
 
     // ---- 2. Activity create updates Kilometerstand -----------------------

@@ -28,7 +28,7 @@ A bike wear-part tracking app. Users track their bikes and the wear parts instal
 | Frontend | Angular 17 / TypeScript ~5.2 |
 | Icons | `lucide-angular` — imported via `LucideAngularModule.pick({})`, tree-shakeable |
 | CSS plugins | `@tailwindcss/forms` — polishes default form input appearance |
-| Auth | Strava OAuth 2.0 — `GET /api/auth/strava/redirect-url` + `POST /api/auth/strava/callback`; user stored in DB with `StravaId`, `AccessToken`, `RefreshToken`, `TokenExpiresAt`, `Vorname`; frontend stores user in `localStorage` |
+| Auth | Email + password registration/login (BCrypt.Net-Next hashing). HttpOnly `SameSite=Lax` cookie sessions via ASP.NET Core cookie auth. Strava OAuth 2.0 is a **connection** (not login) — `GET /api/auth/strava/redirect-url` + `POST /api/auth/strava/callback` + `DELETE /api/auth/strava/disconnect`; each user can connect one Strava account. Frontend uses a `CredentialsInterceptor` to attach `withCredentials: true` to all HTTP requests; session state loaded on startup via `GET /api/auth/me`. |
 | Testing (backend) | xUnit + `Microsoft.EntityFrameworkCore.InMemory` — test project at `bikewear_app/backend.tests/` |
 | Testing (frontend) | Jest (`jest.config.js`) — spec files co-located with services (e.g. `bike.service.spec.ts`) |
 
@@ -60,12 +60,15 @@ These are deliberate choices that are **not visible from the code alone**. Follo
 
 - **No DTOs** — models are used directly as API contracts. Don't introduce DTOs without a prompt requesting it.
 - **Backend namespace is `App.*`** — not `Backend.*`, even though the project folder is `backend/`.
-- **No EF navigation properties** — `WearPart.RadId` is a manual FK. Joins are done in service code.
-- **No auth middleware yet** — `[Authorize]` attributes and Angular route guards are intentionally absent (Strava OAuth flow is implemented, but route protection is not).
+- **Strava auth flow changed** — Strava is now a **connection** for authenticated users, not the primary login. App-level auth uses email + password (BCrypt). JWT is not used; sessions are managed via HttpOnly cookies (`bikewear_session`).
+- **Anti-forgery state** — `GET /api/auth/strava/redirect-url` returns `{ url, state }`. The `state` (GUID stored in `IMemoryCache` for 10 min, keyed to userId) must be echoed back in the callback to prevent CSRF.
+- **No tokens on the wire** — `User.AccessToken`, `User.RefreshToken`, `User.TokenExpiresAt`, `User.PasswordHash` are all `[JsonIgnore]`. Only `id`, `email`, `anzeigename`, `vorname`, `stravaVerbunden` are serialized.
+- **`User` model extended** — `Email` (nullable, unique index), `PasswordHash` (nullable, `[JsonIgnore]`), `Anzeigename` (nullable) added. `StravaId`, `AccessToken`, `RefreshToken` are now nullable (were non-null before).
+- **Frontend session** — No localStorage. `AuthService.loadCurrentUser()` is called by `AppComponent.ngOnInit()` and calls `GET /api/auth/me`. `CredentialsInterceptor` adds `withCredentials: true` to all requests.
 - **Scoped DI** — all services are registered as `Scoped`.
 - **Async throughout** — every service method and controller action must be `async Task<…>`.
 - **Frontend enums are string-typed** and their values must match the C# enum member names exactly.
-- **Full CRUD for domain entities** — `Rad` and `WearPart` must always expose all four CRUD operations (Create, Read, Update, Delete) in both backend (controller + service interface + service implementation) and frontend (service + UI). Partial implementations are considered incomplete. `User` and `StravaGear` are exempt: `User` is lifecycle-managed via Strava OAuth, and `StravaGear` is a transient API wrapper without its own DB table.
+- **Full CRUD for domain entities** — `Rad` and `WearPart` must always expose all four CRUD operations (Create, Read, Update, Delete) in both backend (controller + service interface + service implementation) and frontend (service + UI). Partial implementations are considered incomplete. `User` and `StravaGear` are exempt: `User` is lifecycle-managed via email/password auth, and `StravaGear` is a transient API wrapper without its own DB table.
 
 ---
 
@@ -132,17 +135,26 @@ colors: {
 ## [PROJECT] Roadmap & Constraints
 
 **Implemented:**
-- Strava OAuth 2.0 login flow (redirect URL + callback)
-- Full CRUD for `Bike` (Create, Read, UpdateKilometerstand, UpdateBike, Delete) — backend + frontend + UI
-- Full CRUD for `WearPart` (Create, Read, Update, Delete) — backend + frontend + UI (inline edit form in bike-detail)
+- Email + password registration (`POST /api/auth/register`) and login (`POST /api/auth/login`) with BCrypt hashing
+- HttpOnly cookie sessions (`bikewear_session`, SameSite=Lax, 30-day sliding expiry)
+- `GET /api/auth/me` — returns the current authenticated user (no tokens)
+- `POST /api/auth/logout` — signs out and clears the session cookie
+- Strava OAuth 2.0 as a **connection** for authenticated users (redirect URL + callback + disconnect)
+  - Anti-forgery `state` parameter (GUID stored in `IMemoryCache` for 10 min, tied to userId)
+  - One Strava account per app user (enforced server-side)
 - Strava token refresh via `AuthService.EnsureFreshTokenAsync` (5-min buffer before expiry)
 - Strava webhook: subscription validation (`GET /api/webhook/strava`) + event handler (`POST /api/webhook/strava`)
   - Activity `create` events: fetches activity from Strava API, increments `Bike.Kilometerstand` by distance in km
-  - Athlete `update` (deauth): clears `AccessToken`, `RefreshToken`, `TokenExpiresAt` for the affected user
+  - Athlete `update` (deauth): clears Strava connection fields (`StravaId`, `AccessToken`, `RefreshToken`, `TokenExpiresAt`) for the affected user
   - Configure `Strava:WebhookVerifyToken` in `appsettings.json` (or env var) before registering the webhook with Strava
+- Full CRUD for `Bike` (Create, Read, UpdateKilometerstand, UpdateBike, Delete) — backend + frontend + UI
+- Full CRUD for `WearPart` (Create, Read, Update, Delete) — backend + frontend + UI (inline edit form in bike-detail)
+- Frontend: Login (`/login`) and Register (`/register`) pages; `CredentialsInterceptor` for automatic `withCredentials`; session loaded on app startup via `AuthService.loadCurrentUser()`
 
 **Planned (not yet implemented):**
-- Angular route guards (OAuth is done; guards just haven't been added yet)
+- Angular route guards (auth is done; guards just haven't been added yet)
+- Google / Apple social login (backend cookie auth is already in place — add `Microsoft.AspNetCore.Authentication.Google` etc.)
+- Garmin Connect integration (parallel to Strava connect pattern)
 - Swap SQLite for PostgreSQL when hosting (provider swap only — no service/model changes needed)
 
 **Hard constraints for agents:**
@@ -150,6 +162,8 @@ colors: {
 - Do **not** add Angular route guards without an explicit prompt.
 - Do **not** introduce a DTO layer without an explicit prompt.
 - Do **not** change the German domain naming without an explicit prompt.
+- Do **not** change the auth mechanism (cookie auth) to JWT Bearer without an explicit prompt.
+- Do **not** add `[Authorize]` to `POST /api/auth/register` or `POST /api/auth/login` (they must remain public).
 
 ---
 

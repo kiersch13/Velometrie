@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { LifetimeSettingsService } from '../../services/lifetime-settings.service';
 import { LifetimeSettings, defaultLifetimeSettings } from '../../models/lifetime-settings';
@@ -25,7 +26,11 @@ export class SettingsComponent implements OnInit {
   ];
   lifetimeSaved = false;
 
-  constructor(public authService: AuthService, private lifetimeService: LifetimeSettingsService) {}
+  constructor(
+    public authService: AuthService,
+    private lifetimeService: LifetimeSettingsService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.lifetimeSettings = this.lifetimeService.getSettings();
@@ -34,13 +39,14 @@ export class SettingsComponent implements OnInit {
   connectWithStrava(): void {
     this.loading = true;
     this.error = '';
-    this.authService.getStravaRedirectUrl().subscribe({
-      next: ({ url }) => {
+    this.authService.connectWithStrava().subscribe({
+      next: ({ url, state }) => {
+        sessionStorage.setItem('bikewear_strava_state', state);
         window.location.href = url;
       },
       error: () => {
         this.loading = false;
-        this.error = 'Strava-Verbindung konnte nicht gestartet werden. Bitte Backend prüfen und erneut versuchen.';
+        this.error = 'Strava-Verbindung konnte nicht gestartet werden. Bitte erneut versuchen.';
       }
     });
   }
@@ -49,12 +55,22 @@ export class SettingsComponent implements OnInit {
     this.loading = true;
     this.error = '';
     this.success = '';
-    // disconnect() clears local state immediately — subscribe just waits for backend
-    this.authService.disconnect().subscribe({
+    this.authService.disconnectStrava().subscribe({
       next: () => {
         this.loading = false;
         this.showConfirm = false;
+        this.success = 'Strava-Verbindung getrennt.';
+      },
+      error: () => {
+        this.loading = false;
+        this.error = 'Trennen fehlgeschlagen. Bitte erneut versuchen.';
       }
+    });
+  }
+
+  logout(): void {
+    this.authService.logout().subscribe({
+      next: () => this.router.navigate(['/'])
     });
   }
 

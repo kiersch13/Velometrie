@@ -44,7 +44,8 @@ namespace App.Services
 
                 if (user != null)
                 {
-                    user.AccessToken = string.Empty;
+                    user.StravaId = null;
+                    user.AccessToken = null;
                     user.RefreshToken = null;
                     user.TokenExpiresAt = null;
                     await _context.SaveChangesAsync();
