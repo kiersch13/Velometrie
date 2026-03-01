@@ -7,5 +7,5 @@ dockerfilePath = "./Dockerfile"
 
 [deploy]
 # Railway will check GET / responds with 200 to confirm the service is healthy
-healthcheckPath = "/api/bike"
+healthcheckPath = "/api/health"
 healthcheckTimeout = 30
