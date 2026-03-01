@@ -40,18 +40,39 @@ public class BikeServiceTests
         // Arrange: seed two bikes into the in-memory database
         using var context = CreateInMemoryContext("GetAllBikes");
         context.Rads.AddRange(
-            new Bike { Name = "Rennmaschine", Kategorie = BikeCategory.Rennrad,    Kilometerstand = 1000 },
-            new Bike { Name = "Abenteurer",   Kategorie = BikeCategory.Gravel,     Kilometerstand = 500  }
+            new Bike { Name = "Rennmaschine", Kategorie = BikeCategory.Rennrad,    Kilometerstand = 1000, UserId = 1 },
+            new Bike { Name = "Abenteurer",   Kategorie = BikeCategory.Gravel,     Kilometerstand = 500,  UserId = 1 }
         );
         await context.SaveChangesAsync();
 
         var service = new BikeService(context, new FakeStravaService());
 
         // Act
-        var result = await service.GetAllBikesAsync();
+        var result = await service.GetAllBikesAsync(userId: 1);
 
         // Assert
         Assert.Equal(2, result.Count());
+    }
+
+    [Fact]
+    public async Task GetAllBikesAsync_ReturnsOnlyCurrentUsersBikes()
+    {
+        // Arrange: two bikes for different users
+        using var context = CreateInMemoryContext("GetAllBikes_UserFilter");
+        context.Rads.AddRange(
+            new Bike { Name = "Mein Rad",       Kategorie = BikeCategory.Rennrad, Kilometerstand = 100, UserId = 1 },
+            new Bike { Name = "Fremdes Rad",     Kategorie = BikeCategory.Gravel,  Kilometerstand = 200, UserId = 2 }
+        );
+        await context.SaveChangesAsync();
+
+        var service = new BikeService(context, new FakeStravaService());
+
+        // Act: user 1 should only see their own bike
+        var result = await service.GetAllBikesAsync(userId: 1);
+
+        // Assert
+        Assert.Single(result);
+        Assert.Equal("Mein Rad", result.First().Name);
     }
 
     [Fact]
@@ -59,18 +80,36 @@ public class BikeServiceTests
     {
         // Arrange
         using var context = CreateInMemoryContext("GetBikeById");
-        var bike = new Bike { Name = "Spezifisches Rad", Kategorie = BikeCategory.Gravel, Kilometerstand = 200 };
+        var bike = new Bike { Name = "Spezifisches Rad", Kategorie = BikeCategory.Gravel, Kilometerstand = 200, UserId = 1 };
         context.Rads.Add(bike);
         await context.SaveChangesAsync();
 
         var service = new BikeService(context, new FakeStravaService());
 
         // Act
-        var result = await service.GetBikeByIdAsync(bike.Id);
+        var result = await service.GetBikeByIdAsync(bike.Id, userId: 1);
 
         // Assert
         Assert.NotNull(result);
         Assert.Equal("Spezifisches Rad", result.Name);
+    }
+
+    [Fact]
+    public async Task GetBikeByIdAsync_ReturnsNull_WhenBelongsToDifferentUser()
+    {
+        // Arrange
+        using var context = CreateInMemoryContext("GetBikeById_WrongUser");
+        var bike = new Bike { Name = "Fremdes Rad", Kategorie = BikeCategory.Gravel, Kilometerstand = 200, UserId = 2 };
+        context.Rads.Add(bike);
+        await context.SaveChangesAsync();
+
+        var service = new BikeService(context, new FakeStravaService());
+
+        // Act: user 1 tries to access user 2's bike
+        var result = await service.GetBikeByIdAsync(bike.Id, userId: 1);
+
+        // Assert
+        Assert.Null(result);
     }
 
     [Fact]
@@ -79,7 +118,7 @@ public class BikeServiceTests
         // Arrange
         using var context = CreateInMemoryContext("AddBike");
         var service = new BikeService(context, new FakeStravaService());
-        var newBike = new Bike { Name = "Testrad", Kategorie = BikeCategory.Mountainbike, Kilometerstand = 0 };
+        var newBike = new Bike { Name = "Testrad", Kategorie = BikeCategory.Mountainbike, Kilometerstand = 0, UserId = 1 };
 
         // Act
         var added = await service.AddBikeAsync(newBike);
@@ -95,14 +134,14 @@ public class BikeServiceTests
     {
         // Arrange
         using var context = CreateInMemoryContext("UpdateKm");
-        var bike = new Bike { Name = "Rad", Kategorie = BikeCategory.Rennrad, Kilometerstand = 100 };
+        var bike = new Bike { Name = "Rad", Kategorie = BikeCategory.Rennrad, Kilometerstand = 100, UserId = 1 };
         context.Rads.Add(bike);
         await context.SaveChangesAsync();
 
         var service = new BikeService(context, new FakeStravaService());
 
         // Act
-        var updated = await service.UpdateKilometerstandAsync(bike.Id, 999);
+        var updated = await service.UpdateKilometerstandAsync(bike.Id, userId: 1, kilometerstand: 999);
 
         // Assert
         Assert.NotNull(updated);
@@ -117,7 +156,7 @@ public class BikeServiceTests
         var service = new BikeService(context, new FakeStravaService());
 
         // Act
-        var result = await service.UpdateKilometerstandAsync(id: 9999, kilometerstand: 100);
+        var result = await service.UpdateKilometerstandAsync(id: 9999, userId: 1, kilometerstand: 100);
 
         // Assert
         Assert.Null(result);
@@ -128,15 +167,15 @@ public class BikeServiceTests
     {
         // Arrange
         using var context = CreateInMemoryContext("UpdateBike");
-        var bike = new Bike { Name = "Altes Rad", Kategorie = BikeCategory.Rennrad, Kilometerstand = 100 };
+        var bike = new Bike { Name = "Altes Rad", Kategorie = BikeCategory.Rennrad, Kilometerstand = 100, UserId = 1 };
         context.Rads.Add(bike);
         await context.SaveChangesAsync();
 
         var service = new BikeService(context, new FakeStravaService());
-        var updated = new Bike { Name = "Neues Rad", Kategorie = BikeCategory.Gravel, Kilometerstand = 500 };
+        var updated = new Bike { Name = "Neues Rad", Kategorie = BikeCategory.Gravel, Kilometerstand = 500, UserId = 1 };
 
         // Act
-        var result = await service.UpdateBikeAsync(bike.Id, updated);
+        var result = await service.UpdateBikeAsync(bike.Id, userId: 1, bike: updated);
 
         // Assert
         Assert.NotNull(result);
@@ -151,10 +190,10 @@ public class BikeServiceTests
         // Arrange
         using var context = CreateInMemoryContext("UpdateBike_NotFound");
         var service = new BikeService(context, new FakeStravaService());
-        var updated = new Bike { Name = "Phantom", Kategorie = BikeCategory.Mountainbike, Kilometerstand = 0 };
+        var updated = new Bike { Name = "Phantom", Kategorie = BikeCategory.Mountainbike, Kilometerstand = 0, UserId = 1 };
 
         // Act
-        var result = await service.UpdateBikeAsync(id: 9999, bike: updated);
+        var result = await service.UpdateBikeAsync(id: 9999, userId: 1, bike: updated);
 
         // Assert
         Assert.Null(result);
@@ -165,14 +204,14 @@ public class BikeServiceTests
     {
         // Arrange
         using var context = CreateInMemoryContext("DeleteBike");
-        var bike = new Bike { Name = "Zu löschendes Rad", Kategorie = BikeCategory.Rennrad, Kilometerstand = 0 };
+        var bike = new Bike { Name = "Zu löschendes Rad", Kategorie = BikeCategory.Rennrad, Kilometerstand = 0, UserId = 1 };
         context.Rads.Add(bike);
         await context.SaveChangesAsync();
 
         var service = new BikeService(context, new FakeStravaService());
 
         // Act
-        var result = await service.DeleteBikeAsync(bike.Id);
+        var result = await service.DeleteBikeAsync(bike.Id, userId: 1);
 
         // Assert
         Assert.True(result);
@@ -187,7 +226,7 @@ public class BikeServiceTests
         var service = new BikeService(context, new FakeStravaService());
 
         // Act
-        var result = await service.DeleteBikeAsync(id: 9999);
+        var result = await service.DeleteBikeAsync(id: 9999, userId: 1);
 
         // Assert
         Assert.False(result);
@@ -212,7 +251,7 @@ public class BikeServiceTests
     {
         // Arrange
         using var context = CreateInMemoryContext("OdometerAt_NoStrava");
-        var bike = new Bike { Name = "Ohne Strava", Kategorie = BikeCategory.Rennrad, Kilometerstand = 5000, StravaId = null };
+        var bike = new Bike { Name = "Ohne Strava", Kategorie = BikeCategory.Rennrad, Kilometerstand = 5000, StravaId = null, UserId = 1 };
         context.Rads.Add(bike);
         await context.SaveChangesAsync();
 
@@ -230,7 +269,7 @@ public class BikeServiceTests
     {
         // Arrange
         using var context = CreateInMemoryContext("OdometerAt_WithStrava");
-        var bike = new Bike { Name = "Mit Strava", Kategorie = BikeCategory.Gravel, Kilometerstand = 3000, StravaId = "b123" };
+        var bike = new Bike { Name = "Mit Strava", Kategorie = BikeCategory.Gravel, Kilometerstand = 3000, StravaId = "b123", UserId = 1 };
         context.Rads.Add(bike);
         await context.SaveChangesAsync();
 

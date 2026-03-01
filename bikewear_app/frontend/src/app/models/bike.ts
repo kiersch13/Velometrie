@@ -6,4 +6,5 @@ export interface Bike {
   kategorie: BikeCategory;
   kilometerstand: number;
   stravaId: string;
+  userId: number;
 }

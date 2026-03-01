@@ -115,7 +115,7 @@ namespace App.Services
                     return;
 
                 var bike = await _context.Rads
-                    .FirstOrDefaultAsync(r => r.StravaId == gearId);
+                    .FirstOrDefaultAsync(r => r.StravaId == gearId && r.UserId == user.Id);
 
                 if (bike == null)
                     return;

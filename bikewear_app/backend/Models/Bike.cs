@@ -19,5 +19,9 @@ namespace App.Models
         public BikeCategory Kategorie { get; set; }
         public int Kilometerstand { get; set; }
         public string? StravaId { get; set; }
+
+        /// <summary>The ID of the user who owns this bike.</summary>
+        [Required]
+        public int UserId { get; set; }
     }
 }

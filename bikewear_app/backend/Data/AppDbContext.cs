@@ -29,6 +29,13 @@ namespace App.Data
                 .HasIndex(u => u.Email)
                 .IsUnique()
                 .HasFilter("[Email] IS NOT NULL");
+
+            // Each bike belongs to a user; deleting a user cascades to their bikes
+            modelBuilder.Entity<Bike>()
+                .HasOne<User>()
+                .WithMany()
+                .HasForeignKey(b => b.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

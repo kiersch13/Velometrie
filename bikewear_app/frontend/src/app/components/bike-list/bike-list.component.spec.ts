@@ -22,8 +22,8 @@ describe('BikeListComponent', () => {
   let routerMock: { navigate: jest.Mock };
 
   const mockBikes = [
-    { id: 1, name: 'Rennmaschine', kategorie: BikeCategory.Rennrad, kilometerstand: 1000, stravaId: null as any },
-    { id: 2, name: 'Gravel King',  kategorie: BikeCategory.Gravel,   kilometerstand: 500,  stravaId: null as any },
+    { id: 1, name: 'Rennmaschine', kategorie: BikeCategory.Rennrad, kilometerstand: 1000, stravaId: null as any, userId: 1 },
+    { id: 2, name: 'Gravel King',  kategorie: BikeCategory.Gravel,   kilometerstand: 500,  stravaId: null as any, userId: 1 },
   ];
 
   beforeEach(async () => {
