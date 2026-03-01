@@ -51,5 +51,27 @@ namespace App.Controllers
             }
             return Ok(updatedBike);
         }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Bike>> UpdateBike(int id, Bike bike)
+        {
+            var updatedBike = await _bikeService.UpdateBikeAsync(id, bike);
+            if (updatedBike == null)
+            {
+                return NotFound();
+            }
+            return Ok(updatedBike);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteBike(int id)
+        {
+            var deleted = await _bikeService.DeleteBikeAsync(id);
+            if (!deleted)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
     }
 }

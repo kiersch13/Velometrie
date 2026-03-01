@@ -26,7 +26,7 @@ namespace App.Services
             return await _context.Verschleissteile.Where(w => w.RadId == radId).ToListAsync();
         }
 
-        public async Task<WearPart> GetWearPartByIdAsync(int id)
+        public async Task<WearPart?> GetWearPartByIdAsync(int id)
         {
             return await _context.Verschleissteile.FindAsync(id);
         }
@@ -36,6 +36,35 @@ namespace App.Services
             _context.Verschleissteile.Add(wearPart);
             await _context.SaveChangesAsync();
             return wearPart;
+        }
+
+        public async Task<WearPart?> UpdateWearPartAsync(int id, WearPart wearPart)
+        {
+            var existing = await _context.Verschleissteile.FindAsync(id);
+            if (existing == null)
+            {
+                return null;
+            }
+            existing.Name = wearPart.Name;
+            existing.Kategorie = wearPart.Kategorie;
+            existing.EinbauKilometerstand = wearPart.EinbauKilometerstand;
+            existing.AusbauKilometerstand = wearPart.AusbauKilometerstand;
+            existing.EinbauDatum = wearPart.EinbauDatum;
+            existing.AusbauDatum = wearPart.AusbauDatum;
+            await _context.SaveChangesAsync();
+            return existing;
+        }
+
+        public async Task<bool> DeleteWearPartAsync(int id)
+        {
+            var wearPart = await _context.Verschleissteile.FindAsync(id);
+            if (wearPart == null)
+            {
+                return false;
+            }
+            _context.Verschleissteile.Remove(wearPart);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

@@ -133,12 +133,11 @@ colors: {
 
 **Implemented:**
 - Strava OAuth 2.0 login flow (redirect URL + callback)
-- Full CRUD for `Bike` (Create, Read, UpdateKilometerstand) — Delete and full Update are still missing (known gap)
-- Partial CRUD for `WearPart` (Create, Read) — Update and Delete are missing (known gap)
+- Full CRUD for `Bike` (Create, Read, UpdateKilometerstand, UpdateBike, Delete) — backend + frontend + UI
+- Full CRUD for `WearPart` (Create, Read, Update, Delete) — backend + frontend + UI (inline edit form in bike-detail)
 
 **Planned (not yet implemented):**
 - Angular route guards (OAuth is done; guards just haven't been added yet)
-- Full CRUD completion for `Bike` (delete, general update) and `WearPart` (update, delete)
 - Automatic `Kilometerstand` sync via Strava webhook
 - Strava token refresh (token is stored, but auto-refresh is not yet triggered)
 - Swap SQLite for PostgreSQL when hosting (provider swap only — no service/model changes needed)
@@ -151,20 +150,31 @@ colors: {
 
 ---
 
-## [UNIVERSAL] Agent Workflow
+## [UNIVERSAL] Available Subagents
 
-When working on a feature or fix, follow this loop:
+- `backend` — C# / ASP.NET Core / EF Core expert. Generates and modifies backend services, controllers, and models.
+- `frontend` — Angular 17 / TypeScript / Tailwind expert. Generates and modifies components, services, and models.
+- `code-reviewer` — Code review against project conventions. Returns issues by severity with a PASS/FAIL verdict.
+- `qa` — Generates tests for a code snippet, runs them, and reports pass/fail results.
+- `research` — Deep research via web search, file reads, and codebase exploration. Returns concise sourced findings.
 
-1. **Understand** — read the relevant existing files before generating anything. Check models, the affected service interface, and the controller.
-2. **Generate** — implement the change following all conventions in this file.
-3. **Verify** — after each file edit, check for compile/lint errors. Fix them before continuing.
-4. **Test** — tests are **required** for every non-trivial backend service method and frontend service. Rules:
-   - Backend: add an xUnit test in `backend.tests/Services/` using an in-memory DB (`UseInMemoryDatabase`). Follow the pattern in `BikeServiceTests.cs`.
-   - Frontend: add or update a Jest spec file co-located with the service (e.g. `bike.service.spec.ts`).
-   - If a test file already covers the changed unit, add cases for the new behaviour.
-   - Tests must pass before the change is considered complete.
-5. **Review** — re-read the generated code against the conventions above. Flag any deviation explicitly.
-6. **Update this file** — if the prompt changes an architectural decision or adds a new convention, update the relevant `[PROJECT]` section.
+---
+
+## [UNIVERSAL] Design & Build Workflow
+
+When building or modifying any non-trivial feature, follow this loop:
+
+1. **Write/edit the code** — Spawn `backend` and/or `frontend`.
+2. **Code Review** — Spawn `code-reviewer` with the changed file(s). It reports issues back — it does NOT fix anything itself.
+3. **QA** — Spawn `qa` with the changed code. It generates tests, runs them, and reports results back — it does NOT fix anything itself.
+4. **Fix** — Read the review and QA reports and give fix instructions back to `backend` and/or `frontend`.
+5. **Ship** — Only after review passes and all tests pass.
+
+For research-heavy tasks, spawn `research` first to gather context without polluting the main conversation.
+
+**Parallel execution:** When reviewing + QA'ing independent files, spawn both subagents in parallel.
+
+**Update this file** — if a task changes an architectural decision or adds a new convention, update the relevant `[PROJECT]` section before finishing.
 
 ---
 
@@ -182,14 +192,4 @@ A code change is complete when:
 - [ ] Every new or changed service method has a corresponding test (backend: xUnit; frontend: Jest).
 - [ ] All tests pass (`dotnet test` for backend, `npm test -- --watchAll=false` for frontend).
 
----
 
-## [UNIVERSAL] Code Generation Rules
-
-- Always read the interface (`I*Service.cs`) before editing the implementation.
-- New backend endpoints follow the existing route pattern: `api/[controller]`.
-- New Angular components follow `ng generate component components/<name>` conventions (separate folder, 4 files).
-- Never hardcode port numbers or base URLs in frontend code — use `environment.apiBaseUrl` from the Angular environment files.
-- Keep error handling consistent: controllers return `NotFound()` for missing resources, `BadRequest()` for validation failures.
-- Every new service method must have at least one corresponding test (see Test step in Agent Workflow).
-- Test files live at: backend → `bikewear_app/backend.tests/Services/`; frontend → same directory as the service file.

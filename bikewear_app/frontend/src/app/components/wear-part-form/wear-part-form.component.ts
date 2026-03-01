@@ -11,6 +11,8 @@ import { WearPartService } from '../../services/wear-part.service';
 export class WearPartFormComponent implements OnInit {
   @Input() radId!: number;
   @Input() currentKilometerstand: number = 0;
+  @Input() existingPart?: WearPart;
+  @Input() editMode: boolean = false;
   @Output() saved = new EventEmitter<void>();
 
   categories = Object.values(WearPartCategory);
@@ -20,15 +22,19 @@ export class WearPartFormComponent implements OnInit {
   part: Partial<WearPart> = {};
 
   ngOnInit(): void {
-    this.part = {
-      radId: this.radId,
-      name: '',
-      kategorie: WearPartCategory.Sonstiges,
-      einbauKilometerstand: this.currentKilometerstand,
-      ausbauKilometerstand: 0,
-      einbauDatum: new Date(),
-      ausbauDatum: undefined as any
-    };
+    if (this.editMode && this.existingPart) {
+      this.part = { ...this.existingPart };
+    } else {
+      this.part = {
+        radId: this.radId,
+        name: '',
+        kategorie: WearPartCategory.Sonstiges,
+        einbauKilometerstand: this.currentKilometerstand,
+        ausbauKilometerstand: 0,
+        einbauDatum: new Date(),
+        ausbauDatum: undefined as any
+      };
+    }
   }
 
   get einbauDatumStr(): string {
@@ -57,7 +63,10 @@ export class WearPartFormComponent implements OnInit {
       return;
     }
     this.saving = true;
-    this.wearPartService.addWearPart(this.part as WearPart).subscribe({
+    const request$ = this.editMode && this.part.id
+      ? this.wearPartService.updateWearPart(this.part.id, this.part as WearPart)
+      : this.wearPartService.addWearPart(this.part as WearPart);
+    request$.subscribe({
       next: () => {
         this.saving = false;
         this.saved.emit();

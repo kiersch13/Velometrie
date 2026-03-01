@@ -104,4 +104,101 @@ public class WearPartServiceTests
         Assert.Equal("Kettenblatt", added.Name);
         Assert.Equal(1, await context.Verschleissteile.CountAsync());
     }
+
+    [Fact]
+    public async Task UpdateWearPartAsync_UpdatesExistingPart()
+    {
+        // Arrange
+        using var context = CreateInMemoryContext("UpdateWearPart");
+        var part = new WearPart
+        {
+            RadId = 1,
+            Name = "Alter Reifen",
+            Kategorie = WearPartCategory.Reifen,
+            EinbauKilometerstand = 0,
+            EinbauDatum = DateTime.Today
+        };
+        context.Verschleissteile.Add(part);
+        await context.SaveChangesAsync();
+
+        var service = new WearPartService(context);
+        var updatedPart = new WearPart
+        {
+            RadId = 1,
+            Name = "Neuer Reifen",
+            Kategorie = WearPartCategory.Reifen,
+            EinbauKilometerstand = 200,
+            EinbauDatum = DateTime.Today
+        };
+
+        // Act
+        var result = await service.UpdateWearPartAsync(part.Id, updatedPart);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal("Neuer Reifen", result.Name);
+        Assert.Equal(200, result.EinbauKilometerstand);
+    }
+
+    [Fact]
+    public async Task UpdateWearPartAsync_ReturnsNull_WhenPartNotFound()
+    {
+        // Arrange
+        using var context = CreateInMemoryContext("UpdateWearPart_NotFound");
+        var service = new WearPartService(context);
+        var updatedPart = new WearPart
+        {
+            RadId = 1,
+            Name = "Phantom",
+            Kategorie = WearPartCategory.Kette,
+            EinbauKilometerstand = 0,
+            EinbauDatum = DateTime.Today
+        };
+
+        // Act
+        var result = await service.UpdateWearPartAsync(id: 9999, wearPart: updatedPart);
+
+        // Assert
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public async Task DeleteWearPartAsync_RemovesPartFromDatabase()
+    {
+        // Arrange
+        using var context = CreateInMemoryContext("DeleteWearPart");
+        var part = new WearPart
+        {
+            RadId = 1,
+            Name = "Zu löschendes Teil",
+            Kategorie = WearPartCategory.Sonstiges,
+            EinbauKilometerstand = 0,
+            EinbauDatum = DateTime.Today
+        };
+        context.Verschleissteile.Add(part);
+        await context.SaveChangesAsync();
+
+        var service = new WearPartService(context);
+
+        // Act
+        var result = await service.DeleteWearPartAsync(part.Id);
+
+        // Assert
+        Assert.True(result);
+        Assert.Equal(0, await context.Verschleissteile.CountAsync());
+    }
+
+    [Fact]
+    public async Task DeleteWearPartAsync_ReturnsFalse_WhenPartNotFound()
+    {
+        // Arrange
+        using var context = CreateInMemoryContext("DeleteWearPart_NotFound");
+        var service = new WearPartService(context);
+
+        // Act
+        var result = await service.DeleteWearPartAsync(id: 9999);
+
+        // Assert
+        Assert.False(result);
+    }
 }

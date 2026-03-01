@@ -109,4 +109,74 @@ public class BikeServiceTests
         // Assert
         Assert.Null(result);
     }
+
+    [Fact]
+    public async Task UpdateBikeAsync_UpdatesExistingBike()
+    {
+        // Arrange
+        using var context = CreateInMemoryContext("UpdateBike");
+        var bike = new Bike { Name = "Altes Rad", Kategorie = BikeCategory.Rennrad, Kilometerstand = 100 };
+        context.Rads.Add(bike);
+        await context.SaveChangesAsync();
+
+        var service = new BikeService(context);
+        var updated = new Bike { Name = "Neues Rad", Kategorie = BikeCategory.Gravel, Kilometerstand = 500 };
+
+        // Act
+        var result = await service.UpdateBikeAsync(bike.Id, updated);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal("Neues Rad", result.Name);
+        Assert.Equal(BikeCategory.Gravel, result.Kategorie);
+        Assert.Equal(500, result.Kilometerstand);
+    }
+
+    [Fact]
+    public async Task UpdateBikeAsync_ReturnsNull_WhenBikeNotFound()
+    {
+        // Arrange
+        using var context = CreateInMemoryContext("UpdateBike_NotFound");
+        var service = new BikeService(context);
+        var updated = new Bike { Name = "Phantom", Kategorie = BikeCategory.Mountainbike, Kilometerstand = 0 };
+
+        // Act
+        var result = await service.UpdateBikeAsync(id: 9999, bike: updated);
+
+        // Assert
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public async Task DeleteBikeAsync_RemovesBikeFromDatabase()
+    {
+        // Arrange
+        using var context = CreateInMemoryContext("DeleteBike");
+        var bike = new Bike { Name = "Zu löschendes Rad", Kategorie = BikeCategory.Rennrad, Kilometerstand = 0 };
+        context.Rads.Add(bike);
+        await context.SaveChangesAsync();
+
+        var service = new BikeService(context);
+
+        // Act
+        var result = await service.DeleteBikeAsync(bike.Id);
+
+        // Assert
+        Assert.True(result);
+        Assert.Equal(0, await context.Rads.CountAsync());
+    }
+
+    [Fact]
+    public async Task DeleteBikeAsync_ReturnsFalse_WhenBikeNotFound()
+    {
+        // Arrange
+        using var context = CreateInMemoryContext("DeleteBike_NotFound");
+        var service = new BikeService(context);
+
+        // Act
+        var result = await service.DeleteBikeAsync(id: 9999);
+
+        // Assert
+        Assert.False(result);
+    }
 }

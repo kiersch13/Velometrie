@@ -1,18 +1,31 @@
 # ──────────────────────────────────────────────────────────────
 # CI Pipeline — Bikewear App
 #
-# What this does:
+# Jobs:
 #   1. backend-test  — builds and runs all C# xUnit tests
 #   2. frontend-test — runs Jest tests + validates the production build
-#   3. docker-build  — builds both Docker images to validate Dockerfiles
+#   3. docker-build  — builds both Docker images (validates Dockerfiles)
 #
 # When it runs:
 #   • Every push to any branch
 #   • Every Pull Request targeting main
 #
-# Deployment:
-#   Railway watches the main branch directly via its GitHub integration.
-#   When your PR is merged and all checks pass, Railway auto-deploys.
+# Deployment ("Wait for CI" mode):
+#   Railway is connected to this repo and watches the main branch.
+#   "Wait for CI" is enabled in Railway's service settings for both
+#   backend and frontend. This means:
+#     • A push to main immediately puts Railway deployments into WAITING state.
+#     • Railway waits for ALL workflows here to succeed.
+#     • If any job fails → Railway sets the deployment to SKIPPED (no broken deploys).
+#     • If all jobs pass → Railway proceeds to build and deploy automatically.
+#
+#   One-command deploy:
+#     git push origin main
+#     (then watch CI + Railway dashboard — no manual steps needed)
+#
+#   One-time setup required (Railway dashboard, per service):
+#     Service Settings → GitHub → enable "Wait for CI"
+#   See _local/_commands.md → "CI/CD & Deployment" for full setup guide.
 # ──────────────────────────────────────────────────────────────
 name: CI
 

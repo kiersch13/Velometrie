@@ -28,4 +28,12 @@ export class BikeService {
   updateKilometerstand(id: number, kilometerstand: number): Observable<Bike> {
     return this.http.put<Bike>(`${this.apiUrl}/${id}/kilometerstand`, kilometerstand);
   }
+
+  updateBike(id: number, bike: Bike): Observable<Bike> {
+    return this.http.put<Bike>(`${this.apiUrl}/${id}`, bike);
+  }
+
+  deleteBike(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

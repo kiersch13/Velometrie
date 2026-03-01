@@ -46,5 +46,27 @@ namespace App.Controllers
             var createdWearPart = await _wearPartService.AddWearPartAsync(wearPart);
             return CreatedAtAction(nameof(GetWearPartById), new { id = createdWearPart.Id }, createdWearPart);
         }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<WearPart>> UpdateWearPart(int id, WearPart wearPart)
+        {
+            var updatedWearPart = await _wearPartService.UpdateWearPartAsync(id, wearPart);
+            if (updatedWearPart == null)
+            {
+                return NotFound();
+            }
+            return Ok(updatedWearPart);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteWearPart(int id)
+        {
+            var deleted = await _wearPartService.DeleteWearPartAsync(id);
+            if (!deleted)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
     }
 }

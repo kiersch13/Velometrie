@@ -21,7 +21,7 @@ namespace App.Services
             return await _context.Rads.ToListAsync();
         }
 
-        public async Task<Bike> GetBikeByIdAsync(int id)
+        public async Task<Bike?> GetBikeByIdAsync(int id)
         {
             return await _context.Rads.FindAsync(id);
         }
@@ -33,7 +33,7 @@ namespace App.Services
             return bike;
         }
 
-        public async Task<Bike> UpdateKilometerstandAsync(int id, int kilometerstand)
+        public async Task<Bike?> UpdateKilometerstandAsync(int id, int kilometerstand)
         {
             var bike = await _context.Rads.FindAsync(id);
             if (bike == null)
@@ -43,6 +43,33 @@ namespace App.Services
             bike.Kilometerstand = kilometerstand;
             await _context.SaveChangesAsync();
             return bike;
+        }
+
+        public async Task<Bike?> UpdateBikeAsync(int id, Bike bike)
+        {
+            var existing = await _context.Rads.FindAsync(id);
+            if (existing == null)
+            {
+                return null;
+            }
+            existing.Name = bike.Name;
+            existing.Kategorie = bike.Kategorie;
+            existing.Kilometerstand = bike.Kilometerstand;
+            existing.StravaId = bike.StravaId;
+            await _context.SaveChangesAsync();
+            return existing;
+        }
+
+        public async Task<bool> DeleteBikeAsync(int id)
+        {
+            var bike = await _context.Rads.FindAsync(id);
+            if (bike == null)
+            {
+                return false;
+            }
+            _context.Rads.Remove(bike);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

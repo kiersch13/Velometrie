@@ -21,6 +21,8 @@ export class BikeDetailComponent implements OnInit {
 
   showWearPartForm = false;
 
+  editingWearPart: WearPart | null = null;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -63,9 +65,61 @@ export class BikeDetailComponent implements OnInit {
     });
   }
 
+  deleteBike(): void {
+    if (!this.bike) return;
+    this.bikeService.deleteBike(this.bike.id).subscribe({
+      next: () => this.router.navigate(['/bikes']),
+      error: () => this.error = 'Fehler beim Löschen des Rades.'
+    });
+  }
+
   onWearPartAdded(): void {
     this.showWearPartForm = false;
     if (this.bike) this.loadWearParts(this.bike.id);
+  }
+
+  startEditWearPart(part: WearPart): void {
+    this.editingWearPart = { ...part };
+  }
+
+  get editEinbauDatumStr(): string {
+    if (!this.editingWearPart?.einbauDatum) return '';
+    return new Date(this.editingWearPart.einbauDatum).toISOString().substring(0, 10);
+  }
+
+  set editEinbauDatumStr(val: string) {
+    if (this.editingWearPart && val) {
+      this.editingWearPart.einbauDatum = new Date(val);
+    }
+  }
+
+  get editAusbauDatumStr(): string {
+    if (!this.editingWearPart?.ausbauDatum) return '';
+    return new Date(this.editingWearPart.ausbauDatum).toISOString().substring(0, 10);
+  }
+
+  set editAusbauDatumStr(val: string) {
+    if (this.editingWearPart) {
+      this.editingWearPart.ausbauDatum = val ? new Date(val) : null;
+    }
+  }
+
+  saveWearPart(): void {
+    if (!this.editingWearPart) return;
+    this.wearPartService.updateWearPart(this.editingWearPart.id, this.editingWearPart).subscribe({
+      next: () => {
+        this.editingWearPart = null;
+        if (this.bike) this.loadWearParts(this.bike.id);
+      },
+      error: () => this.error = 'Fehler beim Speichern des Verschleißteils.'
+    });
+  }
+
+  deleteWearPart(id: number): void {
+    this.wearPartService.deleteWearPart(id).subscribe({
+      next: () => { if (this.bike) this.loadWearParts(this.bike.id); },
+      error: () => this.error = 'Fehler beim Löschen des Verschleißteils.'
+    });
   }
 
   goBack(): void {

@@ -40,4 +40,12 @@ export class BikeListComponent implements OnInit {
   addBike(): void {
     this.router.navigate(['/bikes/add']);
   }
+
+  deleteBike(id: number, event: MouseEvent): void {
+    event.stopPropagation();
+    this.bikeService.deleteBike(id).subscribe({
+      next: () => { this.bikes = this.bikes.filter(b => b.id !== id); },
+      error: () => { this.error = 'Fehler beim Löschen des Rades.'; }
+    });
+  }
 }

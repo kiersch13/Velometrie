@@ -45,6 +45,10 @@
           </button>
           <button class="btn-secondary" (click)="editingKm = false">Abbrechen</button>
         </ng-container>
+        <button class="btn-danger" (click)="deleteBike()">
+          <lucide-icon name="trash-2" [size]="14" aria-hidden="true"></lucide-icon>
+          Rad löschen
+        </button>
       </div>
     </div>
   </div>
@@ -87,6 +91,7 @@
             <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Einbau</th>
             <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Ausbau km</th>
             <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Ausbau</th>
+            <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-20">Aktionen</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -97,9 +102,80 @@
             <td class="px-4 py-3 text-gray-600 dark:text-text-dark">{{ part.einbauDatum | date:'dd.MM.yyyy' }}</td>
             <td class="px-4 py-3 text-gray-600 dark:text-text-dark tabular-nums">{{ part.ausbauKilometerstand ? (part.ausbauKilometerstand | number:'1.0-0') + ' km' : '—' }}</td>
             <td class="px-4 py-3 text-gray-600 dark:text-text-dark">{{ part.ausbauDatum ? (part.ausbauDatum | date:'dd.MM.yyyy') : '—' }}</td>
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-1">
+                <button class="btn-secondary !p-1.5" aria-label="Bearbeiten" (click)="startEditWearPart(part)">
+                  <lucide-icon name="pencil" [size]="13" aria-hidden="true"></lucide-icon>
+                </button>
+                <button class="btn-danger !p-1.5" aria-label="Löschen" (click)="deleteWearPart(part.id)">
+                  <lucide-icon name="trash-2" [size]="13" aria-hidden="true"></lucide-icon>
+                </button>
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- Inline wear part edit form -->
+  <div *ngIf="editingWearPart" class="card p-6 mt-4">
+    <h4 class="text-sm font-semibold text-primary dark:text-text-dark mb-4 flex items-center gap-2">
+      <lucide-icon name="pencil" [size]="14" class="text-accent" aria-hidden="true"></lucide-icon>
+      Verschleißteil bearbeiten
+    </h4>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Name</label>
+        <input type="text" [(ngModel)]="editingWearPart.name" class="form-input" />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Kategorie</label>
+        <select [(ngModel)]="editingWearPart.kategorie" class="form-input">
+          <option value="Reifen">Reifen</option>
+          <option value="Kassette">Kassette</option>
+          <option value="Kettenblatt">Kettenblatt</option>
+          <option value="Kette">Kette</option>
+          <option value="Sonstiges">Sonstiges</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Einbau Kilometerstand</label>
+        <input type="number" [(ngModel)]="editingWearPart.einbauKilometerstand" min="0" class="form-input" />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Einbau Datum</label>
+        <input type="date" [(ngModel)]="editEinbauDatumStr" class="form-input" />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">
+          Ausbau Kilometerstand
+          <span class="font-normal text-gray-400 ml-1">(optional)</span>
+        </label>
+        <input type="number" [(ngModel)]="editingWearPart.ausbauKilometerstand" min="0" class="form-input" />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">
+          Ausbau Datum
+          <span class="font-normal text-gray-400 ml-1">(optional)</span>
+        </label>
+        <input type="date" [(ngModel)]="editAusbauDatumStr" class="form-input" />
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 pt-4 border-t border-gray-100 dark:border-gray-700">
+      <button class="btn-primary" (click)="saveWearPart()">
+        <lucide-icon name="check" [size]="14" aria-hidden="true"></lucide-icon>
+        Speichern
+      </button>
+      <button class="btn-secondary" (click)="editingWearPart = null">Abbrechen</button>
     </div>
   </div>
 </ng-container>

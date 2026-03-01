@@ -28,4 +28,12 @@ export class WearPartService {
   addWearPart(wearPart: WearPart): Observable<WearPart> {
     return this.http.post<WearPart>(this.apiUrl, wearPart);
   }
+
+  updateWearPart(id: number, part: WearPart): Observable<WearPart> {
+    return this.http.put<WearPart>(`${this.apiUrl}/${id}`, part);
+  }
+
+  deleteWearPart(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

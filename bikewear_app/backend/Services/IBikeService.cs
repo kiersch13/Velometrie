@@ -7,8 +7,10 @@ namespace App.Services
     public interface IBikeService
     {
         Task<IEnumerable<Bike>> GetAllBikesAsync();
-        Task<Bike> GetBikeByIdAsync(int id);
+        Task<Bike?> GetBikeByIdAsync(int id);
         Task<Bike> AddBikeAsync(Bike bike);
-        Task<Bike> UpdateKilometerstandAsync(int id, int kilometerstand);
+        Task<Bike?> UpdateKilometerstandAsync(int id, int kilometerstand);
+        Task<Bike?> UpdateBikeAsync(int id, Bike bike);
+        Task<bool> DeleteBikeAsync(int id);
     }
 }

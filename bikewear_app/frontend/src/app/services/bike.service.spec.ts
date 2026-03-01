@@ -74,4 +74,25 @@ describe('BikeService', () => {
     expect(req.request.method).toBe('PUT');
     req.flush({});
   });
+
+  it('updateBike() sends a PUT request to the correct URL with the bike body', () => {
+    const bike: Bike = { id: 5, name: 'Geändertes Rad', kategorie: BikeCategory.Gravel, kilometerstand: 300, stravaId: null as any };
+
+    service.updateBike(5, bike).subscribe(result => {
+      expect(result.name).toBe('Geändertes Rad');
+    });
+
+    const req = httpMock.expectOne(`${apiUrl}/5`);
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body.name).toBe('Geändertes Rad');
+    req.flush(bike);
+  });
+
+  it('deleteBike() sends a DELETE request to the correct URL', () => {
+    service.deleteBike(7).subscribe();
+
+    const req = httpMock.expectOne(`${apiUrl}/7`);
+    expect(req.request.method).toBe('DELETE');
+    req.flush(null);
+  });
 });
