@@ -65,8 +65,10 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var cfg = scope.ServiceProvider.GetRequiredService<IConfiguration>();
     await db.Database.MigrateAsync();
     await App.Data.TeilvorlagenSeeder.SeedAsync(db);
+    await App.Data.AdminUserSeeder.SeedAsync(db, cfg);
 }
 
 // Configure the HTTP request pipeline.
