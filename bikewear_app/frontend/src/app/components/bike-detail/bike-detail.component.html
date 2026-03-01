@@ -88,7 +88,6 @@
             <th class="bg-gray-50 dark:bg-gray-800/60 w-1 p-0"></th>
             <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Name</th>
             <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Kategorie</th>
-            <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
             <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Einbau</th>
             <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Gefahren</th>
             <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Erw. Ersatz</th>
@@ -96,26 +95,15 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-          <tr *ngFor="let part of wearParts" class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30 transition-colors duration-100">
+          <tr *ngFor="let part of sortedWearParts"
+              class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30 transition-colors duration-100"
+              [ngClass]="{'opacity-50': !isInstalled(part)}">
             <!-- Status bar -->
             <td class="w-1 p-0">
               <div class="w-1 min-h-[2.75rem] rounded-sm" [ngClass]="getStatusBarClass(part)"></div>
             </td>
             <td class="px-4 py-3 font-medium text-gray-800 dark:text-text-dark">{{ part.name }}</td>
             <td class="px-4 py-3"><span class="badge">{{ part.kategorie }}</span></td>
-            <!-- Status badge: installed vs. removed -->
-            <td class="px-4 py-3">
-              <span *ngIf="isInstalled(part)"
-                    class="inline-flex items-center gap-1.5 text-xs font-semibold text-success bg-success/10 px-2 py-0.5 rounded-full">
-                <lucide-icon name="check-circle-2" [size]="11" aria-hidden="true"></lucide-icon>
-                Eingebaut
-              </span>
-              <span *ngIf="!isInstalled(part)"
-                    class="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">
-                <lucide-icon name="x-circle" [size]="11" aria-hidden="true"></lucide-icon>
-                Ausgebaut
-              </span>
-            </td>
             <td class="px-4 py-3 text-gray-600 dark:text-text-dark">{{ part.einbauDatum | date:'dd.MM.yyyy' }}</td>
             <!-- Gefahrene km -->
             <td class="px-4 py-3 tabular-nums">
@@ -125,7 +113,8 @@
                 <div class="h-full rounded-full transition-all duration-300"
                      [ngClass]="{
                        'bg-success/70': getLifetimePercent(part) < 0.8 && isInstalled(part),
-                       'bg-warning/80': getLifetimePercent(part) >= 0.8 && isInstalled(part),
+                       'bg-warning/80': getLifetimePercent(part) >= 0.8 && getLifetimePercent(part) < 1.0 && isInstalled(part),
+                       'bg-error/80': getLifetimePercent(part) >= 1.0 && isInstalled(part),
                        'bg-gray-300 dark:bg-gray-500': !isInstalled(part)
                      }"
                      [style.width.%]="(getLifetimePercent(part) * 100) | number:'1.0-0'">
@@ -134,7 +123,10 @@
             </td>
             <!-- Expected replacement km -->
             <td class="px-4 py-3 text-gray-600 dark:text-text-dark tabular-nums">
-              <span [ngClass]="{'text-warning font-medium': isInstalled(part) && getLifetimePercent(part) >= 0.8}">
+              <span [ngClass]="{
+                'text-warning font-medium': isInstalled(part) && getLifetimePercent(part) >= 0.8 && getLifetimePercent(part) < 1.0,
+                'text-error font-semibold': isInstalled(part) && getLifetimePercent(part) >= 1.0
+              }">
                 {{ getExpectedReplacementKm(part) | number:'1.0-0' }} km
               </span>
             </td>

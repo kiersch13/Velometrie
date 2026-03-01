@@ -129,11 +129,26 @@ export class BikeDetailComponent implements OnInit {
   }
 
   isInstalled(part: WearPart): boolean {
-    return part.ausbauKilometerstand == null && part.ausbauDatum == null;
+    if (part.ausbauDatum == null) return true;
+    return new Date(part.ausbauDatum) > new Date();
+  }
+
+  get sortedWearParts(): WearPart[] {
+    const active = this.wearParts
+      .filter(p => this.isInstalled(p))
+      .sort((a, b) => new Date(b.einbauDatum).getTime() - new Date(a.einbauDatum).getTime());
+    const inactive = this.wearParts
+      .filter(p => !this.isInstalled(p))
+      .sort((a, b) => {
+        const dateA = a.ausbauDatum ? new Date(a.ausbauDatum).getTime() : 0;
+        const dateB = b.ausbauDatum ? new Date(b.ausbauDatum).getTime() : 0;
+        return dateB - dateA;
+      });
+    return [...active, ...inactive];
   }
 
   getGefahreneKm(part: WearPart): number {
-    if (part.ausbauKilometerstand != null) {
+    if (!this.isInstalled(part) && part.ausbauKilometerstand != null && part.ausbauKilometerstand > 0) {
       return Math.max(0, part.ausbauKilometerstand - part.einbauKilometerstand);
     }
     return Math.max(0, (this.bike?.kilometerstand ?? part.einbauKilometerstand) - part.einbauKilometerstand);
@@ -151,12 +166,11 @@ export class BikeDetailComponent implements OnInit {
 
   getStatusBarClass(part: WearPart): string {
     if (!this.isInstalled(part)) {
-      return 'bg-error/40';
+      return 'bg-gray-300 dark:bg-gray-600';
     }
     const pct = this.getLifetimePercent(part);
-    if (pct >= 0.8) {
-      return 'bg-warning/70';
-    }
+    if (pct >= 1.0) return 'bg-error/60';
+    if (pct >= 0.8) return 'bg-warning/70';
     return 'bg-success/50';
   }
 }
