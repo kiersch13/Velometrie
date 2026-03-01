@@ -45,10 +45,12 @@ namespace App.Services
             if (existing != null)
                 return null; // e-mail already taken
 
+            var passwordHash = await Task.Run(() => BCrypt.Net.BCrypt.HashPassword(password, workFactor: 10));
+
             var user = new User
             {
                 Email = normalizedEmail,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
+                PasswordHash = passwordHash,
                 Anzeigename = string.IsNullOrWhiteSpace(anzeigename) ? null : anzeigename.Trim()
             };
             _context.Benutzer.Add(user);
@@ -65,7 +67,8 @@ namespace App.Services
             if (user == null || user.PasswordHash == null)
                 return null;
 
-            if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+            var valid = await Task.Run(() => BCrypt.Net.BCrypt.Verify(password, user.PasswordHash));
+            if (!valid)
                 return null;
 
             return user;
