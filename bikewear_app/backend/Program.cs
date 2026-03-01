@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using App.Data;
 using App.Services;
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +11,7 @@ builder.Services.AddControllers()
     .AddJsonOptions(options =>
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddHttpClient();
+builder.Services.AddMemoryCache();
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IBikeService, BikeService>();
@@ -20,10 +20,32 @@ builder.Services.AddScoped<ITeilVorlageService, TeilVorlageService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IStravaService, StravaService>();
 builder.Services.AddScoped<IStravaWebhookService, StravaWebhookService>();
+
+// Cookie-based authentication (HttpOnly, SameSite=Lax)
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.Name = "bikewear_session";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        options.ExpireTimeSpan = TimeSpan.FromDays(30);
+        options.SlidingExpiration = true;
+        // Return 401/403 instead of redirecting to a login page (API context)
+        options.Events.OnRedirectToLogin = ctx =>
+        {
+            ctx.Response.StatusCode = 401;
+            return Task.CompletedTask;
+        };
+        options.Events.OnRedirectToAccessDenied = ctx =>
+        {
+            ctx.Response.StatusCode = 403;
+            return Task.CompletedTask;
+        };
+    });
+
 builder.Services.AddCors(options =>
 {
-    // Read allowed origins from config so production deployments can override
-    // via environment variable: AllowedOrigins=https://your-frontend.railway.app
     var allowedOrigins = builder.Configuration
         .GetSection("AllowedOrigins")
         .Get<string[]>() ?? ["http://localhost:4200"];
@@ -32,7 +54,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials(); // Required for cookie auth with cross-origin frontend
     });
 });
 
@@ -52,7 +75,8 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 app.UseHttpsRedirection();
-app.UseAuthorization();
 app.UseCors("AllowAll");
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 app.Run();

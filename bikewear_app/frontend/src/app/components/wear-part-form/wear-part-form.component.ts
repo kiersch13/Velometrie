@@ -4,6 +4,8 @@ import { WearPartCategory } from '../../models/wear-part-category';
 import { WearPartService } from '../../services/wear-part.service';
 import { BikeService } from '../../services/bike.service';
 import { AuthService } from '../../services/auth.service';
+import { TeilVorlageService } from '../../services/teil-vorlage.service';
+import { TeilVorlage } from '../../models/teil-vorlage';
 
 @Component({
   selector: 'app-wear-part-form',
@@ -21,6 +23,13 @@ export class WearPartFormComponent implements OnInit {
   error = '';
   saving = false;
   loadingOdometer = false;
+
+  // Autocomplete state
+  private allTeile: TeilVorlage[] = [];
+  private teileLoaded = false;
+  suggestions: TeilVorlage[] = [];
+  showSuggestions = false;
+  activeSuggestionIndex = -1;
 
   part: Partial<WearPart> = {};
 
@@ -73,6 +82,76 @@ export class WearPartFormComponent implements OnInit {
     this.part.ausbauDatum = val ? new Date(val) : undefined as any;
   }
 
+  // ── Autocomplete ──────────────────────────────────────────────────────────
+
+  onNameInput(): void {
+    const query = (this.part.name ?? '').trim().toLowerCase();
+    if (!query) {
+      this.suggestions = [];
+      this.showSuggestions = false;
+      return;
+    }
+
+    const proceed = () => {
+      this.suggestions = this.allTeile
+        .filter(t =>
+          t.name.toLowerCase().includes(query) ||
+          t.hersteller.toLowerCase().includes(query)
+        )
+        .slice(0, 8);
+      this.showSuggestions = this.suggestions.length > 0;
+      this.activeSuggestionIndex = -1;
+    };
+
+    if (this.teileLoaded) {
+      proceed();
+    } else {
+      this.teilVorlageService.getAll().subscribe({
+        next: (data) => {
+          this.allTeile = data;
+          this.teileLoaded = true;
+          proceed();
+        }
+      });
+    }
+  }
+
+  onNameKeydown(event: KeyboardEvent): void {
+    if (!this.showSuggestions) return;
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      this.activeSuggestionIndex = Math.min(
+        this.activeSuggestionIndex + 1, this.suggestions.length - 1
+      );
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.activeSuggestionIndex = Math.max(this.activeSuggestionIndex - 1, -1);
+    } else if (event.key === 'Enter' && this.activeSuggestionIndex >= 0) {
+      event.preventDefault();
+      this.selectSuggestion(this.suggestions[this.activeSuggestionIndex]);
+    } else if (event.key === 'Escape') {
+      this.closeSuggestions();
+    }
+  }
+
+  selectSuggestion(teil: TeilVorlage): void {
+    this.part.name = `${teil.hersteller} ${teil.name}`.trim();
+    this.part.kategorie = teil.kategorie;
+    this.closeSuggestions();
+  }
+
+  closeSuggestions(): void {
+    this.showSuggestions = false;
+    this.activeSuggestionIndex = -1;
+  }
+
+  onNameBlur(): void {
+    // Small delay so a click on a suggestion registers before hiding
+    setTimeout(() => this.closeSuggestions(), 150);
+  }
+
+  // ──────────────────────────────────────────────────────────────────────────
+
   save(): void {
     if (!this.part.name?.trim()) {
       this.error = 'Bitte einen Namen angeben.';
@@ -97,6 +176,7 @@ export class WearPartFormComponent implements OnInit {
   constructor(
     private wearPartService: WearPartService,
     private bikeService: BikeService,
-    private authService: AuthService
+    private authService: AuthService,
+    private teilVorlageService: TeilVorlageService
   ) {}
 }

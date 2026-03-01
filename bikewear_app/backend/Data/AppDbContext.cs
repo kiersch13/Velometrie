@@ -23,6 +23,12 @@ namespace App.Data
                 .WithMany()
                 .HasForeignKey(w => w.RadId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Unique index on Email (filtered to non-null rows)
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique()
+                .HasFilter("[Email] IS NOT NULL");
         }
     }
 }
