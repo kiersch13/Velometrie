@@ -42,10 +42,12 @@ file class FakeAuthService : IAuthService
     private readonly string _token;
     public FakeAuthService(string token = "fake-token") => _token = token;
     public Task<string> GetFreshAccessTokenAsync(int userId) => Task.FromResult(_token);
-    public Task<User> LoginAsync(string stravaId, string accessToken) => throw new NotImplementedException();
+    public Task<User?> RegisterAsync(string email, string password, string? anzeigename) => throw new NotImplementedException();
+    public Task<User?> LoginAsync(string email, string password) => throw new NotImplementedException();
     public Task LogoutAsync(int userId) => throw new NotImplementedException();
-    public string GetStravaRedirectUrl() => throw new NotImplementedException();
-    public Task<User> StravaCallbackAsync(string code) => throw new NotImplementedException();
+    public string GetStravaRedirectUrl(int userId, out string state) { state = string.Empty; throw new NotImplementedException(); }
+    public Task<User> ConnectStravaAsync(string code, string state, int userId) => throw new NotImplementedException();
+    public Task DisconnectStravaAsync(int userId) => throw new NotImplementedException();
 }
 
 // ---------------------------------------------------------------------------

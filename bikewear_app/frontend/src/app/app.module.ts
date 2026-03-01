@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import {
   LucideAngularModule,
   Bike, Settings, Plus, ArrowLeft, Pencil, Check,
   Inbox, AlertCircle, Loader2, CheckCircle2, XCircle,
   Unplug, Cable, Tag, Gauge, ArrowRight, Zap, RefreshCw, Trash2,
-  Compass, Mountain
+  Compass, Mountain, LogIn, UserPlus, LogOut
 } from 'lucide-angular';
 
 import { AppComponent } from './app.component';
@@ -20,6 +20,9 @@ import { WearPartFormComponent } from './components/wear-part-form/wear-part-for
 import { SettingsComponent } from './components/settings/settings.component';
 import { AuthCallbackComponent } from './components/auth-callback/auth-callback.component';
 import { TeilBibliothekComponent } from './components/teil-bibliothek/teil-bibliothek.component';
+import { LoginComponent } from './components/login/login.component';
+import { RegisterComponent } from './components/register/register.component';
+import { CredentialsInterceptor } from './interceptors/credentials.interceptor';
 
 @NgModule({
   declarations: [
@@ -31,7 +34,9 @@ import { TeilBibliothekComponent } from './components/teil-bibliothek/teil-bibli
     WearPartFormComponent,
     SettingsComponent,
     AuthCallbackComponent,
-    TeilBibliothekComponent
+    TeilBibliothekComponent,
+    LoginComponent,
+    RegisterComponent,
   ],
   imports: [
     BrowserModule,
@@ -43,10 +48,16 @@ import { TeilBibliothekComponent } from './components/teil-bibliothek/teil-bibli
       Bike, Settings, Plus, ArrowLeft, Pencil, Check,
       Inbox, AlertCircle, Loader2, CheckCircle2, XCircle,
       Unplug, Cable, Tag, Gauge, ArrowRight, Zap, RefreshCw, Trash2,
-      Compass, Mountain
+      Compass, Mountain, LogIn, UserPlus, LogOut
     }),
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: CredentialsInterceptor,
+      multi: true,
+    },
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

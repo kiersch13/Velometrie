@@ -7,9 +7,13 @@ import { AddBikeComponent } from './components/add-bike/add-bike.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { AuthCallbackComponent } from './components/auth-callback/auth-callback.component';
 import { TeilBibliothekComponent } from './components/teil-bibliothek/teil-bibliothek.component';
+import { LoginComponent } from './components/login/login.component';
+import { RegisterComponent } from './components/register/register.component';
 
 const routes: Routes = [
   { path: '', component: LandingComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
   { path: 'auth/callback', component: AuthCallbackComponent },
   { path: 'bikes', component: BikeListComponent },
   { path: 'bikes/add', component: AddBikeComponent },
