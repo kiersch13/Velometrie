@@ -7,7 +7,8 @@ import {
   LucideAngularModule,
   Bike, Settings, Plus, ArrowLeft, Pencil, Check,
   Inbox, AlertCircle, Loader2, CheckCircle2, XCircle,
-  Unplug, Cable, Tag, Gauge, ArrowRight, Zap, RefreshCw, Trash2
+  Unplug, Cable, Tag, Gauge, ArrowRight, Zap, RefreshCw, Trash2,
+  Compass, Mountain
 } from 'lucide-angular';
 
 import { AppComponent } from './app.component';
@@ -41,7 +42,8 @@ import { TeilBibliothekComponent } from './components/teil-bibliothek/teil-bibli
     LucideAngularModule.pick({
       Bike, Settings, Plus, ArrowLeft, Pencil, Check,
       Inbox, AlertCircle, Loader2, CheckCircle2, XCircle,
-      Unplug, Cable, Tag, Gauge, ArrowRight, Zap, RefreshCw, Trash2
+      Unplug, Cable, Tag, Gauge, ArrowRight, Zap, RefreshCw, Trash2,
+      Compass, Mountain
     }),
   ],
   providers: [],

@@ -1,0 +1,63 @@
+<div class="min-h-screen bg-bg-light dark:bg-bg-dark flex items-center justify-center px-4">
+  <div class="card max-w-sm w-full p-8">
+
+    <h1 class="page-title text-center mb-6">Anmelden</h1>
+
+    <!-- Error -->
+    <div *ngIf="error" class="mb-4 flex items-center gap-2 rounded-lg bg-error/10 px-4 py-3 text-sm text-error">
+      <lucide-icon name="alert-circle" [size]="16" aria-hidden="true"></lucide-icon>
+      {{ error }}
+    </div>
+
+    <form (ngSubmit)="submit()" #loginForm="ngForm" novalidate class="space-y-4">
+
+      <div>
+        <label for="email" class="block text-sm font-medium text-text-light dark:text-text-dark mb-1">
+          E-Mail
+        </label>
+        <input
+          id="email"
+          type="email"
+          class="form-input w-full"
+          [(ngModel)]="email"
+          name="email"
+          autocomplete="email"
+          placeholder="du@beispiel.de"
+          required
+        />
+      </div>
+
+      <div>
+        <label for="password" class="block text-sm font-medium text-text-light dark:text-text-dark mb-1">
+          Passwort
+        </label>
+        <input
+          id="password"
+          type="password"
+          class="form-input w-full"
+          [(ngModel)]="password"
+          name="password"
+          autocomplete="current-password"
+          placeholder="••••••••"
+          required
+        />
+      </div>
+
+      <button
+        type="submit"
+        class="btn-primary w-full justify-center"
+        [disabled]="loading"
+      >
+        <lucide-icon *ngIf="loading" name="loader-2" [size]="16" class="animate-spin" aria-hidden="true"></lucide-icon>
+        <span>{{ loading ? 'Einen Moment...' : 'Anmelden' }}</span>
+      </button>
+
+    </form>
+
+    <p class="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
+      Noch kein Konto?
+      <a routerLink="/register" class="text-accent hover:underline font-medium">Jetzt registrieren</a>
+    </p>
+
+  </div>
+</div>

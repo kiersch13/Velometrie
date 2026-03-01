@@ -18,6 +18,7 @@ export class AuthCallbackComponent implements OnInit {
 
   ngOnInit(): void {
     const code = this.route.snapshot.queryParamMap.get('code');
+    const stateFromUrl = this.route.snapshot.queryParamMap.get('state') ?? '';
     const errorParam = this.route.snapshot.queryParamMap.get('error');
 
     if (errorParam) {
@@ -30,15 +31,18 @@ export class AuthCallbackComponent implements OnInit {
       return;
     }
 
-    this.authService.exchangeCode(code).subscribe({
-      next: () => this.router.navigate(['/bikes']),
-      error: () => {
-        this.error = 'Authentifizierung fehlgeschlagen. Bitte erneut versuchen.';
+    this.authService.connectStrava(code, stateFromUrl).subscribe({
+      next: () => this.router.navigate(['/settings']),
+      error: (err) => {
+        const msg = err?.error ?? '';
+        this.error = typeof msg === 'string' && msg
+          ? msg
+          : 'Strava-Verbindung fehlgeschlagen. Bitte erneut versuchen.';
       }
     });
   }
 
   retry(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/settings']);
   }
 }

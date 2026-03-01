@@ -37,19 +37,14 @@
 <!-- Bike grid -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
   <div
-    class="card p-5 cursor-pointer transition-all duration-150 border-l-4 border-accent hover:-translate-y-0.5 hover:shadow-card-hover relative overflow-hidden"
+    class="card p-5 cursor-pointer transition-all duration-150 border-l-4 hover:-translate-y-0.5 hover:shadow-card-hover relative overflow-hidden"
+    [ngClass]="getCategoryBorderClass(bike.kategorie)"
     *ngFor="let bike of bikes"
     (click)="openDetail(bike.id)">
-    <div class="absolute top-4 right-4 text-accent/15">
-      <lucide-icon name="bike" [size]="40" aria-hidden="true"></lucide-icon>
+    <div class="absolute top-4 right-4" [ngClass]="getCategoryIconClass(bike.kategorie)">
+      <lucide-icon [name]="getCategoryIcon(bike.kategorie)" [size]="40" aria-hidden="true"></lucide-icon>
     </div>
-    <button
-      class="btn-danger absolute top-3 right-14 z-10 !p-1.5 !text-xs"
-      aria-label="Rad löschen"
-      (click)="deleteBike(bike.id, $event)">
-      <lucide-icon name="trash-2" [size]="13" aria-hidden="true"></lucide-icon>
-    </button>
-    <span class="badge mb-2">{{ bike.kategorie }}</span>
+    <span [ngClass]="getCategoryBadgeClass(bike.kategorie)" class="mb-2">{{ bike.kategorie }}</span>
     <h3 class="text-base font-semibold text-primary dark:text-text-dark mt-1 mb-4 pr-10">{{ bike.name }}</h3>
     <div class="flex justify-between items-center border-t border-gray-100 dark:border-gray-700 pt-3">
       <div class="flex items-center gap-1 text-gray-400">
