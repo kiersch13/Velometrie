@@ -39,25 +39,28 @@
       Ketten, Reifen, Kassetten und mehr — für jedes Rad, jeden Kilometer.
     </p>
 
-    <!-- CTA button -->
-    <button (click)="enter()" class="btn-primary text-base px-7 py-3 gap-2 shadow-lg shadow-accent/20">
-      Jetzt starten
-      <lucide-icon name="arrow-right" [size]="18" aria-hidden="true"></lucide-icon>
-    </button>
-
-    <!-- Strava connect -->
-    <ng-container *ngIf="!authService.isConnected">
-      <button (click)="connectWithStrava()" [disabled]="stravaLoading"
-              class="mt-7 flex items-center gap-2 text-xs text-white/40 hover:text-white/70 transition-colors duration-150 disabled:opacity-50">
-        <lucide-icon *ngIf="stravaLoading" name="loader-2" [size]="13" class="animate-spin" aria-hidden="true"></lucide-icon>
-        <lucide-icon *ngIf="!stravaLoading" name="zap" [size]="13" class="text-accent" aria-hidden="true"></lucide-icon>
-        {{ stravaLoading ? 'Weiterleitung zu Strava...' : 'Mit Strava verbinden' }}
-      </button>
+    <!-- CTA: not logged in -->
+    <ng-container *ngIf="!authService.isLoggedIn">
+      <div class="flex items-center gap-3">
+        <a routerLink="/login" class="btn-primary text-base px-7 py-3 gap-2 shadow-lg shadow-accent/20">
+          <lucide-icon name="log-in" [size]="18" aria-hidden="true"></lucide-icon>
+          Anmelden
+        </a>
+        <a routerLink="/register" class="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors duration-150">
+          <lucide-icon name="user-plus" [size]="16" aria-hidden="true"></lucide-icon>
+          Registrieren
+        </a>
+      </div>
     </ng-container>
-    <ng-container *ngIf="authService.isConnected">
-      <p class="mt-7 text-xs text-white/40 flex items-center gap-1.5">
-        <lucide-icon name="check-circle-2" [size]="13" class="text-success" aria-hidden="true"></lucide-icon>
-        Verbunden als {{ authService.currentUser?.vorname ?? authService.currentUser?.stravaId }}
+
+    <!-- CTA: logged in -->
+    <ng-container *ngIf="authService.isLoggedIn">
+      <button (click)="enter()" class="btn-primary text-base px-7 py-3 gap-2 shadow-lg shadow-accent/20">
+        Zur App
+        <lucide-icon name="arrow-right" [size]="18" aria-hidden="true"></lucide-icon>
+      </button>
+      <p class="mt-4 text-xs text-white/40">
+        Angemeldet als {{ authService.currentUser?.anzeigename ?? authService.currentUser?.email }}
       </p>
     </ng-container>
 

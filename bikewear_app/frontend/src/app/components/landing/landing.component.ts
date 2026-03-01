@@ -8,23 +8,13 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./landing.component.css']
 })
 export class LandingComponent {
-  stravaLoading = false;
-
   constructor(private router: Router, public authService: AuthService) {}
 
   enter(): void {
-    this.router.navigate(['/bikes']);
-  }
-
-  connectWithStrava(): void {
-    this.stravaLoading = true;
-    this.authService.getStravaRedirectUrl().subscribe({
-      next: ({ url }) => {
-        window.location.href = url;
-      },
-      error: () => {
-        this.stravaLoading = false;
-      }
-    });
+    if (this.authService.isLoggedIn) {
+      this.router.navigate(['/bikes']);
+    } else {
+      this.router.navigate(['/login']);
+    }
   }
 }
