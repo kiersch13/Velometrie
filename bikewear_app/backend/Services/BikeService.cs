@@ -19,14 +19,14 @@ namespace App.Services
             _stravaService = stravaService;
         }
 
-        public async Task<IEnumerable<Bike>> GetAllBikesAsync()
+        public async Task<IEnumerable<Bike>> GetAllBikesAsync(int userId)
         {
-            return await _context.Rads.ToListAsync();
+            return await _context.Rads.Where(b => b.UserId == userId).ToListAsync();
         }
 
-        public async Task<Bike?> GetBikeByIdAsync(int id)
+        public async Task<Bike?> GetBikeByIdAsync(int id, int userId)
         {
-            return await _context.Rads.FindAsync(id);
+            return await _context.Rads.FirstOrDefaultAsync(b => b.Id == id && b.UserId == userId);
         }
 
         public async Task<Bike> AddBikeAsync(Bike bike)
@@ -36,9 +36,9 @@ namespace App.Services
             return bike;
         }
 
-        public async Task<Bike?> UpdateKilometerstandAsync(int id, int kilometerstand)
+        public async Task<Bike?> UpdateKilometerstandAsync(int id, int userId, int kilometerstand)
         {
-            var bike = await _context.Rads.FindAsync(id);
+            var bike = await _context.Rads.FirstOrDefaultAsync(b => b.Id == id && b.UserId == userId);
             if (bike == null)
             {
                 return null;
@@ -48,9 +48,9 @@ namespace App.Services
             return bike;
         }
 
-        public async Task<Bike?> UpdateBikeAsync(int id, Bike bike)
+        public async Task<Bike?> UpdateBikeAsync(int id, int userId, Bike bike)
         {
-            var existing = await _context.Rads.FindAsync(id);
+            var existing = await _context.Rads.FirstOrDefaultAsync(b => b.Id == id && b.UserId == userId);
             if (existing == null)
             {
                 return null;
@@ -63,9 +63,9 @@ namespace App.Services
             return existing;
         }
 
-        public async Task<bool> DeleteBikeAsync(int id)
+        public async Task<bool> DeleteBikeAsync(int id, int userId)
         {
-            var bike = await _context.Rads.FindAsync(id);
+            var bike = await _context.Rads.FirstOrDefaultAsync(b => b.Id == id && b.UserId == userId);
             if (bike == null)
             {
                 return false;
@@ -77,7 +77,7 @@ namespace App.Services
 
         public async Task<int?> GetOdometerAtDateAsync(int bikeId, int userId, DateTime date)
         {
-            var bike = await _context.Rads.FindAsync(bikeId);
+            var bike = await _context.Rads.FirstOrDefaultAsync(b => b.Id == bikeId && b.UserId == userId);
             if (bike == null) return null;
 
             if (string.IsNullOrEmpty(bike.StravaId))

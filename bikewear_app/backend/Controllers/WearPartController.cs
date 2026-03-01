@@ -2,12 +2,14 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using App.Models;
 using App.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class WearPartController : ControllerBase
     {
         private readonly IWearPartService _wearPartService;

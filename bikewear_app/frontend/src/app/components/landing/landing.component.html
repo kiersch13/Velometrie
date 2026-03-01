@@ -17,9 +17,13 @@
     <div class="flex items-center">
       <img src="assets/velometrie-logo.png" alt="Velometrie" class="h-8 w-auto">
     </div>
-    <a routerLink="/bikes"
+    <a *ngIf="authService.isLoggedIn" routerLink="/bikes"
        class="text-white/50 hover:text-white text-sm transition-colors duration-150 cursor-pointer">
       Zur App
+    </a>
+    <a *ngIf="!authService.isLoggedIn" routerLink="/login"
+       class="text-white/50 hover:text-white text-sm transition-colors duration-150 cursor-pointer">
+      Anmelden
     </a>
   </header>
 

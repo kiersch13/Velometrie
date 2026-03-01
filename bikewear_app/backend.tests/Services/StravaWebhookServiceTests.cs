@@ -136,7 +136,7 @@ public class StravaWebhookServiceTests
         db.Benutzer.Add(user);
         await db.SaveChangesAsync();
 
-        var bike = new Bike { Name = "Rennrad", Kategorie = BikeCategory.Rennrad, StravaId = "b123", Kilometerstand = 0 };
+        var bike = new Bike { Name = "Rennrad", Kategorie = BikeCategory.Rennrad, StravaId = "b123", Kilometerstand = 0, UserId = user.Id };
         db.Rads.Add(bike);
         await db.SaveChangesAsync();
 

@@ -27,7 +27,7 @@ describe('BikeService', () => {
 
   it('getBikes() sends a GET request to the correct endpoint', () => {
     const mockBikes: Bike[] = [
-      { id: 1, name: 'Rennmaschine', kategorie: BikeCategory.Rennrad, kilometerstand: 1000, stravaId: null as any },
+      { id: 1, name: 'Rennmaschine', kategorie: BikeCategory.Rennrad, kilometerstand: 1000, stravaId: null as any, userId: 1 },
     ];
 
     service.getBikes().subscribe(bikes => {
@@ -43,7 +43,7 @@ describe('BikeService', () => {
   });
 
   it('getBike(id) sends a GET request with the correct id in the URL', () => {
-    const mockBike: Bike = { id: 2, name: 'Gravelbike', kategorie: BikeCategory.Gravel, kilometerstand: 500, stravaId: null as any };
+    const mockBike: Bike = { id: 2, name: 'Gravelbike', kategorie: BikeCategory.Gravel, kilometerstand: 500, stravaId: null as any, userId: 1 };
 
     service.getBike(2).subscribe(bike => {
       expect(bike.name).toBe('Gravelbike');
@@ -55,7 +55,7 @@ describe('BikeService', () => {
   });
 
   it('addBike() sends a POST request with the bike in the body', () => {
-    const newBike: Bike = { id: 0, name: 'Neues Rad', kategorie: BikeCategory.Mountainbike, kilometerstand: 0, stravaId: null as any };
+    const newBike: Bike = { id: 0, name: 'Neues Rad', kategorie: BikeCategory.Mountainbike, kilometerstand: 0, stravaId: null as any, userId: 1 };
 
     service.addBike(newBike).subscribe(result => {
       expect(result.id).toBe(3); // server assigns the real ID
@@ -76,7 +76,7 @@ describe('BikeService', () => {
   });
 
   it('updateBike() sends a PUT request to the correct URL with the bike body', () => {
-    const bike: Bike = { id: 5, name: 'Geändertes Rad', kategorie: BikeCategory.Gravel, kilometerstand: 300, stravaId: null as any };
+    const bike: Bike = { id: 5, name: 'Geändertes Rad', kategorie: BikeCategory.Gravel, kilometerstand: 300, stravaId: null as any, userId: 1 };
 
     service.updateBike(5, bike).subscribe(result => {
       expect(result.name).toBe('Geändertes Rad');
@@ -97,11 +97,11 @@ describe('BikeService', () => {
   });
 
   it('getOdometerAt() sends a GET request with the correct query params', () => {
-    service.getOdometerAt(3, '2025-12-01', 42).subscribe(km => {
+    service.getOdometerAt(3, '2025-12-01').subscribe(km => {
       expect(km).toBe(2549);
     });
 
-    const req = httpMock.expectOne(`${apiUrl}/3/odometer-at?date=2025-12-01&userId=42`);
+    const req = httpMock.expectOne(`${apiUrl}/3/odometer-at?date=2025-12-01`);
     expect(req.request.method).toBe('GET');
     req.flush(2549);
   });

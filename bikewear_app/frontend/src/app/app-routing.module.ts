@@ -9,17 +9,18 @@ import { AuthCallbackComponent } from './components/auth-callback/auth-callback.
 import { TeilBibliothekComponent } from './components/teil-bibliothek/teil-bibliothek.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
+import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
   { path: '', component: LandingComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'auth/callback', component: AuthCallbackComponent },
-  { path: 'bikes', component: BikeListComponent },
-  { path: 'bikes/add', component: AddBikeComponent },
-  { path: 'bikes/:id', component: BikeDetailComponent },
-  { path: 'settings', component: SettingsComponent },
-  { path: 'teilbibliothek', component: TeilBibliothekComponent },
+  { path: 'bikes', component: BikeListComponent, canActivate: [AuthGuard] },
+  { path: 'bikes/add', component: AddBikeComponent, canActivate: [AuthGuard] },
+  { path: 'bikes/:id', component: BikeDetailComponent, canActivate: [AuthGuard] },
+  { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
+  { path: 'teilbibliothek', component: TeilBibliothekComponent, canActivate: [AuthGuard] },
 ];
 
 @NgModule({

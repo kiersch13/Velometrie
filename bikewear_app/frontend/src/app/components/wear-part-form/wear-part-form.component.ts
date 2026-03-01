@@ -3,7 +3,6 @@ import { WearPart } from '../../models/wear-part';
 import { WearPartCategory } from '../../models/wear-part-category';
 import { WearPartService } from '../../services/wear-part.service';
 import { BikeService } from '../../services/bike.service';
-import { AuthService } from '../../services/auth.service';
 import { TeilVorlageService } from '../../services/teil-vorlage.service';
 import { TeilVorlage } from '../../models/teil-vorlage';
 
@@ -57,10 +56,9 @@ export class WearPartFormComponent implements OnInit {
 
   set einbauDatumStr(val: string) {
     this.part.einbauDatum = val ? new Date(val) : undefined as any;
-    const user = this.authService.currentUser;
-    if (val && this.radId && user) {
+    if (val && this.radId) {
       this.loadingOdometer = true;
-      this.bikeService.getOdometerAt(this.radId, val, user.id).subscribe({
+      this.bikeService.getOdometerAt(this.radId, val).subscribe({
         next: (km) => {
           this.part.einbauKilometerstand = km;
           this.loadingOdometer = false;
@@ -176,7 +174,6 @@ export class WearPartFormComponent implements OnInit {
   constructor(
     private wearPartService: WearPartService,
     private bikeService: BikeService,
-    private authService: AuthService,
     private teilVorlageService: TeilVorlageService
   ) {}
 }
