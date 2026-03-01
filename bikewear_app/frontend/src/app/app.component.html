@@ -1,27 +1,29 @@
-<nav *ngIf="!isLanding" class="flex items-center justify-between bg-primary px-8 h-16 shadow-md border-b border-white/10">
-  <div class="flex items-center">
-    <a routerLink="/">
-      <img src="assets/velometrie-logo.png" alt="Velometrie" class="h-8 w-auto">
-    </a>
-  </div>
-  <div class="flex items-center gap-1">
-    <a routerLink="/bikes"
-       routerLinkActive="bg-white/15 text-white"
-       [routerLinkActiveOptions]="{exact: false}"
-       class="text-white/70 hover:text-white hover:bg-white/10 text-sm px-3 py-1.5 rounded-lg transition-colors duration-150">
-      Räder
-    </a>
-    <a routerLink="/settings"
-       routerLinkActive="bg-white/15 text-white"
-       aria-label="Einstellungen"
-       title="Einstellungen"
-       class="text-white/70 hover:text-white hover:bg-white/10 p-1.5 rounded-lg transition-colors duration-150 flex items-center">
-      <lucide-icon name="settings" [size]="18" aria-hidden="true"></lucide-icon>
-    </a>
-  </div>
-</nav>
+<div *ngIf="!isLanding" class="fixed top-4 left-0 right-0 z-50 flex justify-center px-6">
+  <nav class="flex items-center justify-between bg-primary px-6 h-14 shadow-lg border border-white/10 rounded-2xl w-full max-w-5xl">
+    <div class="flex items-center">
+      <a routerLink="/">
+        <img src="assets/velometrie-logo.png" alt="Velometrie" class="h-8 w-auto">
+      </a>
+    </div>
+    <div class="flex items-center gap-1">
+      <a routerLink="/bikes"
+         routerLinkActive="bg-white/15 text-white"
+         [routerLinkActiveOptions]="{exact: false}"
+         class="text-white/70 hover:text-white hover:bg-white/10 text-sm px-3 py-1.5 rounded-lg transition-colors duration-150">
+        Räder
+      </a>
+      <a routerLink="/settings"
+         routerLinkActive="bg-white/15 text-white"
+         aria-label="Einstellungen"
+         title="Einstellungen"
+         class="text-white/70 hover:text-white hover:bg-white/10 p-1.5 rounded-lg transition-colors duration-150 flex items-center">
+        <lucide-icon name="settings" [size]="18" aria-hidden="true"></lucide-icon>
+      </a>
+    </div>
+  </nav>
+</div>
 
-<main [class]="isLanding ? '' : 'max-w-5xl mx-auto px-6 py-8 min-h-screen'">
+<main [class]="isLanding ? '' : 'max-w-5xl mx-auto px-6 pt-24 pb-8 min-h-screen'">
   <router-outlet></router-outlet>
 </main>
 
