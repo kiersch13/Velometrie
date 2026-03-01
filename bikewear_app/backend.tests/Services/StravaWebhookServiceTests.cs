@@ -65,7 +65,6 @@ file class FakeAuthService : IAuthService
     public Task LogoutAsync(int userId) => throw new NotImplementedException();
     public string GetStravaRedirectUrl() => throw new NotImplementedException();
     public Task<User> StravaCallbackAsync(string code) => throw new NotImplementedException();
-    public Task<IEnumerable<StravaGear>> GetStravaGearAsync(int userId) => throw new NotImplementedException();
 }
 
 // ---------------------------------------------------------------------------

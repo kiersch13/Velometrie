@@ -60,23 +60,6 @@ namespace App.Controllers
             }
         }
 
-        [HttpGet("strava/bikes")]
-        public async Task<ActionResult<IEnumerable<StravaGear>>> GetStravaBikes([FromQuery] int userId)
-        {
-            try
-            {
-                var bikes = await _authService.GetStravaGearAsync(userId);
-                return Ok(bikes);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch
-            {
-                return BadRequest("Strava-Fahrräder konnten nicht abgerufen werden.");
-            }
-        }
     }
 
     public class StravaCallbackRequest

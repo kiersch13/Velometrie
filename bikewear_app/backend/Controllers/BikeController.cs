@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using App.Models;
@@ -72,6 +73,21 @@ namespace App.Controllers
                 return NotFound();
             }
             return NoContent();
+        }
+
+        [HttpGet("{id}/odometer-at")]
+        public async Task<ActionResult<int>> GetOdometerAt(int id, [FromQuery] DateTime date, [FromQuery] int userId)
+        {
+            try
+            {
+                var result = await _bikeService.GetOdometerAtDateAsync(id, userId, date);
+                if (result == null) return NotFound();
+                return Ok(result);
+            }
+            catch
+            {
+                return BadRequest("Kilometerstand konnte nicht berechnet werden.");
+            }
         }
     }
 }

@@ -2,6 +2,8 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { WearPart } from '../../models/wear-part';
 import { WearPartCategory } from '../../models/wear-part-category';
 import { WearPartService } from '../../services/wear-part.service';
+import { BikeService } from '../../services/bike.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-wear-part-form',
@@ -18,6 +20,7 @@ export class WearPartFormComponent implements OnInit {
   categories = Object.values(WearPartCategory);
   error = '';
   saving = false;
+  loadingOdometer = false;
 
   part: Partial<WearPart> = {};
 
@@ -45,6 +48,19 @@ export class WearPartFormComponent implements OnInit {
 
   set einbauDatumStr(val: string) {
     this.part.einbauDatum = val ? new Date(val) : undefined as any;
+    const user = this.authService.currentUser;
+    if (val && this.radId && user) {
+      this.loadingOdometer = true;
+      this.bikeService.getOdometerAt(this.radId, val, user.id).subscribe({
+        next: (km) => {
+          this.part.einbauKilometerstand = km;
+          this.loadingOdometer = false;
+        },
+        error: () => {
+          this.loadingOdometer = false;
+        }
+      });
+    }
   }
 
   get ausbauDatumStr(): string {
@@ -78,5 +94,9 @@ export class WearPartFormComponent implements OnInit {
     });
   }
 
-  constructor(private wearPartService: WearPartService) {}
+  constructor(
+    private wearPartService: WearPartService,
+    private bikeService: BikeService,
+    private authService: AuthService
+  ) {}
 }

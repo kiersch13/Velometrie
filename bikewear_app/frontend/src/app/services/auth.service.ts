@@ -57,7 +57,7 @@ export class AuthService {
   }
 
   getStravaBikes(userId: number): Observable<StravaGear[]> {
-    return this.http.get<StravaGear[]>(`${this.apiUrl}/strava/bikes?userId=${userId}`);
+    return this.http.get<StravaGear[]>(`${environment.apiBaseUrl}/api/strava/bikes?userId=${userId}`);
   }
 
   private setUser(user: User | null): void {

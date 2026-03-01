@@ -95,4 +95,14 @@ describe('BikeService', () => {
     expect(req.request.method).toBe('DELETE');
     req.flush(null);
   });
+
+  it('getOdometerAt() sends a GET request with the correct query params', () => {
+    service.getOdometerAt(3, '2025-12-01', 42).subscribe(km => {
+      expect(km).toBe(2549);
+    });
+
+    const req = httpMock.expectOne(`${apiUrl}/3/odometer-at?date=2025-12-01&userId=42`);
+    expect(req.request.method).toBe('GET');
+    req.flush(2549);
+  });
 });

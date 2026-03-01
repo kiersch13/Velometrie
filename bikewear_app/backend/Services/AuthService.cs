@@ -110,41 +110,6 @@ namespace App.Services
             return user;
         }
 
-        public async Task<IEnumerable<StravaGear>> GetStravaGearAsync(int userId)
-        {
-            var user = await _context.Benutzer.FindAsync(userId)
-                ?? throw new InvalidOperationException("Benutzer nicht gefunden.");
-
-            var accessToken = await EnsureFreshTokenAsync(user);
-
-            var httpClient = _httpClientFactory.CreateClient();
-            httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", accessToken);
-
-            var response = await httpClient.GetAsync("https://www.strava.com/api/v3/athlete");
-            response.EnsureSuccessStatusCode();
-
-            var json = await response.Content.ReadAsStringAsync();
-            var root = JsonDocument.Parse(json).RootElement;
-
-            if (!root.TryGetProperty("bikes", out var bikesElement))
-                return Enumerable.Empty<StravaGear>();
-
-            var result = new List<StravaGear>();
-            foreach (var b in bikesElement.EnumerateArray())
-            {
-                result.Add(new StravaGear
-                {
-                    Id = b.TryGetProperty("id", out var id) ? id.GetString()! : string.Empty,
-                    Name = b.TryGetProperty("name", out var name) ? name.GetString()! : string.Empty,
-                    KilometerstandKm = b.TryGetProperty("distance", out var dist)
-                        ? (int)(dist.GetDouble() / 1000)
-                        : 0
-                });
-            }
-            return result;
-        }
-
         public async Task<string> GetFreshAccessTokenAsync(int userId)
         {
             var user = await _context.Benutzer.FindAsync(userId)

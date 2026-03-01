@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using App.Data;
 using App.Models;
 using App.Services;
@@ -5,6 +8,16 @@ using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace BackendTests.Services;
+
+// FakeStravaService returns 0 km by default; configure kmSince to simulate real data.
+file class FakeStravaService : IStravaService
+{
+    private readonly double _kmSince;
+    public FakeStravaService(double kmSince = 0) => _kmSince = kmSince;
+    public Task<IEnumerable<StravaGear>> GetStravaGearAsync(int userId) => throw new NotImplementedException();
+    public Task<double> GetActivityKmOnGearAfterDateAsync(int userId, string stravaGearId, DateTime fromDate)
+        => Task.FromResult(_kmSince);
+}
 
 /// <summary>
 /// Tests for BikeService.
@@ -32,7 +45,7 @@ public class BikeServiceTests
         );
         await context.SaveChangesAsync();
 
-        var service = new BikeService(context);
+        var service = new BikeService(context, new FakeStravaService());
 
         // Act
         var result = await service.GetAllBikesAsync();
@@ -50,7 +63,7 @@ public class BikeServiceTests
         context.Rads.Add(bike);
         await context.SaveChangesAsync();
 
-        var service = new BikeService(context);
+        var service = new BikeService(context, new FakeStravaService());
 
         // Act
         var result = await service.GetBikeByIdAsync(bike.Id);
@@ -65,7 +78,7 @@ public class BikeServiceTests
     {
         // Arrange
         using var context = CreateInMemoryContext("AddBike");
-        var service = new BikeService(context);
+        var service = new BikeService(context, new FakeStravaService());
         var newBike = new Bike { Name = "Testrad", Kategorie = BikeCategory.Mountainbike, Kilometerstand = 0 };
 
         // Act
@@ -86,7 +99,7 @@ public class BikeServiceTests
         context.Rads.Add(bike);
         await context.SaveChangesAsync();
 
-        var service = new BikeService(context);
+        var service = new BikeService(context, new FakeStravaService());
 
         // Act
         var updated = await service.UpdateKilometerstandAsync(bike.Id, 999);
@@ -101,7 +114,7 @@ public class BikeServiceTests
     {
         // Arrange
         using var context = CreateInMemoryContext("UpdateKm_NotFound");
-        var service = new BikeService(context);
+        var service = new BikeService(context, new FakeStravaService());
 
         // Act
         var result = await service.UpdateKilometerstandAsync(id: 9999, kilometerstand: 100);
@@ -119,7 +132,7 @@ public class BikeServiceTests
         context.Rads.Add(bike);
         await context.SaveChangesAsync();
 
-        var service = new BikeService(context);
+        var service = new BikeService(context, new FakeStravaService());
         var updated = new Bike { Name = "Neues Rad", Kategorie = BikeCategory.Gravel, Kilometerstand = 500 };
 
         // Act
@@ -137,7 +150,7 @@ public class BikeServiceTests
     {
         // Arrange
         using var context = CreateInMemoryContext("UpdateBike_NotFound");
-        var service = new BikeService(context);
+        var service = new BikeService(context, new FakeStravaService());
         var updated = new Bike { Name = "Phantom", Kategorie = BikeCategory.Mountainbike, Kilometerstand = 0 };
 
         // Act
@@ -156,7 +169,7 @@ public class BikeServiceTests
         context.Rads.Add(bike);
         await context.SaveChangesAsync();
 
-        var service = new BikeService(context);
+        var service = new BikeService(context, new FakeStravaService());
 
         // Act
         var result = await service.DeleteBikeAsync(bike.Id);
@@ -171,12 +184,63 @@ public class BikeServiceTests
     {
         // Arrange
         using var context = CreateInMemoryContext("DeleteBike_NotFound");
-        var service = new BikeService(context);
+        var service = new BikeService(context, new FakeStravaService());
 
         // Act
         var result = await service.DeleteBikeAsync(id: 9999);
 
         // Assert
         Assert.False(result);
+    }
+
+    [Fact]
+    public async Task GetOdometerAtDateAsync_ReturnsNull_WhenBikeNotFound()
+    {
+        // Arrange
+        using var context = CreateInMemoryContext("OdometerAt_NotFound");
+        var service = new BikeService(context, new FakeStravaService());
+
+        // Act
+        var result = await service.GetOdometerAtDateAsync(bikeId: 9999, userId: 1, date: DateTime.UtcNow);
+
+        // Assert
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public async Task GetOdometerAtDateAsync_ReturnsCurrentKm_WhenNoStravaId()
+    {
+        // Arrange
+        using var context = CreateInMemoryContext("OdometerAt_NoStrava");
+        var bike = new Bike { Name = "Ohne Strava", Kategorie = BikeCategory.Rennrad, Kilometerstand = 5000, StravaId = null };
+        context.Rads.Add(bike);
+        await context.SaveChangesAsync();
+
+        var service = new BikeService(context, new FakeStravaService(kmSince: 0));
+
+        // Act
+        var result = await service.GetOdometerAtDateAsync(bike.Id, userId: 1, date: DateTime.UtcNow.AddMonths(-3));
+
+        // Assert
+        Assert.Equal(5000, result);
+    }
+
+    [Fact]
+    public async Task GetOdometerAtDateAsync_SubtractsKmSinceDate_WhenStravaIdSet()
+    {
+        // Arrange
+        using var context = CreateInMemoryContext("OdometerAt_WithStrava");
+        var bike = new Bike { Name = "Mit Strava", Kategorie = BikeCategory.Gravel, Kilometerstand = 3000, StravaId = "b123" };
+        context.Rads.Add(bike);
+        await context.SaveChangesAsync();
+
+        // Simulate 450.7 km recorded since the install date
+        var service = new BikeService(context, new FakeStravaService(kmSince: 450.7));
+
+        // Act
+        var result = await service.GetOdometerAtDateAsync(bike.Id, userId: 1, date: DateTime.UtcNow.AddMonths(-3));
+
+        // Assert: 3000 - round(450.7) = 3000 - 451 = 2549
+        Assert.Equal(2549, result);
     }
 }

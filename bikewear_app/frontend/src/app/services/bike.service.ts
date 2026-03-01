@@ -36,4 +36,8 @@ export class BikeService {
   deleteBike(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  getOdometerAt(bikeId: number, date: string, userId: number): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/${bikeId}/odometer-at?date=${date}&userId=${userId}`);
+  }
 }

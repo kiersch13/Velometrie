@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,10 +11,12 @@ namespace App.Services
     public class BikeService : IBikeService
     {
         private readonly AppDbContext _context;
+        private readonly IStravaService _stravaService;
 
-        public BikeService(AppDbContext context)
+        public BikeService(AppDbContext context, IStravaService stravaService)
         {
             _context = context;
+            _stravaService = stravaService;
         }
 
         public async Task<IEnumerable<Bike>> GetAllBikesAsync()
@@ -70,6 +73,18 @@ namespace App.Services
             _context.Rads.Remove(bike);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<int?> GetOdometerAtDateAsync(int bikeId, int userId, DateTime date)
+        {
+            var bike = await _context.Rads.FindAsync(bikeId);
+            if (bike == null) return null;
+
+            if (string.IsNullOrEmpty(bike.StravaId))
+                return bike.Kilometerstand;
+
+            var kmSince = await _stravaService.GetActivityKmOnGearAfterDateAsync(userId, bike.StravaId, date);
+            return bike.Kilometerstand - (int)Math.Round(kmSince);
         }
     }
 }
