@@ -34,9 +34,13 @@ export class RegisterComponent {
       error: (err) => {
         this.loading = false;
         const msg = err?.error;
-        this.error = typeof msg === 'string' && msg
-          ? msg
-          : 'Registrierung fehlgeschlagen. Bitte prüfe deine Eingaben.';
+        if (err?.status === 0) {
+          this.error = 'Server nicht erreichbar. Bitte versuche es später erneut.';
+        } else {
+          this.error = typeof msg === 'string' && msg
+            ? msg
+            : 'Registrierung fehlgeschlagen. Bitte prüfe deine Eingaben.';
+        }
       }
     });
   }
