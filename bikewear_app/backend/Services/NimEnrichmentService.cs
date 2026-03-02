@@ -168,8 +168,10 @@ namespace App.Services
             if (val is JsonValue jv)
             {
                 if (jv.TryGetValue<int>(out var i)) return i;
-                if (jv.TryGetValue<long>(out var l)) return (int)l;
-                if (jv.TryGetValue<double>(out var d)) return (int)d;
+                if (jv.TryGetValue<long>(out var l))
+                    return (l >= int.MinValue && l <= int.MaxValue) ? (int)l : null;
+                if (jv.TryGetValue<double>(out var d))
+                    return (d >= int.MinValue && d <= int.MaxValue) ? (int)Math.Round(d) : null;
             }
             return null;
         }

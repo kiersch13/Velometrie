@@ -30,15 +30,7 @@ export class TeilBibliothekComponent implements OnInit {
     WearPartCategory.Sonstiges
   ];
 
-  // Add form
-  showAddForm = false;
-  addLoading = false;
-  addError: string | null = null;
-  enriching = false;
-  enrichError: string | null = null;
-  addSuccess = false;
-
-  newTeil: Partial<TeilVorlage> = {
+  private readonly newTeilDefault: Partial<TeilVorlage> = {
     id: 0,
     name: '',
     hersteller: '',
@@ -48,6 +40,18 @@ export class TeilBibliothekComponent implements OnInit {
     fahrradKategorien: '',
     beschreibung: null
   };
+
+  // Add form
+  showAddForm = false;
+  addLoading = false;
+  addError: string | null = null;
+  enriching = false;
+  enrichError: string | null = null;
+  addSuccess = false;
+
+  newTeil: Partial<TeilVorlage> = { ...this.newTeilDefault };
+
+  private readonly SUCCESS_MESSAGE_DURATION_MS = 1200;
 
   constructor(private teilVorlageService: TeilVorlageService) {}
 
@@ -114,7 +118,7 @@ export class TeilBibliothekComponent implements OnInit {
   }
 
   resetAddForm(): void {
-    this.newTeil = { id: 0, name: '', hersteller: '', kategorie: WearPartCategory.Kette, gruppe: null, geschwindigkeiten: null, fahrradKategorien: '', beschreibung: null };
+    this.newTeil = { ...this.newTeilDefault };
     this.addError = null;
     this.enrichError = null;
     this.addSuccess = false;
@@ -154,7 +158,7 @@ export class TeilBibliothekComponent implements OnInit {
           this.showAddForm = false;
           this.resetAddForm();
           this.loadTeile();
-        }, 1200);
+        }, this.SUCCESS_MESSAGE_DURATION_MS);
       },
       error: () => {
         this.addError = 'Teil konnte nicht gespeichert werden.';
