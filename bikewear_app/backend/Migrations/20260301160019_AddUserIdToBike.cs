@@ -10,6 +10,13 @@ namespace Backend.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // Remove any existing bikes (and their wear parts) that have no valid owner.
+            // UserId would default to 0, which has no matching Benutzer row, causing an
+            // FK constraint failure. Delete Verschleissteile first because the raw SQL
+            // runs outside the EF connection's PRAGMA foreign_keys context.
+            migrationBuilder.Sql("DELETE FROM Verschleissteile WHERE 1=1;");
+            migrationBuilder.Sql("DELETE FROM Rads WHERE 1=1;");
+
             migrationBuilder.AddColumn<int>(
                 name: "UserId",
                 table: "Rads",
