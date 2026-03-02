@@ -18,12 +18,29 @@ builder.Services.AddMemoryCache();
 //   1. ConnectionStrings:DefaultConnection  (appsettings.json or env override ConnectionStrings__DefaultConnection)
 //   2. DATABASE_PRIVATE_URL                 (Railway internal network URL, preferred in production)
 //   3. DATABASE_URL                         (Railway public URL, set automatically by the PostgreSQL plugin)
-var connectionString =
+var rawConnectionString =
     builder.Configuration.GetConnectionString("DefaultConnection")
     ?? builder.Configuration["DATABASE_PRIVATE_URL"]
     ?? builder.Configuration["DATABASE_URL"]
     ?? throw new InvalidOperationException(
         "No PostgreSQL connection string found. Set ConnectionStrings__DefaultConnection, DATABASE_PRIVATE_URL, or DATABASE_URL.");
+
+// Railway provides URLs in postgresql:// URI format. Npgsql's connection string
+// builder only accepts key=value format, so we convert URIs here.
+string connectionString;
+if (rawConnectionString.StartsWith("postgresql://") || rawConnectionString.StartsWith("postgres://"))
+{
+    var uri = new Uri(rawConnectionString);
+    var userInfo = uri.UserInfo.Split(':');
+    var username = userInfo.Length > 0 ? Uri.UnescapeDataString(userInfo[0]) : "";
+    var password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : "";
+    var database = uri.AbsolutePath.TrimStart('/');
+    connectionString = $"Host={uri.Host};Port={(uri.Port > 0 ? uri.Port : 5432)};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+}
+else
+{
+    connectionString = rawConnectionString;
+}
 
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseNpgsql(connectionString));
