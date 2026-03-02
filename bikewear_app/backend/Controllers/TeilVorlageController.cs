@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using App.Filters;
 using App.Models;
 using App.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -58,6 +59,7 @@ namespace App.Controllers
 
         /// <summary>Reichert eine (unvollständige) Teilvorlage per KI an und gibt das Ergebnis zurück, ohne es zu speichern.</summary>
         [HttpPost("enrich")]
+        [SkipModelValidation]
         public async Task<ActionResult<TeilVorlage>> Enrich(TeilVorlage teilVorlage)
         {
             var enriched = await _nimEnrichmentService.EnrichAsync(teilVorlage);
