@@ -9,7 +9,8 @@ namespace App.Services
         Task<IEnumerable<TeilVorlage>> GetAllAsync(
             WearPartCategory? kategorie = null,
             string? hersteller = null,
-            string? fahrradKategorie = null);
+            string? fahrradKategorie = null,
+            string? suche = null);
 
         Task<TeilVorlage?> GetByIdAsync(int id);
 
