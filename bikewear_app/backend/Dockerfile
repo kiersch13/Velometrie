@@ -24,15 +24,6 @@ WORKDIR /app
 # Copy only the published output from the build stage
 COPY --from=build /app/publish .
 
-# Create the data directory where the SQLite database file will live.
-# Without this, the app crashes on first start because MigrateAsync()
-# cannot create the .db file in a non-existent directory.
-RUN mkdir -p /app/data
-
-# The SQLite database file will live in /app/data
-# (mount this directory as a volume in production so data persists)
-ENV ConnectionStrings__DefaultConnection="Data Source=/app/data/bikewear.db"
-
 # Railway auto-injects a $PORT environment variable.
 # We use shell form of CMD so $PORT is expanded at container startup.
 # Falls back to 8080 if PORT is not set (e.g. local docker-compose).

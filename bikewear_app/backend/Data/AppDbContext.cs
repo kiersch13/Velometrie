@@ -24,11 +24,10 @@ namespace App.Data
                 .HasForeignKey(w => w.RadId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Unique index on Email (filtered to non-null rows)
+            // Unique index on Email (nullable; multiple NULLs are allowed in PostgreSQL UNIQUE indexes)
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
-                .IsUnique()
-                .HasFilter("[Email] IS NOT NULL");
+                .IsUnique();
 
             // Each bike belongs to a user; deleting a user cascades to their bikes
             modelBuilder.Entity<Bike>()
