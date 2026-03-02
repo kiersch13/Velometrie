@@ -95,11 +95,6 @@ using (var scope = app.Services.CreateScope())
 // Configure the HTTP request pipeline.
 // Trust X-Forwarded-Proto from Railway's TLS-terminating proxy.
 // Without this, UseHttpsRedirection sees HTTP and issues a redirect loop.
-app.UseForwardedHeaders(new ForwardedHeadersOptions
-{
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-});
-
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -117,7 +112,8 @@ var forwardedHeadersOptions = new ForwardedHeadersOptions
 forwardedHeadersOptions.KnownIPNetworks.Clear();
 forwardedHeadersOptions.KnownProxies.Clear();
 app.UseForwardedHeaders(forwardedHeadersOptions);
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+    app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
