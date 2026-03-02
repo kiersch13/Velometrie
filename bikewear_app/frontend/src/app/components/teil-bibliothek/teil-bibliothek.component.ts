@@ -30,6 +30,15 @@ export class TeilBibliothekComponent implements OnInit {
     WearPartCategory.Sonstiges
   ];
 
+  // ── Add-part form ──────────────────────────────────────────────────────────
+  showAddForm   = false;
+  enriching     = false;
+  saving        = false;
+  formError: string | null = null;
+  saveSuccess   = false;
+
+  form: Partial<TeilVorlage> = {};
+
   constructor(private teilVorlageService: TeilVorlageService) {}
 
   ngOnInit(): void {
@@ -87,5 +96,71 @@ export class TeilBibliothekComponent implements OnInit {
 
   get hasActiveFilters(): boolean {
     return !!(this.selectedFahrradKategorie || this.selectedKategorie || this.selectedHersteller);
+  }
+
+  // ── Add-part form handlers ─────────────────────────────────────────────────
+
+  openAddForm(): void {
+    this.form        = { fahrradKategorien: '', kategorie: WearPartCategory.Kette };
+    this.formError   = null;
+    this.saveSuccess = false;
+    this.showAddForm = true;
+  }
+
+  closeAddForm(): void {
+    this.showAddForm = false;
+  }
+
+  enrichForm(): void {
+    if (!this.form.name?.trim()) {
+      this.formError = 'Bitte zuerst einen Teilenamen eingeben.';
+      return;
+    }
+    this.formError  = null;
+    this.enriching  = true;
+
+    this.teilVorlageService.enrich(this.form).subscribe({
+      next: (enriched) => {
+        this.form      = { ...enriched, id: 0 };
+        this.enriching = false;
+      },
+      error: () => {
+        this.formError = 'KI-Anreicherung fehlgeschlagen. Bitte Felder manuell ausfüllen.';
+        this.enriching = false;
+      }
+    });
+  }
+
+  saveForm(): void {
+    if (!this.form.name?.trim() || !this.form.hersteller?.trim() || !this.form.fahrradKategorien?.trim()) {
+      this.formError = 'Name, Hersteller und Fahrradkategorien sind Pflichtfelder.';
+      return;
+    }
+    this.formError = null;
+    this.saving    = true;
+
+    const teil: TeilVorlage = {
+      id:                 0,
+      name:               this.form.name!,
+      hersteller:         this.form.hersteller!,
+      kategorie:          this.form.kategorie ?? WearPartCategory.Sonstiges,
+      gruppe:             this.form.gruppe    ?? null,
+      geschwindigkeiten:  this.form.geschwindigkeiten ?? null,
+      fahrradKategorien:  this.form.fahrradKategorien!,
+      beschreibung:       this.form.beschreibung ?? null
+    };
+
+    this.teilVorlageService.add(teil).subscribe({
+      next: () => {
+        this.saving      = false;
+        this.saveSuccess = true;
+        this.showAddForm = false;
+        this.loadTeile();
+      },
+      error: () => {
+        this.formError = 'Speichern fehlgeschlagen. Bitte erneut versuchen.';
+        this.saving    = false;
+      }
+    });
   }
 }

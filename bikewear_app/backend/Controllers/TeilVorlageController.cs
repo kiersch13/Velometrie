@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using App.Models;
 using App.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.Controllers
@@ -11,10 +12,12 @@ namespace App.Controllers
     public class TeilVorlageController : ControllerBase
     {
         private readonly ITeilVorlageService _service;
+        private readonly INimEnrichmentService _enrichment;
 
-        public TeilVorlageController(ITeilVorlageService service)
+        public TeilVorlageController(ITeilVorlageService service, INimEnrichmentService enrichment)
         {
-            _service = service;
+            _service    = service;
+            _enrichment = enrichment;
         }
 
         /// <summary>
@@ -54,6 +57,7 @@ namespace App.Controllers
         }
 
         /// <summary>Fügt eine neue Teilvorlage hinzu.</summary>
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<TeilVorlage>> Add(TeilVorlage teilVorlage)
         {
@@ -61,7 +65,21 @@ namespace App.Controllers
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
+        /// <summary>
+        /// Reichert eine Teil-Vorlage mit KI-generierten Daten via Nvidia NIM an.
+        /// Das Teil wird NICHT gespeichert; der Client erhält das angereicherte Objekt
+        /// zurück und kann es danach über POST /api/teilvorlage speichern.
+        /// </summary>
+        [Authorize]
+        [HttpPost("enrich")]
+        public async Task<ActionResult<TeilVorlage>> Enrich(TeilVorlage teilVorlage)
+        {
+            var enriched = await _enrichment.EnrichAsync(teilVorlage);
+            return Ok(enriched);
+        }
+
         /// <summary>Aktualisiert eine vorhandene Teilvorlage.</summary>
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult<TeilVorlage>> Update(int id, TeilVorlage teilVorlage)
         {
@@ -71,6 +89,7 @@ namespace App.Controllers
         }
 
         /// <summary>Löscht eine Teilvorlage.</summary>
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

@@ -150,6 +150,7 @@ colors: {
 - Full CRUD for `Bike` (Create, Read, UpdateKilometerstand, UpdateBike, Delete) — backend + frontend + UI
 - Full CRUD for `WearPart` (Create, Read, Update, Delete) — backend + frontend + UI (inline edit form in bike-detail)
 - Frontend: Login (`/login`) and Register (`/register`) pages; `CredentialsInterceptor` for automatic `withCredentials`; session loaded on app startup via `AuthService.loadCurrentUser()`
+- AI-powered part enrichment via Nvidia NIM (`POST /api/teilvorlage/enrich`) — sends a partial `TeilVorlage` to the NIM API and fills in missing fields (Gruppe, Geschwindigkeiten, FahrradKategorien, Beschreibung). Model and API key are configurable via `Nim:ApiKey`, `Nim:BaseUrl`, `Nim:Model` in `appsettings.json`. If the key is absent, enrichment is silently skipped. The Teilebibliothek UI includes an "Add Part" modal with a "Mit KI anreichern" button.
 
 **Planned (not yet implemented):**
 - Angular route guards (auth is done; guards just haven't been added yet)

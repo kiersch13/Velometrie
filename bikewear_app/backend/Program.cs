@@ -18,6 +18,7 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 builder.Services.AddScoped<IBikeService, BikeService>();
 builder.Services.AddScoped<IWearPartService, WearPartService>();
 builder.Services.AddScoped<ITeilVorlageService, TeilVorlageService>();
+builder.Services.AddScoped<INimEnrichmentService, NimEnrichmentService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IStravaService, StravaService>();
 builder.Services.AddScoped<IStravaWebhookService, StravaWebhookService>();

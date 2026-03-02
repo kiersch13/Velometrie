@@ -44,6 +44,10 @@ export class TeilVorlageService {
     return this.http.post<TeilVorlage>(this.apiUrl, teil);
   }
 
+  enrich(teil: Partial<TeilVorlage>): Observable<TeilVorlage> {
+    return this.http.post<TeilVorlage>(`${this.apiUrl}/enrich`, teil);
+  }
+
   update(id: number, teil: TeilVorlage): Observable<TeilVorlage> {
     return this.http.put<TeilVorlage>(`${this.apiUrl}/${id}`, teil);
   }

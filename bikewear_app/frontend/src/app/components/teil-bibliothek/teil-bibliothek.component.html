@@ -4,6 +4,10 @@
     <h2 class="page-title">Teilebibliothek</h2>
     <p class="text-sm text-gray-400 mt-0.5">Verschleißteile nach Kategorie und Hersteller durchsuchen</p>
   </div>
+  <button class="btn-primary flex items-center gap-2 text-sm" (click)="openAddForm()">
+    <lucide-icon name="plus" [size]="16" aria-hidden="true"></lucide-icon>
+    Teil hinzufügen
+  </button>
 </div>
 
 <!-- Filter bar -->
@@ -121,5 +125,122 @@
        class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-3 flex-1">
       {{ teil.beschreibung }}
     </p>
+  </div>
+</div>
+
+<!-- ── Add-part modal overlay ────────────────────────────────────────────── -->
+<div *ngIf="showAddForm"
+     class="fixed inset-0 z-50 flex items-start justify-center bg-black/50 pt-16 px-4 pb-8 overflow-y-auto"
+     (click)="closeAddForm()">
+  <div class="card w-full max-w-lg p-6 flex flex-col gap-5"
+       (click)="$event.stopPropagation()">
+
+    <!-- Modal header -->
+    <div class="flex items-center justify-between">
+      <h3 class="text-base font-semibold text-primary dark:text-text-dark">Neues Teil hinzufügen</h3>
+      <button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+              (click)="closeAddForm()" aria-label="Schließen">
+        <lucide-icon name="x-circle" [size]="20" aria-hidden="true"></lucide-icon>
+      </button>
+    </div>
+
+    <!-- AI enrichment hint -->
+    <div class="flex items-start gap-2 p-3 bg-accent/10 border border-accent/20 rounded-xl text-xs text-accent">
+      <lucide-icon name="sparkles" [size]="14" class="mt-0.5 shrink-0" aria-hidden="true"></lucide-icon>
+      <span>Gib mindestens <strong>Name</strong>, <strong>Hersteller</strong> und <strong>Kategorie</strong> ein und klicke
+        <em>Mit KI anreichern</em> – fehlende Felder werden automatisch ausgefüllt.</span>
+    </div>
+
+    <!-- Form fields -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+      <!-- Name -->
+      <div class="sm:col-span-2">
+        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Name *</label>
+        <input type="text" class="form-input w-full text-sm"
+               placeholder="z. B. Shimano Ultegra 12s Kette"
+               [(ngModel)]="form.name">
+      </div>
+
+      <!-- Hersteller -->
+      <div>
+        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Hersteller *</label>
+        <input type="text" class="form-input w-full text-sm"
+               placeholder="z. B. Shimano"
+               [(ngModel)]="form.hersteller">
+      </div>
+
+      <!-- Kategorie -->
+      <div>
+        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Kategorie *</label>
+        <select class="form-input w-full text-sm" [(ngModel)]="form.kategorie">
+          <option *ngFor="let k of kategorien" [value]="k">{{ k }}</option>
+        </select>
+      </div>
+
+      <!-- AI enrich button -->
+      <div class="sm:col-span-2 flex">
+        <button class="btn-secondary flex items-center gap-2 text-sm w-full justify-center"
+                (click)="enrichForm()"
+                [disabled]="enriching">
+          <lucide-icon *ngIf="!enriching" name="sparkles" [size]="14" aria-hidden="true"></lucide-icon>
+          <lucide-icon *ngIf="enriching"  name="loader-2" [size]="14" class="animate-spin" aria-hidden="true"></lucide-icon>
+          {{ enriching ? 'Anreichern läuft…' : 'Mit KI anreichern' }}
+        </button>
+      </div>
+
+      <!-- Gruppe -->
+      <div>
+        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Gruppe</label>
+        <input type="text" class="form-input w-full text-sm"
+               placeholder="z. B. Ultegra, Eagle"
+               [(ngModel)]="form.gruppe">
+      </div>
+
+      <!-- Geschwindigkeiten -->
+      <div>
+        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Gänge</label>
+        <input type="number" min="1" max="13" class="form-input w-full text-sm"
+               placeholder="z. B. 12"
+               [(ngModel)]="form.geschwindigkeiten">
+      </div>
+
+      <!-- FahrradKategorien -->
+      <div class="sm:col-span-2">
+        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+          Kompatible Fahrradkategorien * <span class="font-normal">(kommagetrennt)</span>
+        </label>
+        <input type="text" class="form-input w-full text-sm"
+               placeholder="z. B. Rennrad,Gravel"
+               [(ngModel)]="form.fahrradKategorien">
+      </div>
+
+      <!-- Beschreibung -->
+      <div class="sm:col-span-2">
+        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Beschreibung</label>
+        <textarea rows="3" class="form-input w-full text-sm resize-none"
+                  placeholder="Kurze Produktbeschreibung…"
+                  [(ngModel)]="form.beschreibung"></textarea>
+      </div>
+    </div>
+
+    <!-- Form error -->
+    <div *ngIf="formError"
+         class="flex items-center gap-2 p-3 bg-error/10 border border-error/20 rounded-xl text-error text-xs">
+      <lucide-icon name="alert-circle" [size]="14" aria-hidden="true"></lucide-icon>
+      {{ formError }}
+    </div>
+
+    <!-- Actions -->
+    <div class="flex gap-3 justify-end pt-1">
+      <button class="btn-secondary text-sm" (click)="closeAddForm()">Abbrechen</button>
+      <button class="btn-primary flex items-center gap-2 text-sm"
+              (click)="saveForm()"
+              [disabled]="saving">
+        <lucide-icon *ngIf="saving"  name="loader-2" [size]="14" class="animate-spin" aria-hidden="true"></lucide-icon>
+        <lucide-icon *ngIf="!saving" name="check"    [size]="14" aria-hidden="true"></lucide-icon>
+        {{ saving ? 'Speichern…' : 'Speichern' }}
+      </button>
+    </div>
   </div>
 </div>
