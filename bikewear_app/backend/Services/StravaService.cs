@@ -32,7 +32,8 @@ namespace App.Services
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync();
-            var root = JsonDocument.Parse(json).RootElement;
+            using var doc = JsonDocument.Parse(json);
+            var root = doc.RootElement;
 
             if (!root.TryGetProperty("bikes", out var bikesElement))
                 return Enumerable.Empty<StravaGear>();
@@ -78,7 +79,8 @@ namespace App.Services
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
-                var activities = JsonDocument.Parse(json).RootElement;
+                using var actDoc = JsonDocument.Parse(json);
+                var activities = actDoc.RootElement;
 
                 if (activities.GetArrayLength() == 0) break;
 

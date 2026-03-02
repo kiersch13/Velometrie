@@ -53,4 +53,8 @@ export class TeilVorlageService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  enrich(teil: Partial<TeilVorlage>): Observable<TeilVorlage> {
+    return this.http.post<TeilVorlage>(`${this.apiUrl}/enrich`, teil);
+  }
 }

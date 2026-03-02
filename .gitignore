@@ -54,5 +54,9 @@ Thumbs.db
 *.swp
 *.swo
 
+# ── Secrets (never commit real credentials) ──────────────────────────────────
+appsettings.Development.json
+appsettings.*.Local.json
+
 # ── Local notes (not tracked in git) ──────────────────────────────────────────
 _local/
