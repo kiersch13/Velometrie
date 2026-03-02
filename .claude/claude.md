@@ -155,7 +155,7 @@ colors: {
 - Angular route guards (auth is done; guards just haven't been added yet)
 - Google / Apple social login (backend cookie auth is already in place — add `Microsoft.AspNetCore.Authentication.Google` etc.)
 - Garmin Connect integration (parallel to Strava connect pattern)
-- **Swap SQLite for PostgreSQL when hosting** — ✅ Done. Provider swapped to `Npgsql.EntityFrameworkCore.PostgreSQL`. Connection string is `Host=…;Port=5432;Database=bikewear;Username=…;Password=…`. Inject via `ConnectionStrings__DefaultConnection` env var in production (Railway).
+- **Swap SQLite for PostgreSQL when hosting** — ✅ Done. Provider swapped to `Npgsql.EntityFrameworkCore.PostgreSQL`. Connection string priority: (1) `ConnectionStrings__DefaultConnection` env var / appsettings, (2) `DATABASE_PRIVATE_URL` (Railway internal), (3) `DATABASE_URL` (Railway public, set automatically by the PostgreSQL plugin). Supports both Npgsql format (`Host=…;Port=5432;Database=bikewear;Username=…;Password=…`) and the `postgresql://` URI format.
 
 **Hard constraints for agents:**
 - Do **not** change the database provider (already PostgreSQL).
