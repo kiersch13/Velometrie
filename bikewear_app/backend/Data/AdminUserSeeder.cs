@@ -34,5 +34,22 @@ namespace App.Data
 
             await db.SaveChangesAsync();
         }
+
+        /// <summary>
+        /// Removes ghost Benutzer rows with no Email — left over from before
+        /// email/password auth was introduced. Safe to run on every startup.
+        /// </summary>
+        public static async Task CleanupOrphanedUsersAsync(AppDbContext db)
+        {
+            var orphans = await db.Benutzer
+                .Where(u => u.Email == null)
+                .ToListAsync();
+
+            if (orphans.Count == 0)
+                return;
+
+            db.Benutzer.RemoveRange(orphans);
+            await db.SaveChangesAsync();
+        }
     }
 }

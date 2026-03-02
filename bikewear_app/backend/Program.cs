@@ -90,6 +90,7 @@ using (var scope = app.Services.CreateScope())
     await db.Database.MigrateAsync();
     await App.Data.TeilvorlagenSeeder.SeedAsync(db);
     await App.Data.AdminUserSeeder.SeedAsync(db, cfg);
+    await App.Data.AdminUserSeeder.CleanupOrphanedUsersAsync(db);
 }
 
 // Configure the HTTP request pipeline.
