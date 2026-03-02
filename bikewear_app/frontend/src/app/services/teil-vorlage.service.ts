@@ -18,11 +18,13 @@ export class TeilVorlageService {
     kategorie?: WearPartCategory;
     hersteller?: string;
     fahrradKategorie?: string;
+    suche?: string;
   }): Observable<TeilVorlage[]> {
     let params = new HttpParams();
     if (filters?.kategorie)      params = params.set('kategorie', filters.kategorie);
     if (filters?.hersteller)     params = params.set('hersteller', filters.hersteller);
     if (filters?.fahrradKategorie) params = params.set('fahrradKategorie', filters.fahrradKategorie);
+    if (filters?.suche)          params = params.set('suche', filters.suche);
     return this.http.get<TeilVorlage[]>(this.apiUrl, { params });
   }
 

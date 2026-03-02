@@ -25,9 +25,10 @@ namespace App.Controllers
         public async Task<ActionResult<IEnumerable<TeilVorlage>>> GetAll(
             [FromQuery] WearPartCategory? kategorie,
             [FromQuery] string? hersteller,
-            [FromQuery] string? fahrradKategorie)
+            [FromQuery] string? fahrradKategorie,
+            [FromQuery] string? suche)
         {
-            return Ok(await _service.GetAllAsync(kategorie, hersteller, fahrradKategorie));
+            return Ok(await _service.GetAllAsync(kategorie, hersteller, fahrradKategorie, suche));
         }
 
         /// <summary>
