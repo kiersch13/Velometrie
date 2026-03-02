@@ -8,7 +8,7 @@ import {
   Bike, Settings, Plus, ArrowLeft, Pencil, Check,
   Inbox, AlertCircle, Loader2, CheckCircle2, XCircle,
   Unplug, Cable, Tag, Gauge, ArrowRight, Zap, RefreshCw, Trash2,
-  Compass, Mountain, LogIn, UserPlus, LogOut, Sparkles, X
+  Compass, Mountain, LogIn, UserPlus, LogOut, Sparkles, Search, X
 } from 'lucide-angular';
 
 import { AppComponent } from './app.component';
@@ -48,7 +48,7 @@ import { CredentialsInterceptor } from './interceptors/credentials.interceptor';
       Bike, Settings, Plus, ArrowLeft, Pencil, Check,
       Inbox, AlertCircle, Loader2, CheckCircle2, XCircle,
       Unplug, Cable, Tag, Gauge, ArrowRight, Zap, RefreshCw, Trash2,
-      Compass, Mountain, LogIn, UserPlus, LogOut, Sparkles, X
+      Compass, Mountain, LogIn, UserPlus, LogOut, Sparkles, Search, X
     }),
   ],
   providers: [

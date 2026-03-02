@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, ElementRef } from '@angular/core';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { TeilVorlage } from '../../models/teil-vorlage';
 import { WearPartCategory } from '../../models/wear-part-category';
 import { TeilVorlageService } from '../../services/teil-vorlage.service';
@@ -20,6 +22,13 @@ export class TeilBibliothekComponent implements OnInit {
   selectedFahrradKategorie = '';
   selectedKategorie = '';
   selectedHersteller = '';
+  suchbegriff = '';
+
+  // Autocomplete
+  autocompleteItems: string[] = [];
+  showAutocomplete = false;
+  private allNamen: string[] = [];
+  private searchInput$ = new Subject<string>();
 
   readonly fahrradKategorien = ['Rennrad', 'Gravel', 'Mountainbike'];
   readonly kategorien: WearPartCategory[] = [
@@ -53,10 +62,57 @@ export class TeilBibliothekComponent implements OnInit {
 
   private readonly SUCCESS_MESSAGE_DURATION_MS = 1200;
 
-  constructor(private teilVorlageService: TeilVorlageService) {}
+  constructor(private teilVorlageService: TeilVorlageService, private elRef: ElementRef) {}
 
   ngOnInit(): void {
     this.loadTeile();
+    this.loadAllNamen();
+
+    this.searchInput$.pipe(
+      debounceTime(200),
+      distinctUntilChanged()
+    ).subscribe(term => {
+      this.updateAutocomplete(term);
+      this.loadTeile();
+    });
+  }
+
+  private loadAllNamen(): void {
+    this.teilVorlageService.getAll().subscribe({
+      next: (data) => {
+        this.allNamen = [...new Set(data.map(t => t.name))].sort();
+      }
+    });
+  }
+
+  private updateAutocomplete(term: string): void {
+    if (!term.trim()) {
+      this.autocompleteItems = [];
+      this.showAutocomplete = false;
+      return;
+    }
+    const lower = term.toLowerCase();
+    this.autocompleteItems = this.allNamen
+      .filter(n => n.toLowerCase().includes(lower))
+      .slice(0, 8);
+    this.showAutocomplete = this.autocompleteItems.length > 0;
+  }
+
+  onSuchbegriffChange(): void {
+    this.searchInput$.next(this.suchbegriff);
+  }
+
+  selectAutocomplete(name: string): void {
+    this.suchbegriff = name;
+    this.showAutocomplete = false;
+    this.loadTeile();
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.elRef.nativeElement.contains(event.target)) {
+      this.showAutocomplete = false;
+    }
   }
 
   loadTeile(): void {
@@ -66,7 +122,8 @@ export class TeilBibliothekComponent implements OnInit {
     const filters = {
       kategorie:        this.selectedKategorie      as WearPartCategory || undefined,
       hersteller:       this.selectedHersteller      || undefined,
-      fahrradKategorie: this.selectedFahrradKategorie || undefined
+      fahrradKategorie: this.selectedFahrradKategorie || undefined,
+      suche:            this.suchbegriff              || undefined
     };
 
     this.teilVorlageService.getAll(filters).subscribe({
@@ -100,6 +157,8 @@ export class TeilBibliothekComponent implements OnInit {
     this.selectedFahrradKategorie = '';
     this.selectedKategorie = '';
     this.selectedHersteller = '';
+    this.suchbegriff = '';
+    this.showAutocomplete = false;
     this.loadTeile();
   }
 
@@ -109,7 +168,7 @@ export class TeilBibliothekComponent implements OnInit {
   }
 
   get hasActiveFilters(): boolean {
-    return !!(this.selectedFahrradKategorie || this.selectedKategorie || this.selectedHersteller);
+    return !!(this.selectedFahrradKategorie || this.selectedKategorie || this.selectedHersteller || this.suchbegriff);
   }
 
   toggleAddForm(): void {

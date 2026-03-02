@@ -19,7 +19,8 @@ namespace App.Services
         public async Task<IEnumerable<TeilVorlage>> GetAllAsync(
             WearPartCategory? kategorie = null,
             string? hersteller = null,
-            string? fahrradKategorie = null)
+            string? fahrradKategorie = null,
+            string? suche = null)
         {
             var query = _context.Teilvorlagen.AsQueryable();
 
@@ -31,6 +32,9 @@ namespace App.Services
 
             if (!string.IsNullOrWhiteSpace(fahrradKategorie))
                 query = query.Where(t => t.FahrradKategorien.Contains(fahrradKategorie));
+
+            if (!string.IsNullOrWhiteSpace(suche))
+                query = query.Where(t => (t.Name != null && t.Name.Contains(suche)) || (t.Hersteller != null && t.Hersteller.Contains(suche)));
 
             return await query.OrderBy(t => t.Hersteller).ThenBy(t => t.Name).ToListAsync();
         }

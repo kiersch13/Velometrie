@@ -13,8 +13,20 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddHttpClient();
 builder.Services.AddMemoryCache();
+// Resolve the PostgreSQL connection string.
+// Priority (highest first):
+//   1. ConnectionStrings:DefaultConnection  (appsettings.json or env override ConnectionStrings__DefaultConnection)
+//   2. DATABASE_PRIVATE_URL                 (Railway internal network URL, preferred in production)
+//   3. DATABASE_URL                         (Railway public URL, set automatically by the PostgreSQL plugin)
+var connectionString =
+    builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? builder.Configuration["DATABASE_PRIVATE_URL"]
+    ?? builder.Configuration["DATABASE_URL"]
+    ?? throw new InvalidOperationException(
+        "No PostgreSQL connection string found. Set ConnectionStrings__DefaultConnection, DATABASE_PRIVATE_URL, or DATABASE_URL.");
+
 builder.Services.AddDbContext<AppDbContext>(opt =>
-    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    opt.UseNpgsql(connectionString));
 builder.Services.AddScoped<IBikeService, BikeService>();
 builder.Services.AddScoped<IWearPartService, WearPartService>();
 builder.Services.AddScoped<ITeilVorlageService, TeilVorlageService>();

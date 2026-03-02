@@ -17,7 +17,7 @@ You generate production-ready C# code for the bikewear app backend. Before writi
 |---|---|
 | Language / Runtime | C# 13 / .NET 10 |
 | Web framework | ASP.NET Core 10 Minimal Hosting (`Program.cs`) |
-| ORM | EF Core 10 with SQLite (`bikewear.db`) |
+| ORM | EF Core 10 with PostgreSQL (`Npgsql.EntityFrameworkCore.PostgreSQL`) |
 | Serialisation | `System.Text.Json` + `JsonStringEnumConverter` (registered globally in `Program.cs`) |
 | DI lifetime | `Scoped` for all services |
 | Testing | xUnit + `Microsoft.EntityFrameworkCore.InMemory` |
