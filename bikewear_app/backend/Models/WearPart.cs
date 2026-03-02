@@ -19,7 +19,7 @@ namespace App.Models
         [Required]
         public int RadId { get; set; }
         [Required]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public WearPartCategory Kategorie { get; set; }
         public int EinbauKilometerstand { get; set; }
         public int? AusbauKilometerstand { get; set; }

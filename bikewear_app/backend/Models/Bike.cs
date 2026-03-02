@@ -15,7 +15,7 @@ namespace App.Models
         [Key]
         public int Id { get; set; }
         [Required]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public BikeCategory Kategorie { get; set; }
         public int Kilometerstand { get; set; }
         public string? StravaId { get; set; }
