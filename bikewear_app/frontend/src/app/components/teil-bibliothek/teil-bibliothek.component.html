@@ -4,6 +4,104 @@
     <h2 class="page-title">Teilebibliothek</h2>
     <p class="text-sm text-gray-400 mt-0.5">Verschleißteile nach Kategorie und Hersteller durchsuchen</p>
   </div>
+  <button class="btn-primary flex items-center gap-2" (click)="toggleAddForm()">
+    <lucide-icon [name]="showAddForm ? 'x' : 'plus'" [size]="16" aria-hidden="true"></lucide-icon>
+    {{ showAddForm ? 'Abbrechen' : 'Teil hinzufügen' }}
+  </button>
+</div>
+
+<!-- Add form -->
+<div *ngIf="showAddForm" class="card p-5 mb-6">
+  <h3 class="text-sm font-semibold text-primary dark:text-text-dark mb-4">Neues Teil hinzufügen</h3>
+
+  <!-- AI enrich hint + button -->
+  <div class="flex items-center gap-3 mb-4 p-3 bg-accent/5 border border-accent/20 rounded-lg">
+    <lucide-icon name="sparkles" [size]="16" class="text-accent shrink-0" aria-hidden="true"></lucide-icon>
+    <p class="text-xs text-gray-500 dark:text-gray-400 flex-1">Gib einen Teilenamen ein und lass die KI die restlichen Felder automatisch ausfüllen.</p>
+    <button
+      class="btn-secondary text-xs flex items-center gap-1.5 shrink-0"
+      [disabled]="enriching"
+      (click)="enrichTeil()">
+      <lucide-icon *ngIf="!enriching" name="sparkles" [size]="13" aria-hidden="true"></lucide-icon>
+      <lucide-icon *ngIf="enriching"  name="loader-2" [size]="13" class="animate-spin" aria-hidden="true"></lucide-icon>
+      {{ enriching ? 'Wird angereichert...' : 'KI-Anreicherung' }}
+    </button>
+  </div>
+
+  <!-- Enrich error -->
+  <div *ngIf="enrichError" class="flex items-center gap-2 mb-3 p-3 bg-warning/10 border border-warning/20 rounded-lg text-warning text-xs">
+    <lucide-icon name="alert-circle" [size]="14" aria-hidden="true"></lucide-icon>
+    {{ enrichError }}
+  </div>
+
+  <!-- Form fields -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <!-- Name -->
+    <div>
+      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Name <span class="text-error">*</span></label>
+      <input type="text" class="form-input w-full text-sm" placeholder="z. B. Shimano Ultegra 12s Kette"
+             [(ngModel)]="newTeil.name" />
+    </div>
+    <!-- Hersteller -->
+    <div>
+      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Hersteller <span class="text-error">*</span></label>
+      <input type="text" class="form-input w-full text-sm" placeholder="z. B. Shimano"
+             [(ngModel)]="newTeil.hersteller" />
+    </div>
+    <!-- Kategorie -->
+    <div>
+      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Kategorie</label>
+      <select class="form-input w-full text-sm" [(ngModel)]="newTeil.kategorie">
+        <option *ngFor="let k of kategorien" [value]="k">{{ k }}</option>
+      </select>
+    </div>
+    <!-- Gruppe -->
+    <div>
+      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Gruppe</label>
+      <input type="text" class="form-input w-full text-sm" placeholder="z. B. Ultegra, GRX, Eagle"
+             [ngModel]="newTeil.gruppe" (ngModelChange)="newTeil.gruppe = $event || null" />
+    </div>
+    <!-- Geschwindigkeiten -->
+    <div>
+      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Geschwindigkeiten</label>
+      <input type="number" class="form-input w-full text-sm" placeholder="z. B. 11, 12"
+             [ngModel]="newTeil.geschwindigkeiten" (ngModelChange)="newTeil.geschwindigkeiten = $event ? +$event : null" />
+    </div>
+    <!-- FahrradKategorien -->
+    <div>
+      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Fahrradkategorien <span class="text-error">*</span></label>
+      <input type="text" class="form-input w-full text-sm" placeholder="z. B. Rennrad,Gravel"
+             [(ngModel)]="newTeil.fahrradKategorien" />
+    </div>
+    <!-- Beschreibung (full width) -->
+    <div class="sm:col-span-2">
+      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Beschreibung</label>
+      <textarea rows="2" class="form-input w-full text-sm" placeholder="Kurze Produktbeschreibung auf Deutsch"
+                [ngModel]="newTeil.beschreibung" (ngModelChange)="newTeil.beschreibung = $event || null"></textarea>
+    </div>
+  </div>
+
+  <!-- Save error -->
+  <div *ngIf="addError" class="flex items-center gap-2 mt-3 p-3 bg-error/10 border border-error/20 rounded-lg text-error text-xs">
+    <lucide-icon name="alert-circle" [size]="14" aria-hidden="true"></lucide-icon>
+    {{ addError }}
+  </div>
+
+  <!-- Save success -->
+  <div *ngIf="addSuccess" class="flex items-center gap-2 mt-3 p-3 bg-success/10 border border-success/20 rounded-lg text-success text-xs">
+    <lucide-icon name="check-circle-2" [size]="14" aria-hidden="true"></lucide-icon>
+    Teil erfolgreich gespeichert.
+  </div>
+
+  <!-- Actions -->
+  <div class="flex justify-end gap-3 mt-4">
+    <button class="btn-secondary text-sm" (click)="toggleAddForm()">Abbrechen</button>
+    <button class="btn-primary text-sm flex items-center gap-2" [disabled]="addLoading" (click)="saveTeil()">
+      <lucide-icon *ngIf="addLoading" name="loader-2" [size]="14" class="animate-spin" aria-hidden="true"></lucide-icon>
+      <lucide-icon *ngIf="!addLoading" name="check" [size]="14" aria-hidden="true"></lucide-icon>
+      {{ addLoading ? 'Speichert...' : 'Speichern' }}
+    </button>
+  </div>
 </div>
 
 <!-- Filter bar -->

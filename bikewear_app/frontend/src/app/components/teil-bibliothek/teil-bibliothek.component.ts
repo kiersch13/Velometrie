@@ -30,6 +30,25 @@ export class TeilBibliothekComponent implements OnInit {
     WearPartCategory.Sonstiges
   ];
 
+  // Add form
+  showAddForm = false;
+  addLoading = false;
+  addError: string | null = null;
+  enriching = false;
+  enrichError: string | null = null;
+  addSuccess = false;
+
+  newTeil: Partial<TeilVorlage> = {
+    id: 0,
+    name: '',
+    hersteller: '',
+    kategorie: WearPartCategory.Kette,
+    gruppe: null,
+    geschwindigkeiten: null,
+    fahrradKategorien: '',
+    beschreibung: null
+  };
+
   constructor(private teilVorlageService: TeilVorlageService) {}
 
   ngOnInit(): void {
@@ -87,5 +106,60 @@ export class TeilBibliothekComponent implements OnInit {
 
   get hasActiveFilters(): boolean {
     return !!(this.selectedFahrradKategorie || this.selectedKategorie || this.selectedHersteller);
+  }
+
+  toggleAddForm(): void {
+    this.showAddForm = !this.showAddForm;
+    if (!this.showAddForm) this.resetAddForm();
+  }
+
+  resetAddForm(): void {
+    this.newTeil = { id: 0, name: '', hersteller: '', kategorie: WearPartCategory.Kette, gruppe: null, geschwindigkeiten: null, fahrradKategorien: '', beschreibung: null };
+    this.addError = null;
+    this.enrichError = null;
+    this.addSuccess = false;
+  }
+
+  enrichTeil(): void {
+    if (!this.newTeil.name?.trim()) {
+      this.enrichError = 'Bitte zuerst einen Namen eingeben.';
+      return;
+    }
+    this.enriching = true;
+    this.enrichError = null;
+    this.teilVorlageService.enrich(this.newTeil).subscribe({
+      next: (enriched) => {
+        this.newTeil = { ...enriched };
+        this.enriching = false;
+      },
+      error: () => {
+        this.enrichError = 'KI-Anreicherung fehlgeschlagen. Bitte Felder manuell ausfüllen.';
+        this.enriching = false;
+      }
+    });
+  }
+
+  saveTeil(): void {
+    if (!this.newTeil.name?.trim() || !this.newTeil.hersteller?.trim() || !this.newTeil.fahrradKategorien?.trim()) {
+      this.addError = 'Name, Hersteller und Fahrradkategorien sind Pflichtfelder.';
+      return;
+    }
+    this.addLoading = true;
+    this.addError = null;
+    this.teilVorlageService.add(this.newTeil as TeilVorlage).subscribe({
+      next: () => {
+        this.addSuccess = true;
+        this.addLoading = false;
+        setTimeout(() => {
+          this.showAddForm = false;
+          this.resetAddForm();
+          this.loadTeile();
+        }, 1200);
+      },
+      error: () => {
+        this.addError = 'Teil konnte nicht gespeichert werden.';
+        this.addLoading = false;
+      }
+    });
   }
 }
