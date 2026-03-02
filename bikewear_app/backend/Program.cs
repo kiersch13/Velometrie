@@ -14,7 +14,7 @@ builder.Services.AddControllers()
 builder.Services.AddHttpClient();
 builder.Services.AddMemoryCache();
 builder.Services.AddDbContext<AppDbContext>(opt =>
-    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IBikeService, BikeService>();
 builder.Services.AddScoped<IWearPartService, WearPartService>();
 builder.Services.AddScoped<ITeilVorlageService, TeilVorlageService>();

@@ -24,7 +24,7 @@ A bike wear-part tracking app. Users track their bikes and the wear parts instal
 | Layer | Technology |
 |---|---|
 | Backend | C# / ASP.NET Core / .NET 10 |
-| Database | EF Core with SQLite (`bikewear.db`) — auto-migrated on startup via `db.Database.MigrateAsync()` |
+| Database | EF Core with PostgreSQL — auto-migrated on startup via `db.Database.MigrateAsync()` |
 | Frontend | Angular 17 / TypeScript ~5.2 |
 | Icons | `lucide-angular` — imported via `LucideAngularModule.pick({})`, tree-shakeable |
 | CSS plugins | `@tailwindcss/forms` — polishes default form input appearance |
@@ -155,10 +155,10 @@ colors: {
 - Angular route guards (auth is done; guards just haven't been added yet)
 - Google / Apple social login (backend cookie auth is already in place — add `Microsoft.AspNetCore.Authentication.Google` etc.)
 - Garmin Connect integration (parallel to Strava connect pattern)
-- Swap SQLite for PostgreSQL when hosting (provider swap only — no service/model changes needed)
+- **Swap SQLite for PostgreSQL when hosting** — ✅ Done. Provider swapped to `Npgsql.EntityFrameworkCore.PostgreSQL`. Connection string is `Host=…;Port=5432;Database=bikewear;Username=…;Password=…`. Inject via `ConnectionStrings__DefaultConnection` env var in production (Railway).
 
 **Hard constraints for agents:**
-- Do **not** swap the database provider unless explicitly asked.
+- Do **not** change the database provider (already PostgreSQL).
 - Do **not** add Angular route guards without an explicit prompt.
 - Do **not** introduce a DTO layer without an explicit prompt.
 - Do **not** change the German domain naming without an explicit prompt.
