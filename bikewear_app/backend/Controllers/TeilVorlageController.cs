@@ -11,10 +11,12 @@ namespace App.Controllers
     public class TeilVorlageController : ControllerBase
     {
         private readonly ITeilVorlageService _service;
+        private readonly INimEnrichmentService _nimEnrichmentService;
 
-        public TeilVorlageController(ITeilVorlageService service)
+        public TeilVorlageController(ITeilVorlageService service, INimEnrichmentService nimEnrichmentService)
         {
             _service = service;
+            _nimEnrichmentService = nimEnrichmentService;
         }
 
         /// <summary>
@@ -51,6 +53,14 @@ namespace App.Controllers
             [FromQuery] string? fahrradKategorie)
         {
             return Ok(await _service.GetHerstellerListAsync(kategorie, fahrradKategorie));
+        }
+
+        /// <summary>Reichert eine (unvollständige) Teilvorlage per KI an und gibt das Ergebnis zurück, ohne es zu speichern.</summary>
+        [HttpPost("enrich")]
+        public async Task<ActionResult<TeilVorlage>> Enrich(TeilVorlage teilVorlage)
+        {
+            var enriched = await _nimEnrichmentService.EnrichAsync(teilVorlage);
+            return Ok(enriched);
         }
 
         /// <summary>Fügt eine neue Teilvorlage hinzu.</summary>
