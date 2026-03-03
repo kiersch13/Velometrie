@@ -119,6 +119,60 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// ── Schema repair ─────────────────────────────────────────────────────────────
+// Runs BEFORE MigrateAsync so EF Core queries never fail due to missing/wrong columns.
+// Uses raw Npgsql (bypasses __EFMigrationsHistory) so it is reliable regardless of
+// the migration history state.
+try
+{
+    await using var repairConn = new Npgsql.NpgsqlConnection(connectionString);
+    await repairConn.OpenAsync();
+
+    // 1. Ensure Position column exists (AddWearPartPosition migration may have been
+    //    recorded as applied but the column was never actually created).
+    await using (var cmd = new Npgsql.NpgsqlCommand(
+        "ALTER TABLE \"Verschleissteile\" ADD COLUMN IF NOT EXISTS \"Position\" text NULL;",
+        repairConn))
+    {
+        await cmd.ExecuteNonQueryAsync();
+    }
+
+    // 2. Convert timestamp with time zone → timestamp without time zone for
+    //    EinbauDatum and AusbauDatum so plain C# DateTime works with Npgsql 9+/10.
+    //    Uses information_schema to detect whether the conversion is still needed.
+    await using (var cmd = new Npgsql.NpgsqlCommand(
+        """
+        DO $$
+        BEGIN
+            IF EXISTS (
+                SELECT 1 FROM information_schema.columns
+                WHERE table_name = 'Verschleissteile'
+                  AND column_name = 'EinbauDatum'
+                  AND data_type = 'timestamp with time zone'
+            ) THEN
+                ALTER TABLE "Verschleissteile"
+                    ALTER COLUMN "EinbauDatum"
+                        TYPE timestamp without time zone
+                        USING "EinbauDatum" AT TIME ZONE 'UTC',
+                    ALTER COLUMN "AusbauDatum"
+                        TYPE timestamp without time zone
+                        USING "AusbauDatum" AT TIME ZONE 'UTC';
+            END IF;
+        END $$;
+        """,
+        repairConn))
+    {
+        await cmd.ExecuteNonQueryAsync();
+    }
+
+    Console.WriteLine("[STARTUP] Schema repair completed.");
+}
+catch (Exception ex)
+{
+    Console.Error.WriteLine($"[STARTUP SCHEMA REPAIR ERROR] {ex.Message}");
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 // Apply pending EF Core migrations on startup
 try
 {
