@@ -2,6 +2,8 @@
 # Build output directories (all projects)
 **/bin/
 **/obj/
+# Build host output created by dotnet-ef with Windows-style paths (backslash in name)
+bikewear_app/backend/bin\\Debug/
 
 # User-specific files
 *.user
