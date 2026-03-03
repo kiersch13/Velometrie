@@ -120,8 +120,9 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // Apply pending EF Core migrations on startup
-using (var scope = app.Services.CreateScope())
+try
 {
+    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var cfg = scope.ServiceProvider.GetRequiredService<IConfiguration>();
     await db.Database.MigrateAsync();
@@ -129,6 +130,24 @@ using (var scope = app.Services.CreateScope())
     await App.Data.AdminUserSeeder.SeedAsync(db, cfg);
     await App.Data.AdminUserSeeder.CleanupOrphanedUsersAsync(db);
 }
+catch (Exception ex)
+{
+    // Log migration error but allow app to start so the /api/health diagnostic endpoint
+    // remains reachable and we can inspect /api/wearpart for the actual error.
+    // TEMP: remove try/catch once DB migrations are stable.
+    Console.Error.WriteLine($"[STARTUP MIGRATION ERROR] {ex}");
+}
+
+// TEMP: expose exception message in production to diagnose the 500 on WearPart endpoints.
+// Remove once the root cause is confirmed and fixed.
+app.UseExceptionHandler(exh => exh.Run(async ctx =>
+{
+    var feature = ctx.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerPathFeature>();
+    ctx.Response.StatusCode = 500;
+    ctx.Response.ContentType = "application/json";
+    var msg = feature?.Error?.ToString() ?? "unknown";
+    await ctx.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(new { error = msg }));
+}));
 
 // Configure the HTTP request pipeline.
 // Trust X-Forwarded-Proto from Railway's TLS-terminating proxy.
@@ -156,5 +175,5 @@ app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.MapGet("/api/health", () => Results.Ok());
+app.MapGet("/api/health", () => Results.Ok(new { version = "2026-03-03-v5", status = "ok" }));
 app.Run();
