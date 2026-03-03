@@ -3,5 +3,6 @@ export enum WearPartCategory {
   Kassette = 'Kassette',
   Kettenblatt = 'Kettenblatt',
   Kette = 'Kette',
-  Sonstiges = 'Sonstiges'
+  Sonstiges = 'Sonstiges',
+  Federung = 'Federung'
 }

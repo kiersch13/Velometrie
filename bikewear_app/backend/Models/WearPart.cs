@@ -9,7 +9,8 @@ namespace App.Models
         Kassette,
         Kettenblatt,
         Kette,
-        Sonstiges
+        Sonstiges,
+        Federung
     }
 
     public class WearPart

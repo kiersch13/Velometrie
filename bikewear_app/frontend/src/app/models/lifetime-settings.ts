@@ -10,4 +10,5 @@ export const defaultLifetimeSettings: LifetimeSettings = {
   [WearPartCategory.Kettenblatt]: 25000,
   [WearPartCategory.Kette]: 3000,
   [WearPartCategory.Sonstiges]: 10000,
+  [WearPartCategory.Federung]: 20000,
 };

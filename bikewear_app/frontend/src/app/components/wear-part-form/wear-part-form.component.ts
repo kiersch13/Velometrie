@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { WearPart } from '../../models/wear-part';
 import { WearPartCategory } from '../../models/wear-part-category';
+import { BikeCategory } from '../../models/bike-category';
 import { WearPartService } from '../../services/wear-part.service';
 import { BikeService } from '../../services/bike.service';
 import { TeilVorlageService } from '../../services/teil-vorlage.service';
@@ -17,11 +18,22 @@ export class WearPartFormComponent implements OnInit {
   @Input() currentKilometerstand: number = 0;
   @Input() existingPart?: WearPart;
   @Input() editMode: boolean = false;
+  @Input() bikeKategorie: BikeCategory | null = null;
   @Output() saved = new EventEmitter<void>();
 
   readonly WearPartCategory = WearPartCategory;
 
-  categories = Object.values(WearPartCategory);
+  get categories(): WearPartCategory[] {
+    const all = Object.values(WearPartCategory);
+    if (
+      this.bikeKategorie === BikeCategory.Mountainbike ||
+      this.bikeKategorie === BikeCategory.Gravel
+    ) {
+      return all;
+    }
+    return all.filter(c => c !== WearPartCategory.Federung);
+  }
+
   error = '';
   saving = false;
   loadingOdometer = false;
@@ -63,14 +75,20 @@ export class WearPartFormComponent implements OnInit {
     return ['Einteilig', 'Klein', 'Groß', 'Mittel'];
   }
 
+  get federungPositions(): string[] {
+    return ['Federgabel', 'Dämpfer'];
+  }
+
   get showPositionDropdown(): boolean {
     return this.part.kategorie === WearPartCategory.Reifen ||
-           this.part.kategorie === WearPartCategory.Kettenblatt;
+           this.part.kategorie === WearPartCategory.Kettenblatt ||
+           this.part.kategorie === WearPartCategory.Federung;
   }
 
   get currentPositions(): string[] {
     if (this.part.kategorie === WearPartCategory.Reifen) return this.reifenPositions;
     if (this.part.kategorie === WearPartCategory.Kettenblatt) return this.kettenblattPositions;
+    if (this.part.kategorie === WearPartCategory.Federung) return this.federungPositions;
     return [];
   }
 
