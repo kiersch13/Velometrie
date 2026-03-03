@@ -21,6 +21,7 @@ namespace App.Models
         [Required]
         public string Name { get; set; } = string.Empty;
         public WearPartCategory Kategorie { get; set; }
+        public string? Position { get; set; }
         public int EinbauKilometerstand { get; set; }
         public int? AusbauKilometerstand { get; set; }
         public DateTime EinbauDatum { get; set; }

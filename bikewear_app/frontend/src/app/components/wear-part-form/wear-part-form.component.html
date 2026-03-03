@@ -47,9 +47,34 @@
       </div>
       <div class="flex flex-col gap-1">
         <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Kategorie</label>
-        <select [(ngModel)]="part.kategorie" class="form-input">
+        <select [(ngModel)]="part.kategorie" (ngModelChange)="onKategorieChange()" class="form-input">
           <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
         </select>
+      </div>
+    </div>
+
+    <!-- Position dropdown for Reifen and Kettenblatt -->
+    <div *ngIf="showPositionDropdown" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">
+          Position
+          <span class="font-normal text-gray-400 ml-1">(optional)</span>
+        </label>
+        <select [(ngModel)]="part.position" (ngModelChange)="onPositionChange()" class="form-input">
+          <option [ngValue]="null">– keine Angabe –</option>
+          <option *ngFor="let pos of currentPositions" [value]="pos">{{ pos }}</option>
+        </select>
+      </div>
+      <!-- Checkbox: also mount on other wheel (Reifen only) -->
+      <div *ngIf="otherWheelLabel" class="flex items-end pb-1">
+        <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-600 dark:text-text-dark select-none">
+          <input
+            type="checkbox"
+            [(ngModel)]="mountOnOtherWheel"
+            class="w-4 h-4 rounded border-gray-300 text-accent focus:ring-accent"
+          />
+          {{ otherWheelLabel }}
+        </label>
       </div>
     </div>
 

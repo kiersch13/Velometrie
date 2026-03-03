@@ -5,6 +5,7 @@ import { WearPartService } from '../../services/wear-part.service';
 import { BikeService } from '../../services/bike.service';
 import { TeilVorlageService } from '../../services/teil-vorlage.service';
 import { TeilVorlage } from '../../models/teil-vorlage';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-wear-part-form',
@@ -18,10 +19,15 @@ export class WearPartFormComponent implements OnInit {
   @Input() editMode: boolean = false;
   @Output() saved = new EventEmitter<void>();
 
+  readonly WearPartCategory = WearPartCategory;
+
   categories = Object.values(WearPartCategory);
   error = '';
   saving = false;
   loadingOdometer = false;
+
+  /** Show checkbox to also mount tire on the other wheel */
+  mountOnOtherWheel = false;
 
   // Autocomplete state
   private allTeile: TeilVorlage[] = [];
@@ -40,12 +46,54 @@ export class WearPartFormComponent implements OnInit {
         radId: this.radId,
         name: '',
         kategorie: WearPartCategory.Sonstiges,
+        position: null,
         einbauKilometerstand: this.currentKilometerstand,
         ausbauKilometerstand: 0,
         einbauDatum: new Date(),
         ausbauDatum: undefined as any
       };
     }
+  }
+
+  get reifenPositions(): string[] {
+    return ['Vorderrad', 'Hinterrad'];
+  }
+
+  get kettenblattPositions(): string[] {
+    return ['Einteilig', 'Klein', 'Groß', 'Mittel'];
+  }
+
+  get showPositionDropdown(): boolean {
+    return this.part.kategorie === WearPartCategory.Reifen ||
+           this.part.kategorie === WearPartCategory.Kettenblatt;
+  }
+
+  get currentPositions(): string[] {
+    if (this.part.kategorie === WearPartCategory.Reifen) return this.reifenPositions;
+    if (this.part.kategorie === WearPartCategory.Kettenblatt) return this.kettenblattPositions;
+    return [];
+  }
+
+  get otherWheelLabel(): string | null {
+    if (this.part.kategorie !== WearPartCategory.Reifen) return null;
+    if (this.part.position === 'Hinterrad') return 'Reifen auch an Vorderrad montieren';
+    if (this.part.position === 'Vorderrad') return 'Reifen auch an Hinterrad montieren';
+    return null;
+  }
+
+  get otherWheelPosition(): string | null {
+    if (this.part.position === 'Hinterrad') return 'Vorderrad';
+    if (this.part.position === 'Vorderrad') return 'Hinterrad';
+    return null;
+  }
+
+  onKategorieChange(): void {
+    this.part.position = null;
+    this.mountOnOtherWheel = false;
+  }
+
+  onPositionChange(): void {
+    this.mountOnOtherWheel = false;
   }
 
   get einbauDatumStr(): string {
@@ -135,6 +183,8 @@ export class WearPartFormComponent implements OnInit {
   selectSuggestion(teil: TeilVorlage): void {
     this.part.name = `${teil.hersteller} ${teil.name}`.trim();
     this.part.kategorie = teil.kategorie;
+    this.part.position = null;
+    this.mountOnOtherWheel = false;
     this.closeSuggestions();
   }
 
@@ -156,19 +206,37 @@ export class WearPartFormComponent implements OnInit {
       return;
     }
     this.saving = true;
-    const request$ = this.editMode && this.part.id
-      ? this.wearPartService.updateWearPart(this.part.id, this.part as WearPart)
-      : this.wearPartService.addWearPart(this.part as WearPart);
-    request$.subscribe({
-      next: () => {
-        this.saving = false;
-        this.saved.emit();
-      },
-      error: () => {
-        this.error = 'Fehler beim Speichern des Verschleißteils.';
-        this.saving = false;
-      }
-    });
+
+    if (!this.editMode && this.mountOnOtherWheel && this.otherWheelPosition) {
+      // Save two entries: one for primary position, one for the other wheel
+      const primary$ = this.wearPartService.addWearPart(this.part as WearPart);
+      const other = { ...this.part, position: this.otherWheelPosition } as WearPart;
+      const other$ = this.wearPartService.addWearPart(other);
+      forkJoin([primary$, other$]).subscribe({
+        next: () => {
+          this.saving = false;
+          this.saved.emit();
+        },
+        error: () => {
+          this.error = 'Fehler beim Speichern des Verschleißteils.';
+          this.saving = false;
+        }
+      });
+    } else {
+      const request$ = this.editMode && this.part.id
+        ? this.wearPartService.updateWearPart(this.part.id, this.part as WearPart)
+        : this.wearPartService.addWearPart(this.part as WearPart);
+      request$.subscribe({
+        next: () => {
+          this.saving = false;
+          this.saved.emit();
+        },
+        error: () => {
+          this.error = 'Fehler beim Speichern des Verschleißteils.';
+          this.saving = false;
+        }
+      });
+    }
   }
 
   constructor(
@@ -177,3 +245,4 @@ export class WearPartFormComponent implements OnInit {
     private teilVorlageService: TeilVorlageService
   ) {}
 }
+

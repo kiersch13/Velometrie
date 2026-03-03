@@ -116,6 +116,12 @@ export class BikeDetailComponent implements OnInit {
     this.editingWearPart = { ...part };
   }
 
+  onEditKategorieChange(): void {
+    if (this.editingWearPart) {
+      this.editingWearPart.position = null;
+    }
+  }
+
   get editEinbauDatumStr(): string {
     if (!this.editingWearPart?.einbauDatum) return '';
     return new Date(this.editingWearPart.einbauDatum).toISOString().substring(0, 10);
