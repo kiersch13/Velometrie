@@ -11,5 +11,13 @@ namespace App.Services
         /// completed / corrected by the AI.
         /// </summary>
         Task<TeilVorlage> EnrichAsync(TeilVorlage partial);
+
+        /// <summary>
+        /// Checks whether the input looks like a real bicycle wear part.
+        /// Returns (true, "") when valid.
+        /// Returns (false, grund) when rejected — grund is a German explanation.
+        /// On any error (API failure, missing key, parse failure) returns (true, "") — fail open.
+        /// </summary>
+        Task<(bool IsValid, string Grund)> ValidateAsync(TeilVorlage partial);
     }
 }

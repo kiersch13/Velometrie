@@ -62,6 +62,10 @@ namespace App.Controllers
         [SkipModelValidation]
         public async Task<ActionResult<TeilVorlage>> Enrich(TeilVorlage teilVorlage)
         {
+            var validation = await _nimEnrichmentService.ValidateAsync(teilVorlage);
+            if (!validation.IsValid)
+                return UnprocessableEntity(new { gueltig = false, grund = validation.Grund });
+
             var enriched = await _nimEnrichmentService.EnrichAsync(teilVorlage);
             return Ok(enriched);
         }

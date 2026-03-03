@@ -58,6 +58,12 @@ export class TeilBibliothekComponent implements OnInit {
   enrichError: string | null = null;
   addSuccess = false;
 
+  // Validation dialog state
+  showValidationDialog = false;
+  validationDialogStep: 'confirm' | 'support' = 'confirm';
+  validationGrund = '';
+  supportRequestSent = false;
+
   newTeil: Partial<TeilVorlage> = { ...this.newTeilDefault };
 
   private readonly SUCCESS_MESSAGE_DURATION_MS = 1200;
@@ -181,6 +187,7 @@ export class TeilBibliothekComponent implements OnInit {
     this.addError = null;
     this.enrichError = null;
     this.addSuccess = false;
+    this.supportRequestSent = false;
   }
 
   enrichTeil(): void {
@@ -190,16 +197,43 @@ export class TeilBibliothekComponent implements OnInit {
     }
     this.enriching = true;
     this.enrichError = null;
+    this.supportRequestSent = false;
     this.teilVorlageService.enrich(this.newTeil).subscribe({
       next: (enriched) => {
         this.newTeil = { ...enriched };
         this.enriching = false;
       },
-      error: () => {
-        this.enrichError = 'KI-Anreicherung fehlgeschlagen. Bitte Felder manuell ausfüllen.';
+      error: (err) => {
         this.enriching = false;
+        if (err.status === 422) {
+          this.validationGrund = err.error?.grund ?? '';
+          this.validationDialogStep = 'confirm';
+          this.showValidationDialog = true;
+        } else {
+          this.enrichError = 'KI-Anreicherung fehlgeschlagen. Bitte Felder manuell ausfüllen.';
+        }
       }
     });
+  }
+
+  onValidationNein(): void {
+    this.showValidationDialog = false;
+    this.enrichError = 'Kein gültiges Fahrradteil erkannt.';
+  }
+
+  onValidationJa(): void {
+    this.validationDialogStep = 'support';
+  }
+
+  onSupportAbbrechen(): void {
+    this.showValidationDialog = false;
+    this.validationGrund = '';
+  }
+
+  onSupportAnfrage(): void {
+    this.showValidationDialog = false;
+    this.validationGrund = '';
+    this.supportRequestSent = true;
   }
 
   saveTeil(): void {

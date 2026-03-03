@@ -190,5 +190,111 @@ namespace App.Services
                 _ => Enum.TryParse<WearPartCategory>(value, ignoreCase: true, out var parsed) ? parsed : null
             };
         }
+
+        public async Task<(bool IsValid, string Grund)> ValidateAsync(TeilVorlage partial)
+        {
+            var apiKey = _configuration["NvidiaAI:ApiKey"];
+            if (string.IsNullOrWhiteSpace(apiKey))
+            {
+                _logger.LogWarning("NvidiaAI:ApiKey is not configured. Skipping validation, failing open.");
+                return (true, "");
+            }
+
+            var model = _configuration["NvidiaAI:Model"] ?? "meta/llama-3.1-70b-instruct";
+            var baseUrl = _configuration["NvidiaAI:BaseUrl"] ?? "https://integrate.api.nvidia.com/v1";
+
+            const string validationSystemPrompt =
+                "Du bist ein Fahrradkomponenten-Experte. Entscheide, ob das folgende Teil ein echtes, real existierendes " +
+                "Fahrrad-Verschleißteil ist (Kette, Kassette, Kettenblatt, Reifen, o.ä.). " +
+                "Gib ausschließlich ein JSON-Objekt zurück mit: \"gueltig\": true/false und \"grund\": kurze Begründung auf Deutsch.";
+
+            var userPrompt =
+                $"Ist das folgende ein echtes Fahrrad-Verschleißteil?\n" +
+                $"name: {partial.Name}\n" +
+                $"hersteller: {partial.Hersteller ?? ""}";
+
+            var requestBody = new
+            {
+                model,
+                messages = new[]
+                {
+                    new { role = "system", content = validationSystemPrompt },
+                    new { role = "user",   content = userPrompt }
+                },
+                response_format = new { type = "json_object" },
+                temperature = 0.1,
+                max_tokens = 128
+            };
+
+            var json = JsonSerializer.Serialize(requestBody);
+
+            using var client = _httpClientFactory.CreateClient();
+            using var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/chat/completions");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response;
+            try
+            {
+                response = await client.SendAsync(request);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "HTTP request to Nvidia NIM (validation) failed. Failing open.");
+                return (true, "");
+            }
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("Nvidia NIM (validation) returned {StatusCode}. Failing open.", response.StatusCode);
+                return (true, "");
+            }
+
+            string responseJson;
+            try
+            {
+                responseJson = await response.Content.ReadAsStringAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to read Nvidia NIM validation response. Failing open.");
+                return (true, "");
+            }
+
+            try
+            {
+                var responseNode = JsonNode.Parse(responseJson);
+                var messageContent = responseNode?["choices"]?[0]?["message"]?["content"]?.GetValue<string>();
+                if (string.IsNullOrWhiteSpace(messageContent))
+                {
+                    _logger.LogWarning("Nvidia NIM validation returned empty content. Failing open.");
+                    return (true, "");
+                }
+
+                var aiNode = JsonNode.Parse(messageContent);
+                if (aiNode == null)
+                {
+                    _logger.LogWarning("Failed to parse Nvidia NIM validation JSON. Failing open.");
+                    return (true, "");
+                }
+
+                var gueltigNode = aiNode["gueltig"];
+                if (gueltigNode == null)
+                {
+                    _logger.LogWarning("Nvidia NIM validation response missing 'gueltig' field. Failing open.");
+                    return (true, "");
+                }
+
+                bool gueltig = gueltigNode.GetValue<bool>();
+                string grund = aiNode["grund"]?.GetValue<string>() ?? "";
+
+                return gueltig ? (true, "") : (false, grund);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to parse Nvidia NIM validation response JSON. Failing open.");
+                return (true, "");
+            }
+        }
     }
 }

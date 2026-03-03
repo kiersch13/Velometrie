@@ -34,6 +34,12 @@
     {{ enrichError }}
   </div>
 
+  <!-- Support request confirmation -->
+  <div *ngIf="supportRequestSent" class="flex items-center gap-2 mb-3 p-3 bg-warning/10 border border-warning/20 rounded-lg text-warning text-xs">
+    <lucide-icon name="check-circle-2" [size]="14" aria-hidden="true"></lucide-icon>
+    Deine Anfrage wurde entgegengenommen und wird untersucht.
+  </div>
+
   <!-- Form fields -->
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <!-- Name -->
@@ -261,5 +267,51 @@
        class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-3 flex-1">
       {{ teil.beschreibung }}
     </p>
+  </div>
+</div>
+
+<!-- Validation dialog overlay -->
+<div *ngIf="showValidationDialog"
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+  <div class="card w-full max-w-md p-6">
+
+    <!-- Step: confirm -->
+    <div *ngIf="validationDialogStep === 'confirm'">
+      <div class="flex items-start gap-3 mb-5">
+        <lucide-icon name="alert-circle" [size]="20" class="text-warning shrink-0 mt-0.5" aria-hidden="true"></lucide-icon>
+        <div>
+          <h2 class="text-base font-semibold text-primary dark:text-text-dark">Bist du sicher?</h2>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Hast du wirklich dieses Teil montiert und bist sicher, dass es existiert?
+          </p>
+        </div>
+      </div>
+      <div class="flex justify-end gap-3">
+        <button class="btn-secondary text-sm" (click)="onValidationNein()">Nein</button>
+        <button class="btn-primary text-sm" (click)="onValidationJa()">Ja</button>
+      </div>
+    </div>
+
+    <!-- Step: support -->
+    <div *ngIf="validationDialogStep === 'support'">
+      <div class="flex items-start gap-3 mb-5">
+        <lucide-icon name="alert-circle" [size]="20" class="text-warning shrink-0 mt-0.5" aria-hidden="true"></lucide-icon>
+        <div>
+          <h2 class="text-base font-semibold text-primary dark:text-text-dark">Nicht verifizierbar</h2>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Dieses Teil konnte nicht automatisch verifiziert werden. Möchtest du eine Supportanfrage stellen? Wir werden es untersuchen.
+          </p>
+        </div>
+      </div>
+      <div class="flex justify-end gap-3">
+        <button class="btn-secondary text-sm" (click)="onSupportAbbrechen()">Abbrechen</button>
+        <button
+          class="rounded-lg px-4 py-2 text-sm font-medium bg-warning text-white hover:bg-warning/90 transition-colors"
+          (click)="onSupportAnfrage()">
+          Supportanfrage
+        </button>
+      </div>
+    </div>
+
   </div>
 </div>
