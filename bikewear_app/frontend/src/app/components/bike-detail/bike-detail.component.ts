@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Bike } from '../../models/bike';
+import { BikeCategory } from '../../models/bike-category';
 import { WearPart } from '../../models/wear-part';
 import { BikeService } from '../../services/bike.service';
 import { WearPartService } from '../../services/wear-part.service';
@@ -17,12 +18,16 @@ export class BikeDetailComponent implements OnInit {
   loading = false;
   error = '';
 
-  editingKm = false;
-  newKilometerstand: number = 0;
-
   showWearPartForm = false;
 
   editingWearPart: WearPart | null = null;
+
+  // Bike edit modal
+  showBikeEditModal = false;
+  readonly bikeCategories = Object.values(BikeCategory);
+  editBikeName = '';
+  editBikeKategorie: BikeCategory = BikeCategory.Rennrad;
+  editBikeKilometerstand = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -38,7 +43,6 @@ export class BikeDetailComponent implements OnInit {
     this.bikeService.getBike(id).subscribe({
       next: bike => {
         this.bike = bike;
-        this.newKilometerstand = bike.kilometerstand;
         this.loading = false;
         this.loadWearParts(id);
       },
@@ -56,14 +60,32 @@ export class BikeDetailComponent implements OnInit {
     });
   }
 
-  saveKilometerstand(): void {
+  openBikeEdit(): void {
     if (!this.bike) return;
-    this.bikeService.updateKilometerstand(this.bike.id, this.newKilometerstand).subscribe({
+    this.editBikeName = this.bike.name;
+    this.editBikeKategorie = this.bike.kategorie;
+    this.editBikeKilometerstand = this.bike.kilometerstand;
+    this.showBikeEditModal = true;
+  }
+
+  closeBikeEdit(): void {
+    this.showBikeEditModal = false;
+  }
+
+  saveBikeEdit(): void {
+    if (!this.bike) return;
+    const updatedBike: Bike = {
+      ...this.bike,
+      name: this.editBikeName,
+      kategorie: this.editBikeKategorie,
+      kilometerstand: this.editBikeKilometerstand
+    };
+    this.bikeService.updateBike(this.bike.id, updatedBike).subscribe({
       next: updated => {
         this.bike = updated;
-        this.editingKm = false;
+        this.showBikeEditModal = false;
       },
-      error: () => this.error = 'Fehler beim Speichern des Kilometerstands.'
+      error: () => this.error = 'Fehler beim Speichern des Rades.'
     });
   }
 
