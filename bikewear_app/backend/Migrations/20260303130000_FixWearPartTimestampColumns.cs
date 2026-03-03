@@ -16,11 +16,19 @@ namespace Backend.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // 'timestamp with time zone' → 'timestamp without time zone' is an explicit
+            // (not implicit) cast in PostgreSQL, so a USING clause is required.
+            // AT TIME ZONE 'UTC' treats the stored UTC instant as a local unspecified
+            // timestamp, which is the correct semantic for wall-clock dates in this app.
             migrationBuilder.Sql(
                 """
                 ALTER TABLE "Verschleissteile"
-                    ALTER COLUMN "EinbauDatum"  TYPE timestamp without time zone,
-                    ALTER COLUMN "AusbauDatum"  TYPE timestamp without time zone;
+                    ALTER COLUMN "EinbauDatum"
+                        TYPE timestamp without time zone
+                        USING "EinbauDatum" AT TIME ZONE 'UTC',
+                    ALTER COLUMN "AusbauDatum"
+                        TYPE timestamp without time zone
+                        USING "AusbauDatum" AT TIME ZONE 'UTC';
                 """);
         }
 
@@ -29,8 +37,12 @@ namespace Backend.Migrations
             migrationBuilder.Sql(
                 """
                 ALTER TABLE "Verschleissteile"
-                    ALTER COLUMN "EinbauDatum"  TYPE timestamp with time zone,
-                    ALTER COLUMN "AusbauDatum"  TYPE timestamp with time zone;
+                    ALTER COLUMN "EinbauDatum"
+                        TYPE timestamp with time zone
+                        USING "EinbauDatum" AT TIME ZONE 'UTC',
+                    ALTER COLUMN "AusbauDatum"
+                        TYPE timestamp with time zone
+                        USING "AusbauDatum" AT TIME ZONE 'UTC';
                 """);
         }
     }
