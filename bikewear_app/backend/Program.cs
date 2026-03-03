@@ -5,6 +5,12 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using System.Text.Json.Serialization;
 
+// Npgsql 6+ changed DateTime handling for 'timestamp with time zone' columns:
+// DateTime with Kind=Unspecified/Local now throws. Re-enable the legacy behavior
+// so existing DateTime model properties continue to work with timestamptz columns.
+// Long-term fix: migrate columns to 'timestamp without time zone' or use DateTimeOffset.
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
