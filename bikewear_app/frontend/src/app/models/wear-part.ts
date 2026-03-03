@@ -10,4 +10,5 @@ export interface WearPart {
   ausbauKilometerstand: number | null;
   einbauDatum: Date;
   ausbauDatum: Date | null;
+  notizen: string | null;
 }

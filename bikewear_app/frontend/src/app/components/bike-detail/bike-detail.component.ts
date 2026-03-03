@@ -22,6 +22,9 @@ export class BikeDetailComponent implements OnInit {
 
   editingWearPart: WearPart | null = null;
 
+  // Wear part detail modal
+  detailWearPart: WearPart | null = null;
+
   // Bike edit modal
   showBikeEditModal = false;
   readonly bikeCategories = Object.values(BikeCategory);
@@ -114,6 +117,14 @@ export class BikeDetailComponent implements OnInit {
 
   startEditWearPart(part: WearPart): void {
     this.editingWearPart = { ...part };
+  }
+
+  openWearPartDetail(part: WearPart): void {
+    this.detailWearPart = part;
+  }
+
+  closeWearPartDetail(): void {
+    this.detailWearPart = null;
   }
 
   onEditKategorieChange(): void {

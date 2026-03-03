@@ -27,5 +27,6 @@ namespace App.Models
         public int? AusbauKilometerstand { get; set; }
         public DateTime EinbauDatum { get; set; }
         public DateTime? AusbauDatum { get; set; }
+        public string? Notizen { get; set; }
     }
 }

@@ -75,10 +75,9 @@
             <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Kategorie</th>
             <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Position</th>
             <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Einbau</th>
-            <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Gefahren</th>
-            <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Erw. Ersatz</th>
+            <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Kilometerstand</th>
             <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Ausbau</th>
-            <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-20">Aktionen</th>
+            <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-24">Aktionen</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -93,11 +92,19 @@
             <td class="px-4 py-3"><span class="badge">{{ part.kategorie }}</span></td>
             <td class="px-4 py-3 text-gray-500 dark:text-text-dark text-xs">{{ part.position || '—' }}</td>
             <td class="px-4 py-3 text-gray-600 dark:text-text-dark">{{ part.einbauDatum | date:'dd.MM.yyyy' }}</td>
-            <!-- Gefahrene km -->
+            <!-- Kilometerstand combined column -->
             <td class="px-4 py-3 tabular-nums">
-              <span class="text-gray-800 dark:text-text-dark font-medium">{{ getGefahreneKm(part) | number:'1.0-0' }} km</span>
+              <div class="flex items-baseline gap-1">
+                <span class="text-gray-800 dark:text-text-dark font-medium">{{ getGefahreneKm(part) | number:'1.0-0' }} km</span>
+                <span class="text-gray-400 text-xs">/</span>
+                <span class="text-xs" [ngClass]="{
+                  'text-warning font-medium': isInstalled(part) && getLifetimePercent(part) >= 0.8 && getLifetimePercent(part) < 1.0,
+                  'text-error font-semibold': isInstalled(part) && getLifetimePercent(part) >= 1.0,
+                  'text-gray-400': !(isInstalled(part) && getLifetimePercent(part) >= 0.8)
+                }">{{ getExpectedReplacementKm(part) | number:'1.0-0' }} km</span>
+              </div>
               <!-- Progress bar -->
-              <div class="w-20 h-1 bg-gray-100 dark:bg-gray-700 rounded-full mt-1 overflow-hidden">
+              <div class="w-full h-1 bg-gray-100 dark:bg-gray-700 rounded-full mt-1.5 overflow-hidden">
                 <div class="h-full rounded-full transition-all duration-300"
                      [ngClass]="{
                        'bg-success/70': getLifetimePercent(part) < 0.8 && isInstalled(part),
@@ -108,15 +115,6 @@
                      [style.width.%]="(getLifetimePercent(part) * 100) | number:'1.0-0'">
                 </div>
               </div>
-            </td>
-            <!-- Expected replacement km -->
-            <td class="px-4 py-3 text-gray-600 dark:text-text-dark tabular-nums">
-              <span [ngClass]="{
-                'text-warning font-medium': isInstalled(part) && getLifetimePercent(part) >= 0.8 && getLifetimePercent(part) < 1.0,
-                'text-error font-semibold': isInstalled(part) && getLifetimePercent(part) >= 1.0
-              }">
-                {{ getExpectedReplacementKm(part) | number:'1.0-0' }} km
-              </span>
             </td>
             <!-- Expected or actual removal date -->
             <td class="px-4 py-3 text-gray-600 dark:text-text-dark tabular-nums">
@@ -137,9 +135,14 @@
               </ng-container>
             </td>
             <td class="px-4 py-3">
-              <button class="btn-secondary !p-1.5" aria-label="Bearbeiten" (click)="startEditWearPart(part)">
-                <lucide-icon name="pencil" [size]="13" aria-hidden="true"></lucide-icon>
-              </button>
+              <div class="flex items-center gap-1.5">
+                <button class="btn-secondary !p-1.5" aria-label="Details" (click)="openWearPartDetail(part)">
+                  <lucide-icon name="info" [size]="13" aria-hidden="true"></lucide-icon>
+                </button>
+                <button class="btn-secondary !p-1.5" aria-label="Bearbeiten" (click)="startEditWearPart(part)">
+                  <lucide-icon name="pencil" [size]="13" aria-hidden="true"></lucide-icon>
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -228,6 +231,14 @@
       </div>
     </div>
 
+    <div class="flex flex-col gap-1 mb-5">
+      <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">
+        Notizen
+        <span class="font-normal text-gray-400 ml-1">(optional)</span>
+      </label>
+      <textarea [(ngModel)]="editingWearPart.notizen" rows="3" class="form-input resize-none" placeholder="Notizen zum Teil…"></textarea>
+    </div>
+
     <div class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
       <button class="btn-danger" (click)="openDeleteModal(editingWearPart.id)">
         <lucide-icon name="trash-2" [size]="14" aria-hidden="true"></lucide-icon>
@@ -289,6 +300,108 @@
     </div>
   </div>
 </ng-container>
+
+<!-- Wear part detail modal -->
+<div *ngIf="detailWearPart"
+     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+     (click)="closeWearPartDetail()">
+  <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-card w-full max-w-lg p-6"
+       (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="flex items-start justify-between mb-5">
+      <div>
+        <span class="badge mb-1">{{ detailWearPart.kategorie }}</span>
+        <h3 class="text-lg font-bold text-primary dark:text-text-dark mt-1">{{ detailWearPart.name }}</h3>
+        <p *ngIf="detailWearPart.position" class="text-xs text-gray-400 mt-0.5">{{ detailWearPart.position }}</p>
+      </div>
+      <button class="btn-secondary !p-1.5 shrink-0" aria-label="Schließen" (click)="closeWearPartDetail()">
+        <lucide-icon name="x" [size]="15" aria-hidden="true"></lucide-icon>
+      </button>
+    </div>
+
+    <!-- Kilometerstand progress -->
+    <div class="mb-5 p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+      <div class="flex items-baseline justify-between mb-2">
+        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Kilometerstand</span>
+        <span class="text-sm font-semibold tabular-nums"
+              [ngClass]="{
+                'text-error': getLifetimePercent(detailWearPart) >= 1.0 && isInstalled(detailWearPart),
+                'text-warning': getLifetimePercent(detailWearPart) >= 0.8 && getLifetimePercent(detailWearPart) < 1.0 && isInstalled(detailWearPart),
+                'text-gray-800 dark:text-text-dark': getLifetimePercent(detailWearPart) < 0.8 || !isInstalled(detailWearPart)
+              }">
+          {{ getGefahreneKm(detailWearPart) | number:'1.0-0' }} km&nbsp;/&nbsp;{{ getExpectedReplacementKm(detailWearPart) | number:'1.0-0' }} km
+        </span>
+      </div>
+      <div class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+        <div class="h-full rounded-full transition-all duration-300"
+             [ngClass]="{
+               'bg-success/70': getLifetimePercent(detailWearPart) < 0.8 && isInstalled(detailWearPart),
+               'bg-warning/80': getLifetimePercent(detailWearPart) >= 0.8 && getLifetimePercent(detailWearPart) < 1.0 && isInstalled(detailWearPart),
+               'bg-error/80': getLifetimePercent(detailWearPart) >= 1.0 && isInstalled(detailWearPart),
+               'bg-gray-300 dark:bg-gray-500': !isInstalled(detailWearPart)
+             }"
+             [style.width.%]="(getLifetimePercent(detailWearPart) * 100) | number:'1.0-0'">
+        </div>
+      </div>
+      <p class="text-xs text-gray-400 mt-1.5 text-right">
+        {{ (getLifetimePercent(detailWearPart) * 100) | number:'1.0-0' }}% der erwarteten Lebensdauer
+      </p>
+    </div>
+
+    <!-- Info grid -->
+    <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+      <div class="flex flex-col gap-0.5">
+        <span class="text-xs text-gray-400">Einbau</span>
+        <span class="text-gray-800 dark:text-text-dark font-medium">{{ detailWearPart.einbauDatum | date:'dd.MM.yyyy' }}</span>
+        <span class="text-xs text-gray-400 tabular-nums">bei {{ detailWearPart.einbauKilometerstand | number:'1.0-0' }} km</span>
+      </div>
+      <div class="flex flex-col gap-0.5">
+        <span class="text-xs text-gray-400">{{ isInstalled(detailWearPart) ? 'Erw. Ausbau' : 'Ausbau' }}</span>
+        <ng-container *ngIf="!isInstalled(detailWearPart)">
+          <span class="text-gray-800 dark:text-text-dark font-medium">{{ detailWearPart.ausbauDatum | date:'dd.MM.yyyy' }}</span>
+          <span *ngIf="detailWearPart.ausbauKilometerstand" class="text-xs text-gray-400 tabular-nums">bei {{ detailWearPart.ausbauKilometerstand | number:'1.0-0' }} km</span>
+        </ng-container>
+        <ng-container *ngIf="isInstalled(detailWearPart)">
+          <ng-container *ngIf="getExpectedAusbauDate(detailWearPart) as expDate; else detailNoAvg">
+            <span class="font-medium"
+                  [ngClass]="{
+                    'text-error': getLifetimePercent(detailWearPart) >= 1.0,
+                    'text-warning': getLifetimePercent(detailWearPart) >= 0.8 && getLifetimePercent(detailWearPart) < 1.0,
+                    'text-gray-800 dark:text-text-dark': getLifetimePercent(detailWearPart) < 0.8
+                  }">{{ expDate | date:'dd.MM.yyyy' }}</span>
+          </ng-container>
+          <ng-template #detailNoAvg>
+            <span class="text-gray-400">—</span>
+          </ng-template>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Notizen -->
+    <div class="mb-5">
+      <div class="flex items-center justify-between mb-1.5">
+        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Notizen</span>
+        <button class="text-xs text-accent hover:underline" (click)="closeWearPartDetail(); startEditWearPart(detailWearPart!)">Bearbeiten</button>
+      </div>
+      <div *ngIf="detailWearPart.notizen; else noNotizen"
+           class="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg text-sm text-gray-700 dark:text-text-dark whitespace-pre-wrap">
+        {{ detailWearPart.notizen }}
+      </div>
+      <ng-template #noNotizen>
+        <p class="text-sm text-gray-400 italic">Keine Notizen vorhanden.</p>
+      </ng-template>
+    </div>
+
+    <!-- Footer actions -->
+    <div class="flex items-center justify-end gap-2 pt-4 border-t border-gray-100 dark:border-gray-700">
+      <button class="btn-secondary" (click)="closeWearPartDetail()">Schließen</button>
+      <button class="btn-primary" (click)="closeWearPartDetail(); startEditWearPart(detailWearPart!)">
+        <lucide-icon name="pencil" [size]="14" aria-hidden="true"></lucide-icon>
+        Bearbeiten
+      </button>
+    </div>
+  </div>
+</div>
 
 <!-- Delete wear part confirmation modal -->
 <div *ngIf="showDeleteModal"
