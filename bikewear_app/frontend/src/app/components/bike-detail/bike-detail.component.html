@@ -72,6 +72,7 @@
             <th class="bg-gray-50 dark:bg-gray-800/60 w-1 p-0"></th>
             <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Name</th>
             <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Kategorie</th>
+            <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Position</th>
             <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Einbau</th>
             <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Gefahren</th>
             <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Erw. Ersatz</th>
@@ -89,6 +90,7 @@
             </td>
             <td class="px-4 py-3 font-medium text-gray-800 dark:text-text-dark">{{ part.name }}</td>
             <td class="px-4 py-3"><span class="badge">{{ part.kategorie }}</span></td>
+            <td class="px-4 py-3 text-gray-500 dark:text-text-dark text-xs">{{ part.position || '—' }}</td>
             <td class="px-4 py-3 text-gray-600 dark:text-text-dark">{{ part.einbauDatum | date:'dd.MM.yyyy' }}</td>
             <!-- Gefahrene km -->
             <td class="px-4 py-3 tabular-nums">
@@ -158,12 +160,36 @@
       </div>
       <div class="flex flex-col gap-1">
         <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Kategorie</label>
-        <select [(ngModel)]="editingWearPart.kategorie" class="form-input">
+        <select [(ngModel)]="editingWearPart.kategorie" (ngModelChange)="onEditKategorieChange()" class="form-input">
           <option value="Reifen">Reifen</option>
           <option value="Kassette">Kassette</option>
           <option value="Kettenblatt">Kettenblatt</option>
           <option value="Kette">Kette</option>
           <option value="Sonstiges">Sonstiges</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Position for Reifen / Kettenblatt -->
+    <div *ngIf="editingWearPart.kategorie === 'Reifen' || editingWearPart.kategorie === 'Kettenblatt'"
+         class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">
+          Position
+          <span class="font-normal text-gray-400 ml-1">(optional)</span>
+        </label>
+        <select [(ngModel)]="editingWearPart.position" class="form-input">
+          <option [ngValue]="null">– keine Angabe –</option>
+          <ng-container *ngIf="editingWearPart.kategorie === 'Reifen'">
+            <option value="Vorderrad">Vorderrad</option>
+            <option value="Hinterrad">Hinterrad</option>
+          </ng-container>
+          <ng-container *ngIf="editingWearPart.kategorie === 'Kettenblatt'">
+            <option value="Einteilig">Einteilig</option>
+            <option value="Klein">Klein</option>
+            <option value="Groß">Groß</option>
+            <option value="Mittel">Mittel</option>
+          </ng-container>
         </select>
       </div>
     </div>

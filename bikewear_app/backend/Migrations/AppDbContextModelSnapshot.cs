@@ -157,6 +157,9 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Position")
+                        .HasColumnType("text");
+
                     b.Property<int>("RadId")
                         .HasColumnType("integer");
 

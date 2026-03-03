@@ -5,6 +5,7 @@ export interface WearPart {
   radId: number;
   name: string;
   kategorie: WearPartCategory;
+  position: string | null;
   einbauKilometerstand: number;
   ausbauKilometerstand: number | null;
   einbauDatum: Date;

@@ -47,6 +47,7 @@ namespace App.Services
             }
             existing.Name = wearPart.Name;
             existing.Kategorie = wearPart.Kategorie;
+            existing.Position = wearPart.Position;
             existing.EinbauKilometerstand = wearPart.EinbauKilometerstand;
             existing.AusbauKilometerstand = wearPart.AusbauKilometerstand;
             existing.EinbauDatum = wearPart.EinbauDatum;
