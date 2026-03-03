@@ -33,6 +33,7 @@ describe('WearPartService', () => {
     ausbauKilometerstand: null,
     einbauDatum: new Date('2024-01-01'),
     ausbauDatum: null,
+    notizen: null,
   };
 
   it('getWearParts() sends a GET request to the correct endpoint', () => {
