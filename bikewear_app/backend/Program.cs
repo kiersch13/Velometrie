@@ -5,11 +5,10 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using System.Text.Json.Serialization;
 
-// Npgsql 6+ changed DateTime handling for 'timestamp with time zone' columns:
-// DateTime with Kind=Unspecified/Local now throws. Re-enable the legacy behavior
-// so existing DateTime model properties continue to work with timestamptz columns.
-// Long-term fix: migrate columns to 'timestamp without time zone' or use DateTimeOffset.
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+// Npgsql 9+ changed DateTime handling for 'timestamp with time zone' columns:
+// DateTime with Kind=Unspecified/Local now throws. The EnableLegacyTimestampBehavior
+// switch was removed in Npgsql 9.0. Instead, WearPart DateTime columns are configured
+// as 'timestamp without time zone' in AppDbContext and migrated accordingly.
 
 var builder = WebApplication.CreateBuilder(args);
 

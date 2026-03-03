@@ -139,13 +139,13 @@ namespace Backend.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("AusbauDatum")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int?>("AusbauKilometerstand")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("EinbauDatum")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("EinbauKilometerstand")
                         .HasColumnType("integer");

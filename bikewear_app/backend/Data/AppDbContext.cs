@@ -24,6 +24,16 @@ namespace App.Data
                 .HasForeignKey(w => w.RadId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // Npgsql 9+ maps DateTime to 'timestamp with time zone' by default, which
+            // requires DateTimeKind.Utc. Since the app stores wall-clock dates (no timezone
+            // semantics), use 'timestamp without time zone' so plain DateTime works correctly.
+            modelBuilder.Entity<WearPart>()
+                .Property(w => w.EinbauDatum)
+                .HasColumnType("timestamp without time zone");
+            modelBuilder.Entity<WearPart>()
+                .Property(w => w.AusbauDatum)
+                .HasColumnType("timestamp without time zone");
+
             // Unique index on Email (nullable; multiple NULLs are allowed in PostgreSQL UNIQUE indexes)
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
