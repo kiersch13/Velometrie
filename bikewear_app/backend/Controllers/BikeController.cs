@@ -96,5 +96,12 @@ namespace App.Controllers
                 return BadRequest("Kilometerstand konnte nicht berechnet werden.");
             }
         }
+
+        [HttpGet("{id}/weekly-avg-km")]
+        public async Task<ActionResult<double?>> GetWeeklyAvgKm(int id)
+        {
+            var result = await _bikeService.GetWeeklyAvgKmAsync(id, GetCurrentUserId());
+            return Ok(result);
+        }
     }
 }

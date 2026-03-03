@@ -14,5 +14,6 @@ namespace App.Services
         Task<Bike?> UpdateBikeAsync(int id, int userId, Bike bike);
         Task<bool> DeleteBikeAsync(int id, int userId);
         Task<int?> GetOdometerAtDateAsync(int bikeId, int userId, DateTime date);
+        Task<double?> GetWeeklyAvgKmAsync(int bikeId, int userId);
     }
 }

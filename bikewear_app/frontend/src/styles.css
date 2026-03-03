@@ -15,6 +15,10 @@
     @apply bg-error hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-lg px-4 py-2 text-sm cursor-pointer transition-colors duration-150 inline-flex items-center gap-1.5;
   }
 
+  .btn-warning {
+    @apply bg-warning hover:bg-warning/90 disabled:opacity-60 disabled:cursor-not-allowed text-white font-medium rounded-lg px-4 py-2 text-sm cursor-pointer transition-colors duration-150 inline-flex items-center gap-1.5;
+  }
+
   .form-input {
     @apply w-full px-3 py-2 border border-gray-200 focus:border-accent focus:ring-1 focus:ring-accent rounded-lg text-sm outline-none transition-colors duration-150 dark:bg-bg-dark dark:border-gray-600 dark:text-text-dark;
   }

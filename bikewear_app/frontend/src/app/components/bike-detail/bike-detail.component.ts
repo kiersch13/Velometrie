@@ -29,6 +29,12 @@ export class BikeDetailComponent implements OnInit {
   editBikeKategorie: BikeCategory = BikeCategory.Rennrad;
   editBikeKilometerstand = 0;
 
+  weeklyAvgKm: number | null = null;
+
+  // Delete wear part confirmation modal
+  showDeleteModal = false;
+  deleteModalPartId: number | null = null;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -45,6 +51,10 @@ export class BikeDetailComponent implements OnInit {
         this.bike = bike;
         this.loading = false;
         this.loadWearParts(id);
+        this.bikeService.getWeeklyAvgKm(id).subscribe({
+          next: avg => this.weeklyAvgKm = avg,
+          error: () => this.weeklyAvgKm = null
+        });
       },
       error: () => {
         this.error = 'Rad nicht gefunden.';
@@ -146,6 +156,45 @@ export class BikeDetailComponent implements OnInit {
     });
   }
 
+  openDeleteModal(id: number): void {
+    this.deleteModalPartId = id;
+    this.showDeleteModal = true;
+  }
+
+  cancelDelete(): void {
+    this.showDeleteModal = false;
+    this.deleteModalPartId = null;
+  }
+
+  confirmDeleteWearPart(): void {
+    if (this.deleteModalPartId == null) return;
+    this.wearPartService.deleteWearPart(this.deleteModalPartId).subscribe({
+      next: () => {
+        this.showDeleteModal = false;
+        this.deleteModalPartId = null;
+        this.editingWearPart = null;
+        if (this.bike) this.loadWearParts(this.bike.id);
+      },
+      error: () => {
+        this.error = 'Fehler beim Löschen des Verschleißteils.';
+        this.showDeleteModal = false;
+        this.deleteModalPartId = null;
+      }
+    });
+  }
+
+  getExpectedAusbauDate(part: WearPart): Date | null {
+    if (this.weeklyAvgKm == null || this.weeklyAvgKm <= 0) return null;
+    const lifetime = this.lifetimeService.getLifetime(part.kategorie);
+    const gefahren = this.getGefahreneKm(part);
+    const remaining = lifetime - gefahren;
+    if (remaining <= 0) return new Date();
+    const weeksUntil = remaining / this.weeklyAvgKm;
+    const result = new Date();
+    result.setDate(result.getDate() + Math.round(weeksUntil * 7));
+    return result;
+  }
+
   goBack(): void {
     this.router.navigate(['/bikes']);
   }
@@ -170,8 +219,11 @@ export class BikeDetailComponent implements OnInit {
   }
 
   getGefahreneKm(part: WearPart): number {
-    if (!this.isInstalled(part) && part.ausbauKilometerstand != null && part.ausbauKilometerstand > 0) {
-      return Math.max(0, part.ausbauKilometerstand - part.einbauKilometerstand);
+    if (!this.isInstalled(part)) {
+      if (part.ausbauKilometerstand != null && part.ausbauKilometerstand > 0) {
+        return Math.max(0, part.ausbauKilometerstand - part.einbauKilometerstand);
+      }
+      return 0;
     }
     return Math.max(0, (this.bike?.kilometerstand ?? part.einbauKilometerstand) - part.einbauKilometerstand);
   }

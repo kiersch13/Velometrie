@@ -84,7 +84,19 @@ namespace App.Services
                 return bike.Kilometerstand;
 
             var kmSince = await _stravaService.GetActivityKmOnGearAfterDateAsync(userId, bike.StravaId, date);
-            return bike.Kilometerstand - (int)Math.Round(kmSince);
+            return Math.Max(0, bike.Kilometerstand - (int)Math.Round(kmSince));
+        }
+
+        public async Task<double?> GetWeeklyAvgKmAsync(int bikeId, int userId)
+        {
+            var bike = await _context.Rads.FirstOrDefaultAsync(b => b.Id == bikeId && b.UserId == userId);
+            if (bike == null) return null;
+
+            if (string.IsNullOrEmpty(bike.StravaId)) return null;
+
+            var sixWeeksAgo = DateTime.UtcNow.AddDays(-42);
+            var kmInSixWeeks = await _stravaService.GetActivityKmOnGearAfterDateAsync(userId, bike.StravaId, sixWeeksAgo);
+            return kmInSixWeeks / 6.0;
         }
     }
 }

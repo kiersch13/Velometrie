@@ -72,13 +72,13 @@ export class BikeListComponent implements OnInit {
   getCategoryBadgeClass(kategorie: BikeCategory): string {
     switch (kategorie) {
       case BikeCategory.Rennrad:
-        return 'inline-block rounded-md px-2 py-0.5 text-xs font-medium bg-accent/10 text-accent';
+        return 'badge bg-accent/10 text-accent';
       case BikeCategory.Gravel:
-        return 'inline-block rounded-md px-2 py-0.5 text-xs font-medium bg-success/10 text-success';
+        return 'badge bg-success/10 text-success';
       case BikeCategory.Mountainbike:
-        return 'inline-block rounded-md px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400';
+        return 'badge bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400';
       default:
-        return 'inline-block rounded-md px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-600';
+        return 'badge';
     }
   }
 }
