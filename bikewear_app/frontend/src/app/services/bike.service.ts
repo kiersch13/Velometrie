@@ -40,4 +40,8 @@ export class BikeService {
   getOdometerAt(bikeId: number, date: string): Observable<number> {
     return this.http.get<number>(`${this.apiUrl}/${bikeId}/odometer-at?date=${date}`);
   }
+
+  getWeeklyAvgKm(bikeId: number): Observable<number | null> {
+    return this.http.get<number | null>(`${this.apiUrl}/${bikeId}/weekly-avg-km`);
+  }
 }
