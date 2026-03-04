@@ -251,7 +251,13 @@
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" *ngIf="!loading && !error && teile.length > 0">
   <div
     *ngFor="let teil of teile"
-    class="card p-5 flex flex-col gap-3 hover:-translate-y-0.5 hover:shadow-card-hover transition-all duration-150">
+    class="card p-5 flex flex-col gap-3 hover:-translate-y-0.5 hover:shadow-card-hover transition-all duration-150 cursor-pointer"
+    (click)="openAddToBikeDialog(teil)"
+    (keydown.enter)="openAddToBikeDialog(teil)"
+    (keydown.space)="openAddToBikeDialog(teil)"
+    role="button"
+    tabindex="0"
+    [attr.aria-label]="'Zu Rad hinzufügen: ' + teil.name">
 
     <!-- Top row: part category badge + speed badge -->
     <div class="flex items-start justify-between gap-2">
@@ -283,16 +289,6 @@
        class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-3 flex-1">
       {{ teil.beschreibung }}
     </p>
-
-    <!-- Add to bike button -->
-    <div class="pt-2 border-t border-gray-100 dark:border-gray-700 mt-auto">
-      <button
-        class="btn-secondary text-xs w-full flex items-center justify-center gap-1.5"
-        (click)="openAddToBikeDialog(teil)">
-        <lucide-icon name="plus" [size]="13" aria-hidden="true"></lucide-icon>
-        Zu Rad hinzufügen
-      </button>
-    </div>
   </div>
 </div>
 
