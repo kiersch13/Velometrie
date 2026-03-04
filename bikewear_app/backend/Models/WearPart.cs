@@ -36,6 +36,12 @@ namespace App.Models
 
         public string? Notizen { get; set; }
 
+        /// <summary>ID des Vorgänger-Eintrags, wenn dieses Teil von einem anderen Rad umgebaut wurde.</summary>
+        public int? VorgaengerId { get; set; }
+
+        /// <summary>Optionale Gruppenzugehörigkeit (z.B. Hinterrad-Gruppe).</summary>
+        public int? GruppeId { get; set; }
+
         /// <summary>Reifenbreite in Millimetern (nur für Reifen relevant).</summary>
         public int? ReifenBreiteMm { get; set; }
 

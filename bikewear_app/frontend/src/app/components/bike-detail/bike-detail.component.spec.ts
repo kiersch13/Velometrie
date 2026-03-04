@@ -6,6 +6,7 @@ import { of } from 'rxjs';
 import { BikeDetailComponent } from './bike-detail.component';
 import { BikeService } from '../../services/bike.service';
 import { WearPartService } from '../../services/wear-part.service';
+import { WearPartGruppeService } from '../../services/wear-part-gruppe.service';
 import { ServiceEintragService } from '../../services/service-eintrag.service';
 import { LifetimeSettingsService } from '../../services/lifetime-settings.service';
 import { BikeCategory } from '../../models/bike-category';
@@ -27,6 +28,8 @@ function makePart(overrides: Partial<WearPart> = {}): WearPart {
     einbauFahrstunden: null,
     ausbauFahrstunden: null,
     notizen: null,
+    vorgaengerId: null,
+    gruppeId: null,
     ...overrides,
   };
 }
@@ -62,6 +65,12 @@ describe('BikeDetailComponent – Reifen-Edit & getPartConfigSummary', () => {
       add: jest.fn(),
       delete: jest.fn(),
     };
+    const wearPartGruppeServiceMock = {
+      getByBike: jest.fn().mockReturnValue(of([])),
+      add: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    };
 
     await TestBed.configureTestingModule({
       declarations: [BikeDetailComponent],
@@ -70,6 +79,7 @@ describe('BikeDetailComponent – Reifen-Edit & getPartConfigSummary', () => {
         { provide: Router, useValue: routerMock },
         { provide: BikeService, useValue: bikeServiceMock },
         { provide: WearPartService, useValue: wearPartServiceMock },
+        { provide: WearPartGruppeService, useValue: wearPartGruppeServiceMock },
         { provide: ServiceEintragService, useValue: serviceEintragServiceMock },
         { provide: LifetimeSettingsService, useValue: lifetimeServiceMock },
       ],

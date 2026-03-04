@@ -55,6 +55,11 @@ namespace App.Services
             existing.EinbauFahrstunden = wearPart.EinbauFahrstunden;
             existing.AusbauFahrstunden = wearPart.AusbauFahrstunden;
             existing.Notizen = wearPart.Notizen;
+            existing.GruppeId = wearPart.GruppeId;
+            existing.ReifenBreiteMm = wearPart.ReifenBreiteMm;
+            existing.ReifenBreiteZoll = wearPart.ReifenBreiteZoll;
+            existing.ReifenDruckBar = wearPart.ReifenDruckBar;
+            existing.ReifenDruckPsi = wearPart.ReifenDruckPsi;
             await _context.SaveChangesAsync();
             return existing;
         }
@@ -69,6 +74,87 @@ namespace App.Services
             _context.Verschleissteile.Remove(wearPart);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<WearPart?> MoveWearPartAsync(int id, MoveWearPartRequest request, int userId)
+        {
+            var existing = await _context.Verschleissteile.FindAsync(id);
+            if (existing == null)
+            {
+                return null;
+            }
+
+            // Validate target bike exists and belongs to the same user
+            var targetBike = await _context.Rads.FirstOrDefaultAsync(b => b.Id == request.ZielRadId && b.UserId == userId);
+            if (targetBike == null)
+            {
+                return null;
+            }
+
+            // Close the current installation
+            existing.AusbauKilometerstand = request.AusbauKilometerstand;
+            existing.AusbauDatum = request.AusbauDatum;
+            existing.AusbauFahrstunden = request.AusbauFahrstunden;
+
+            // Create a new installation on the target bike
+            var newPart = new WearPart
+            {
+                RadId = request.ZielRadId,
+                Name = existing.Name,
+                Kategorie = existing.Kategorie,
+                Position = existing.Position,
+                EinbauKilometerstand = request.EinbauKilometerstand,
+                EinbauDatum = request.EinbauDatum,
+                EinbauFahrstunden = request.EinbauFahrstunden,
+                Notizen = existing.Notizen,
+                ReifenBreiteMm = existing.ReifenBreiteMm,
+                ReifenBreiteZoll = existing.ReifenBreiteZoll,
+                ReifenDruckBar = existing.ReifenDruckBar,
+                ReifenDruckPsi = existing.ReifenDruckPsi,
+                VorgaengerId = existing.Id,
+                // GruppeId intentionally null — groups are per-bike
+            };
+
+            _context.Verschleissteile.Add(newPart);
+            await _context.SaveChangesAsync();
+            return newPart;
+        }
+
+        public async Task<IEnumerable<WearPart>> GetWearPartHistoryAsync(int id)
+        {
+            var part = await _context.Verschleissteile.FindAsync(id);
+            if (part == null)
+            {
+                return Enumerable.Empty<WearPart>();
+            }
+
+            var chain = new List<WearPart>();
+
+            // Walk backwards to find the root
+            var current = part;
+            while (current.VorgaengerId != null)
+            {
+                var predecessor = await _context.Verschleissteile.FindAsync(current.VorgaengerId);
+                if (predecessor == null) break;
+                chain.Insert(0, predecessor);
+                current = predecessor;
+            }
+
+            // Add the queried part
+            chain.Add(part);
+
+            // Walk forwards to find successors
+            var currentId = part.Id;
+            while (true)
+            {
+                var successor = await _context.Verschleissteile
+                    .FirstOrDefaultAsync(w => w.VorgaengerId == currentId);
+                if (successor == null) break;
+                chain.Add(successor);
+                currentId = successor.Id;
+            }
+
+            return chain;
         }
     }
 }

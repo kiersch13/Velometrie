@@ -9,7 +9,8 @@ import {
   Inbox, AlertCircle, Loader2, CheckCircle2, XCircle,
   Unplug, Cable, Tag, Gauge, ArrowRight, Zap, RefreshCw, Trash2,
   Compass, Mountain, LogIn, UserPlus, LogOut, Sparkles, Search, X, Info,
-  Wrench, Clock, CalendarDays, ChevronDown, User, Sliders
+  Wrench, Clock, CalendarDays, ChevronDown, User, Sliders,
+  MoveRight, FolderPlus, FolderOpen, History, Circle
 } from 'lucide-angular';
 
 import { AppComponent } from './app.component';
@@ -49,7 +50,8 @@ import { CredentialsInterceptor } from './interceptors/credentials.interceptor';
       Inbox, AlertCircle, Loader2, CheckCircle2, XCircle,
       Unplug, Cable, Tag, Gauge, ArrowRight, Zap, RefreshCw, Trash2,
       Compass, Mountain, LogIn, UserPlus, LogOut, Sparkles, Search, X, Info,
-      Wrench, Clock, CalendarDays, ChevronDown, User, Sliders
+      Wrench, Clock, CalendarDays, ChevronDown, User, Sliders,
+      MoveRight, FolderPlus, FolderOpen, History, Circle
     }),
   ],
   providers: [

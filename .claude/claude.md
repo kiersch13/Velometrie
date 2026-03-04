@@ -64,6 +64,8 @@ These are deliberate choices that are **not visible from the code alone**. Follo
 - **Anti-forgery state** — `GET /api/auth/strava/redirect-url` returns `{ url, state }`. The `state` (GUID stored in `IMemoryCache` for 10 min, keyed to userId) must be echoed back in the callback to prevent CSRF.
 - **No tokens on the wire** — `User.AccessToken`, `User.RefreshToken`, `User.TokenExpiresAt`, `User.PasswordHash` are all `[JsonIgnore]`. Only `id`, `email`, `anzeigename`, `vorname`, `stravaVerbunden` are serialized.
 - **`User` model extended** — `Email` (nullable, unique index), `PasswordHash` (nullable, `[JsonIgnore]`), `Anzeigename` (nullable) added. `StravaId`, `AccessToken`, `RefreshToken` are now nullable (were non-null before).
+- **WearPart move history via `VorgaengerId`** — `WearPart.VorgaengerId` (nullable self-referencing FK, `SetNull` on delete) creates a linked chain of installation records for the same physical part across bikes. Moving a part creates a new `WearPart` row on the target bike (copying properties, clearing `GruppeId`) with `VorgaengerId` pointing to the closed-out source record.
+- **WearPart groups via `GruppeId`** — `WearPartGruppe` (`Id`, `Name`, `RadId`) is a per-bike grouping entity. `WearPart.GruppeId` is a nullable FK (`SetNull` on delete). Parts can optionally belong to one group.
 - **Frontend session** — No localStorage. `AuthService.loadCurrentUser()` is called by `AppComponent.ngOnInit()` and calls `GET /api/auth/me`. `CredentialsInterceptor` adds `withCredentials: true` to all requests.
 - **Scoped DI** — all services are registered as `Scoped`.
 - **Async throughout** — every service method and controller action must be `async Task<…>`.
@@ -149,6 +151,8 @@ colors: {
   - Configure `Strava:WebhookVerifyToken` in `appsettings.json` (or env var) before registering the webhook with Strava
 - Full CRUD for `Bike` (Create, Read, UpdateKilometerstand, UpdateBike, Delete) — backend + frontend + UI
 - Full CRUD for `WearPart` (Create, Read, Update, Delete) — backend + frontend + UI (inline edit form in bike-detail)
+- **WearPart move with history** — `POST /api/wearpart/{id}/move` closes the current installation (sets ausbau fields) and creates a new record on the target bike with `VorgaengerId` linking back. `GET /api/wearpart/{id}/history` returns the full chain. Frontend: "Umbauen" button in edit modal, bike picker, history modal in detail view.
+- **WearPart groups** — `WearPartGruppe` entity (`Id`, `Name`, `RadId`); `WearPart.GruppeId` nullable FK (SetNull on delete). Full CRUD via `WearPartGruppeController` (`api/wearpartgruppe`). Frontend: groups management card on bike-detail, group assignment dropdown in edit modal.
 - Frontend: Login (`/login`) and Register (`/register`) pages; `CredentialsInterceptor` for automatic `withCredentials`; session loaded on app startup via `AuthService.loadCurrentUser()`
 
 **Planned (not yet implemented):**

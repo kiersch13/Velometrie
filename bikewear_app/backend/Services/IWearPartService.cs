@@ -12,5 +12,7 @@ namespace App.Services
         Task<WearPart> AddWearPartAsync(WearPart wearPart);
         Task<WearPart?> UpdateWearPartAsync(int id, WearPart wearPart);
         Task<bool> DeleteWearPartAsync(int id);
+        Task<WearPart?> MoveWearPartAsync(int id, MoveWearPartRequest request, int userId);
+        Task<IEnumerable<WearPart>> GetWearPartHistoryAsync(int id);
     }
 }
