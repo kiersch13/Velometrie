@@ -39,6 +39,8 @@ export class BikeDetailComponent implements OnInit {
   editBikeFahrstunden = 0;
 
   weeklyAvgKm: number | null = null;
+  loadingOdometerEdit = false;
+  loadingOdometerAusbauEdit = false;
 
   // Delete wear part confirmation modal
   showDeleteModal = false;
@@ -226,6 +228,18 @@ export class BikeDetailComponent implements OnInit {
   set editEinbauDatumStr(val: string) {
     if (this.editingWearPart && val) {
       this.editingWearPart.einbauDatum = new Date(val);
+      if (this.bike) {
+        this.loadingOdometerEdit = true;
+        this.bikeService.getOdometerAt(this.bike.id, val).subscribe({
+          next: (km) => {
+            this.editingWearPart!.einbauKilometerstand = km;
+            this.loadingOdometerEdit = false;
+          },
+          error: () => {
+            this.loadingOdometerEdit = false;
+          }
+        });
+      }
     }
   }
 
@@ -237,6 +251,18 @@ export class BikeDetailComponent implements OnInit {
   set editAusbauDatumStr(val: string) {
     if (this.editingWearPart) {
       this.editingWearPart.ausbauDatum = val ? new Date(val) : null;
+      if (val && this.bike) {
+        this.loadingOdometerAusbauEdit = true;
+        this.bikeService.getOdometerAt(this.bike.id, val).subscribe({
+          next: (km) => {
+            this.editingWearPart!.ausbauKilometerstand = km;
+            this.loadingOdometerAusbauEdit = false;
+          },
+          error: () => {
+            this.loadingOdometerAusbauEdit = false;
+          }
+        });
+      }
     }
   }
 
@@ -334,7 +360,7 @@ export class BikeDetailComponent implements OnInit {
 
   getExpectedReplacementKm(part: WearPart): number {
     const bikeKat = this.bike?.kategorie ?? BikeCategory.Rennrad;
-    return part.einbauKilometerstand + this.lifetimeService.getLifetime(part.kategorie, bikeKat);
+    return this.lifetimeService.getLifetime(part.kategorie, bikeKat);
   }
 
   getLifetimePercent(part: WearPart): number {
