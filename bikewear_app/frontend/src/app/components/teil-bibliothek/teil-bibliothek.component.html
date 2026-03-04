@@ -418,9 +418,13 @@
 
       <!-- Einbau Kilometerstand -->
       <div>
-        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Einbau Kilometerstand</label>
+        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+          Einbau Kilometerstand
+          <lucide-icon *ngIf="loadingOdometerBibliothek" name="loader-2" [size]="12" class="animate-spin text-accent" aria-hidden="true"></lucide-icon>
+        </label>
         <input type="number" class="form-input w-full text-sm" min="0"
-               [(ngModel)]="addToBikePart.einbauKilometerstand" />
+               [(ngModel)]="addToBikePart.einbauKilometerstand"
+               [disabled]="loadingOdometerBibliothek" />
       </div>
 
       <!-- Notizen -->
