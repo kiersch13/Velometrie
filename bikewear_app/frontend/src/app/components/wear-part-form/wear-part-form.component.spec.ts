@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import { WearPartFormComponent } from './wear-part-form.component';
 import { WearPartService } from '../../services/wear-part.service';
@@ -221,6 +221,42 @@ describe('WearPartFormComponent – Reifen-Konvertierung', () => {
       component.onReifenDruckBarChange();
       component.onReifenDruckPsiChange();
       expect(component.part.reifenDruckBar).toBeCloseTo(5.0, 0);
+    });
+  });
+
+  // ── ausbauDatumStr – Kilometerstand-Neuberechnung ──────────────────────────
+
+  describe('ausbauDatumStr setter', () => {
+    let bikeService: any;
+
+    beforeEach(() => {
+      bikeService = TestBed.inject(BikeService);
+    });
+
+    it('calls getOdometerAt and updates ausbauKilometerstand when a date is set', () => {
+      bikeService.getOdometerAt.mockReturnValue(of(1500));
+      component.ausbauDatumStr = '2024-06-01';
+      expect(bikeService.getOdometerAt).toHaveBeenCalledWith(1, '2024-06-01');
+      expect(component.part.ausbauKilometerstand).toBe(1500);
+    });
+
+    it('sets ausbauDatum to the given date', () => {
+      bikeService.getOdometerAt.mockReturnValue(of(0));
+      component.ausbauDatumStr = '2024-06-01';
+      expect(component.part.ausbauDatum).toEqual(new Date('2024-06-01'));
+    });
+
+    it('clears ausbauDatum and does not call getOdometerAt when value is empty', () => {
+      bikeService.getOdometerAt.mockClear();
+      component.ausbauDatumStr = '';
+      expect(component.part.ausbauDatum).toBeFalsy();
+      expect(bikeService.getOdometerAt).not.toHaveBeenCalled();
+    });
+
+    it('clears loadingOdometerAusbau on error', () => {
+      bikeService.getOdometerAt.mockReturnValue(throwError(() => new Error('error')));
+      component.ausbauDatumStr = '2024-06-01';
+      expect(component.loadingOdometerAusbau).toBe(false);
     });
   });
 });

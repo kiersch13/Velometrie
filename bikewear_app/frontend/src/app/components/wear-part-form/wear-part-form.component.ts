@@ -38,6 +38,7 @@ export class WearPartFormComponent implements OnInit {
   error = '';
   saving = false;
   loadingOdometer = false;
+  loadingOdometerAusbau = false;
 
   /** Show checkbox to also mount tire on the other wheel */
   mountOnOtherWheel = false;
@@ -192,6 +193,18 @@ export class WearPartFormComponent implements OnInit {
 
   set ausbauDatumStr(val: string) {
     this.part.ausbauDatum = val ? new Date(val) : undefined as any;
+    if (val && this.radId) {
+      this.loadingOdometerAusbau = true;
+      this.bikeService.getOdometerAt(this.radId, val).subscribe({
+        next: (km) => {
+          this.part.ausbauKilometerstand = km;
+          this.loadingOdometerAusbau = false;
+        },
+        error: () => {
+          this.loadingOdometerAusbau = false;
+        }
+      });
+    }
   }
 
   // ── Autocomplete ──────────────────────────────────────────────────────────
