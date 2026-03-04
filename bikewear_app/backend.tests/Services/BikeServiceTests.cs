@@ -172,7 +172,7 @@ public class BikeServiceTests
         await context.SaveChangesAsync();
 
         var service = new BikeService(context, new FakeStravaService());
-        var updated = new Bike { Name = "Neues Rad", Kategorie = BikeCategory.Gravel, Kilometerstand = 500, UserId = 1 };
+        var updated = new Bike { Name = "Neues Rad", Kategorie = BikeCategory.Gravel, Kilometerstand = 500, Fahrstunden = 42.5, UserId = 1 };
 
         // Act
         var result = await service.UpdateBikeAsync(bike.Id, userId: 1, bike: updated);
@@ -182,6 +182,7 @@ public class BikeServiceTests
         Assert.Equal("Neues Rad", result.Name);
         Assert.Equal(BikeCategory.Gravel, result.Kategorie);
         Assert.Equal(500, result.Kilometerstand);
+        Assert.Equal(42.5, result.Fahrstunden);
     }
 
     [Fact]
