@@ -229,8 +229,11 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div class="flex flex-col gap-1">
-        <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Einbau Kilometerstand</label>
-        <input type="number" [(ngModel)]="editingWearPart.einbauKilometerstand" min="0" class="form-input" />
+        <label class="text-xs font-semibold text-gray-500 dark:text-text-dark flex items-center gap-1.5">
+          Einbau Kilometerstand
+          <lucide-icon *ngIf="loadingOdometerEdit" name="loader-2" [size]="12" class="animate-spin text-accent" aria-hidden="true"></lucide-icon>
+        </label>
+        <input type="number" [(ngModel)]="editingWearPart.einbauKilometerstand" min="0" class="form-input" [disabled]="loadingOdometerEdit" />
       </div>
       <div class="flex flex-col gap-1">
         <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Einbau Datum</label>
@@ -240,11 +243,12 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
       <div class="flex flex-col gap-1">
-        <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">
+        <label class="text-xs font-semibold text-gray-500 dark:text-text-dark flex items-center gap-1.5">
           Ausbau Kilometerstand
-          <span class="font-normal text-gray-400 ml-1">(optional)</span>
+          <lucide-icon *ngIf="loadingOdometerAusbauEdit" name="loader-2" [size]="12" class="animate-spin text-accent" aria-hidden="true"></lucide-icon>
+          <span *ngIf="!loadingOdometerAusbauEdit" class="font-normal text-gray-400 ml-1">(optional)</span>
         </label>
-        <input type="number" [(ngModel)]="editingWearPart.ausbauKilometerstand" min="0" class="form-input" />
+        <input type="number" [(ngModel)]="editingWearPart.ausbauKilometerstand" min="0" class="form-input" [disabled]="loadingOdometerAusbauEdit" />
       </div>
       <div class="flex flex-col gap-1">
         <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">
