@@ -174,12 +174,21 @@
     </div>
   </div>
 
-  <!-- Inline wear part edit form -->
-  <div *ngIf="editingWearPart" class="card p-6 mt-4">
-    <h4 class="text-sm font-semibold text-primary dark:text-text-dark mb-4 flex items-center gap-2">
-      <lucide-icon name="pencil" [size]="14" class="text-accent" aria-hidden="true"></lucide-icon>
-      Verschleißteil bearbeiten
-    </h4>
+<!-- Wear part edit modal -->
+<div *ngIf="editingWearPart"
+     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+     (click)="editingWearPart = null">
+  <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-card w-full max-w-lg p-6 overflow-y-auto max-h-[90vh]"
+       (click)="$event.stopPropagation()">
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="text-base font-semibold text-primary dark:text-text-dark flex items-center gap-2">
+        <lucide-icon name="pencil" [size]="14" class="text-accent" aria-hidden="true"></lucide-icon>
+        Verschleißteil bearbeiten
+      </h3>
+      <button class="btn-secondary !p-1.5" aria-label="Schließen" (click)="editingWearPart = null">
+        <lucide-icon name="x" [size]="15" aria-hidden="true"></lucide-icon>
+      </button>
+    </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div class="flex flex-col gap-1">
@@ -238,7 +247,7 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div class="flex flex-col gap-1">
         <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">
           Ausbau Kilometerstand
@@ -256,7 +265,7 @@
     </div>
 
     <!-- Reifen-spezifische Felder -->
-    <div *ngIf="editingWearPart.kategorie === 'Reifen'" class="mb-5">
+    <div *ngIf="editingWearPart.kategorie === 'Reifen'" class="mb-4">
       <p class="text-xs font-semibold text-gray-500 dark:text-text-dark mb-3 flex items-center gap-1.5">
         <lucide-icon name="circle" [size]="12" class="text-accent" aria-hidden="true"></lucide-icon>
         Reifen-Konfiguration
@@ -285,7 +294,7 @@
     </div>
 
     <!-- Federung: Fahrstunden -->
-    <div *ngIf="editingWearPart.kategorie === 'Federung'" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+    <div *ngIf="editingWearPart.kategorie === 'Federung'" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div class="flex flex-col gap-1">
         <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">
           Einbau Fahrstunden
@@ -324,6 +333,7 @@
       </div>
     </div>
   </div>
+</div>
 
   <!-- Bike edit modal -->
   <div *ngIf="showBikeEditModal"
