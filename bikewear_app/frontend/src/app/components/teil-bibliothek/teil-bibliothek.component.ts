@@ -3,7 +3,11 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { TeilVorlage } from '../../models/teil-vorlage';
 import { WearPartCategory } from '../../models/wear-part-category';
+import { WearPart } from '../../models/wear-part';
+import { Bike } from '../../models/bike';
 import { TeilVorlageService } from '../../services/teil-vorlage.service';
+import { BikeService } from '../../services/bike.service';
+import { WearPartService } from '../../services/wear-part.service';
 
 @Component({
   selector: 'app-teil-bibliothek',
@@ -39,6 +43,16 @@ export class TeilBibliothekComponent implements OnInit {
     WearPartCategory.Sonstiges
   ];
 
+  // Add to bike dialog
+  bikes: Bike[] = [];
+  bikesLoading = false;
+  showAddToBikeDialog = false;
+  selectedTeil: TeilVorlage | null = null;
+  addToBikePart: Partial<WearPart> = {};
+  addToBikeLoading = false;
+  addToBikeError: string | null = null;
+  addToBikeSuccess = false;
+
   private readonly newTeilDefault: Partial<TeilVorlage> = {
     id: 0,
     name: '',
@@ -68,11 +82,17 @@ export class TeilBibliothekComponent implements OnInit {
 
   private readonly SUCCESS_MESSAGE_DURATION_MS = 1200;
 
-  constructor(private teilVorlageService: TeilVorlageService, private elRef: ElementRef) {}
+  constructor(
+    private teilVorlageService: TeilVorlageService,
+    private bikeService: BikeService,
+    private wearPartService: WearPartService,
+    private elRef: ElementRef
+  ) {}
 
   ngOnInit(): void {
     this.loadTeile();
     this.loadAllNamen();
+    this.loadBikes();
 
     this.searchInput$.pipe(
       debounceTime(200),
@@ -166,6 +186,99 @@ export class TeilBibliothekComponent implements OnInit {
     this.suchbegriff = '';
     this.showAutocomplete = false;
     this.loadTeile();
+  }
+
+  private loadBikes(): void {
+    this.bikesLoading = true;
+    this.bikeService.getBikes().subscribe({
+      next: (data) => {
+        this.bikes = data;
+        this.bikesLoading = false;
+      },
+      error: () => { this.bikesLoading = false; }
+    });
+  }
+
+  openAddToBikeDialog(teil: TeilVorlage): void {
+    this.selectedTeil = teil;
+    const defaultBike = this.bikes[0] ?? null;
+    this.addToBikePart = {
+      radId: defaultBike?.id ?? 0,
+      name: `${teil.hersteller} ${teil.name}`.trim(),
+      kategorie: teil.kategorie,
+      position: null,
+      einbauKilometerstand: defaultBike?.kilometerstand ?? 0,
+      ausbauKilometerstand: null,
+      einbauDatum: new Date(),
+      ausbauDatum: null,
+      einbauFahrstunden: defaultBike?.fahrstunden ?? null,
+      ausbauFahrstunden: null,
+      notizen: null
+    };
+    this.addToBikeError = null;
+    this.addToBikeSuccess = false;
+    this.showAddToBikeDialog = true;
+  }
+
+  closeAddToBikeDialog(): void {
+    this.showAddToBikeDialog = false;
+    this.selectedTeil = null;
+    this.addToBikeError = null;
+    this.addToBikeSuccess = false;
+  }
+
+  onAddToBikeRadChange(): void {
+    const bike = this.bikes.find(b => b.id === Number(this.addToBikePart.radId));
+    if (bike) {
+      this.addToBikePart.einbauKilometerstand = bike.kilometerstand;
+      this.addToBikePart.einbauFahrstunden = bike.fahrstunden;
+    }
+  }
+
+  get addToBikeEinbauDatumStr(): string {
+    if (!this.addToBikePart.einbauDatum) return '';
+    return new Date(this.addToBikePart.einbauDatum).toISOString().substring(0, 10);
+  }
+
+  set addToBikeEinbauDatumStr(val: string) {
+    this.addToBikePart.einbauDatum = val ? new Date(val) : (undefined as any);
+  }
+
+  get addToBikeShowPositionDropdown(): boolean {
+    return this.addToBikePart.kategorie === WearPartCategory.Reifen ||
+           this.addToBikePart.kategorie === WearPartCategory.Kettenblatt ||
+           this.addToBikePart.kategorie === WearPartCategory.Federung;
+  }
+
+  get addToBikePositions(): string[] {
+    if (this.addToBikePart.kategorie === WearPartCategory.Reifen) return ['Vorderrad', 'Hinterrad'];
+    if (this.addToBikePart.kategorie === WearPartCategory.Kettenblatt) return ['Einteilig', 'Klein', 'Groß', 'Mittel'];
+    if (this.addToBikePart.kategorie === WearPartCategory.Federung) return ['Federgabel', 'Dämpfer'];
+    return [];
+  }
+
+  saveAddToBike(): void {
+    if (!this.addToBikePart.radId) {
+      this.addToBikeError = 'Bitte ein Rad auswählen.';
+      return;
+    }
+    if (!this.addToBikePart.einbauDatum) {
+      this.addToBikeError = 'Bitte ein Einbaudatum angeben.';
+      return;
+    }
+    this.addToBikeLoading = true;
+    this.addToBikeError = null;
+    this.wearPartService.addWearPart(this.addToBikePart as WearPart).subscribe({
+      next: () => {
+        this.addToBikeLoading = false;
+        this.addToBikeSuccess = true;
+        setTimeout(() => this.closeAddToBikeDialog(), 1200);
+      },
+      error: () => {
+        this.addToBikeLoading = false;
+        this.addToBikeError = 'Teil konnte nicht hinzugefügt werden.';
+      }
+    });
   }
 
   /** Returns the individual bike category badges for a comma-separated string */

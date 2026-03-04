@@ -267,6 +267,16 @@
        class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-3 flex-1">
       {{ teil.beschreibung }}
     </p>
+
+    <!-- Add to bike button -->
+    <div class="pt-2 border-t border-gray-100 dark:border-gray-700 mt-auto">
+      <button
+        class="btn-secondary text-xs w-full flex items-center justify-center gap-1.5"
+        (click)="openAddToBikeDialog(teil)">
+        <lucide-icon name="plus" [size]="13" aria-hidden="true"></lucide-icon>
+        Zu Rad hinzufügen
+      </button>
+    </div>
   </div>
 </div>
 
@@ -309,6 +319,122 @@
           Supportanfrage
         </button>
       </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Add to bike dialog overlay -->
+<div *ngIf="showAddToBikeDialog"
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+  <div class="card w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
+
+    <!-- Header -->
+    <div class="flex items-start justify-between mb-5">
+      <div>
+        <h2 class="text-base font-semibold text-primary dark:text-text-dark">Zu Rad hinzufügen</h2>
+        <p class="text-xs text-gray-400 mt-0.5">{{ selectedTeil?.hersteller }} {{ selectedTeil?.name }}</p>
+      </div>
+      <button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 ml-4 shrink-0"
+              (click)="closeAddToBikeDialog()" aria-label="Schließen">
+        <lucide-icon name="x" [size]="18" aria-hidden="true"></lucide-icon>
+      </button>
+    </div>
+
+    <!-- Success -->
+    <div *ngIf="addToBikeSuccess"
+         class="flex items-center gap-2 mb-4 p-3 bg-success/10 border border-success/20 rounded-lg text-success text-xs">
+      <lucide-icon name="check-circle-2" [size]="14" aria-hidden="true"></lucide-icon>
+      Teil erfolgreich hinzugefügt.
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="addToBikeError"
+         class="flex items-center gap-2 mb-4 p-3 bg-error/10 border border-error/20 rounded-lg text-error text-xs">
+      <lucide-icon name="alert-circle" [size]="14" aria-hidden="true"></lucide-icon>
+      {{ addToBikeError }}
+    </div>
+
+    <div *ngIf="!addToBikeSuccess" class="grid grid-cols-1 gap-4">
+
+      <!-- Bike selector -->
+      <div>
+        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+          Rad <span class="text-error">*</span>
+        </label>
+        <div *ngIf="bikesLoading" class="flex items-center gap-2 text-xs text-gray-400">
+          <lucide-icon name="loader-2" [size]="13" class="animate-spin" aria-hidden="true"></lucide-icon>
+          Lädt Räder...
+        </div>
+        <select *ngIf="!bikesLoading"
+                class="form-input w-full text-sm"
+                [(ngModel)]="addToBikePart.radId"
+                (ngModelChange)="onAddToBikeRadChange()">
+          <option *ngFor="let bike of bikes" [value]="bike.id">{{ bike.name }}</option>
+        </select>
+        <p *ngIf="!bikesLoading && bikes.length === 0" class="text-xs text-gray-400 mt-1">
+          Noch keine Räder vorhanden. Bitte zuerst ein Rad anlegen.
+        </p>
+      </div>
+
+      <!-- Kategorie (read-only badge) -->
+      <div>
+        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Kategorie</label>
+        <span class="badge text-xs">{{ addToBikePart.kategorie }}</span>
+      </div>
+
+      <!-- Position (conditional) -->
+      <div *ngIf="addToBikeShowPositionDropdown">
+        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+          Position <span class="font-normal text-gray-400">(optional)</span>
+        </label>
+        <select class="form-input w-full text-sm" [(ngModel)]="addToBikePart.position">
+          <option [ngValue]="null">– keine Angabe –</option>
+          <option *ngFor="let pos of addToBikePositions" [value]="pos">{{ pos }}</option>
+        </select>
+      </div>
+
+      <!-- Einbau Datum -->
+      <div>
+        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+          Einbau Datum <span class="text-error">*</span>
+        </label>
+        <input type="date" class="form-input w-full text-sm"
+               [(ngModel)]="addToBikeEinbauDatumStr" />
+      </div>
+
+      <!-- Einbau Kilometerstand -->
+      <div>
+        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Einbau Kilometerstand</label>
+        <input type="number" class="form-input w-full text-sm" min="0"
+               [(ngModel)]="addToBikePart.einbauKilometerstand" />
+      </div>
+
+      <!-- Notizen -->
+      <div>
+        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+          Notizen <span class="font-normal text-gray-400">(optional)</span>
+        </label>
+        <textarea rows="2" class="form-input w-full text-sm resize-none"
+                  placeholder="Notizen zum Teil…"
+                  [ngModel]="addToBikePart.notizen"
+                  (ngModelChange)="addToBikePart.notizen = $event || null"></textarea>
+      </div>
+
+    </div>
+
+    <!-- Actions -->
+    <div class="flex justify-end gap-3 mt-5 pt-4 border-t border-gray-100 dark:border-gray-700">
+      <button class="btn-secondary text-sm" (click)="closeAddToBikeDialog()">Abbrechen</button>
+      <button
+        *ngIf="!addToBikeSuccess"
+        class="btn-primary text-sm flex items-center gap-2"
+        [disabled]="addToBikeLoading || bikes.length === 0"
+        (click)="saveAddToBike()">
+        <lucide-icon *ngIf="addToBikeLoading" name="loader-2" [size]="14" class="animate-spin" aria-hidden="true"></lucide-icon>
+        <lucide-icon *ngIf="!addToBikeLoading" name="check" [size]="14" aria-hidden="true"></lucide-icon>
+        {{ addToBikeLoading ? 'Speichert...' : 'Hinzufügen' }}
+      </button>
     </div>
 
   </div>
