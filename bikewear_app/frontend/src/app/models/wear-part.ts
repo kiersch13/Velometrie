@@ -11,4 +11,8 @@ export interface WearPart {
   einbauDatum: Date;
   ausbauDatum: Date | null;
   notizen: string | null;
+  reifenBreiteMm?: number | null;
+  reifenBreiteZoll?: number | null;
+  reifenDruckBar?: number | null;
+  reifenDruckPsi?: number | null;
 }

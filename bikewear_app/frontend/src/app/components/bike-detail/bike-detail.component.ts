@@ -133,6 +133,58 @@ export class BikeDetailComponent implements OnInit {
     }
   }
 
+  // ── Reifen-Edit: Konvertierung Breite & Druck ──────────────────────────────
+
+  onEditReifenBreiteMmChange(): void {
+    if (!this.editingWearPart) return;
+    const mm = this.editingWearPart.reifenBreiteMm;
+    if (mm != null && !isNaN(mm)) {
+      this.editingWearPart.reifenBreiteZoll = Math.round((mm / 25.4) * 10) / 10;
+    } else {
+      this.editingWearPart.reifenBreiteZoll = null;
+    }
+  }
+
+  onEditReifenBreiteZollChange(): void {
+    if (!this.editingWearPart) return;
+    const zoll = this.editingWearPart.reifenBreiteZoll;
+    if (zoll != null && !isNaN(zoll)) {
+      this.editingWearPart.reifenBreiteMm = Math.round(zoll * 25.4);
+    } else {
+      this.editingWearPart.reifenBreiteMm = null;
+    }
+  }
+
+  onEditReifenDruckBarChange(): void {
+    if (!this.editingWearPart) return;
+    const bar = this.editingWearPart.reifenDruckBar;
+    if (bar != null && !isNaN(bar)) {
+      this.editingWearPart.reifenDruckPsi = Math.round(bar * 14.5038);
+    } else {
+      this.editingWearPart.reifenDruckPsi = null;
+    }
+  }
+
+  onEditReifenDruckPsiChange(): void {
+    if (!this.editingWearPart) return;
+    const psi = this.editingWearPart.reifenDruckPsi;
+    if (psi != null && !isNaN(psi)) {
+      this.editingWearPart.reifenDruckBar = Math.round((psi / 14.5038) * 10) / 10;
+    } else {
+      this.editingWearPart.reifenDruckBar = null;
+    }
+  }
+
+  /** Gibt eine kurze Konfigurationsübersicht für ein Verschleißteil zurück (z.B. Reifenbreite/-druck). */
+  getPartConfigSummary(part: WearPart): string {
+    const tokens: string[] = [];
+    if (part.reifenBreiteMm != null) tokens.push(`${part.reifenBreiteMm} mm`);
+    if (part.reifenDruckBar != null) tokens.push(`${part.reifenDruckBar} bar`);
+    return tokens.length > 0 ? tokens.join(' · ') : '–';
+  }
+
+  // ──────────────────────────────────────────────────────────────────────────
+
   get editEinbauDatumStr(): string {
     if (!this.editingWearPart?.einbauDatum) return '';
     return new Date(this.editingWearPart.einbauDatum).toISOString().substring(0, 10);

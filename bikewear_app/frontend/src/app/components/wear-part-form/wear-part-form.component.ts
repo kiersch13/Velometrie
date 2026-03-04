@@ -114,6 +114,51 @@ export class WearPartFormComponent implements OnInit {
     this.mountOnOtherWheel = false;
   }
 
+  // ── Reifen: Konvertierung Breite & Druck ───────────────────────────────────
+
+  /** Standard-Reifenbreiten in mm (für Schnell-Auswahl im Formular). */
+  get verfuegbareGroessen(): number[] {
+    return [23, 25, 28, 32, 35, 38, 40, 42, 47, 50, 54, 57, 60, 63];
+  }
+
+  onReifenBreiteMmChange(): void {
+    const mm = this.part.reifenBreiteMm;
+    if (mm != null && !isNaN(mm)) {
+      this.part.reifenBreiteZoll = Math.round((mm / 25.4) * 10) / 10;
+    } else {
+      this.part.reifenBreiteZoll = null;
+    }
+  }
+
+  onReifenBreiteZollChange(): void {
+    const zoll = this.part.reifenBreiteZoll;
+    if (zoll != null && !isNaN(zoll)) {
+      this.part.reifenBreiteMm = Math.round(zoll * 25.4);
+    } else {
+      this.part.reifenBreiteMm = null;
+    }
+  }
+
+  onReifenDruckBarChange(): void {
+    const bar = this.part.reifenDruckBar;
+    if (bar != null && !isNaN(bar)) {
+      this.part.reifenDruckPsi = Math.round(bar * 14.5038);
+    } else {
+      this.part.reifenDruckPsi = null;
+    }
+  }
+
+  onReifenDruckPsiChange(): void {
+    const psi = this.part.reifenDruckPsi;
+    if (psi != null && !isNaN(psi)) {
+      this.part.reifenDruckBar = Math.round((psi / 14.5038) * 10) / 10;
+    } else {
+      this.part.reifenDruckBar = null;
+    }
+  }
+
+  // ──────────────────────────────────────────────────────────────────────────
+
   get einbauDatumStr(): string {
     if (!this.part.einbauDatum) return '';
     const d = new Date(this.part.einbauDatum);
