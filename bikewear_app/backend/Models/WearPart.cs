@@ -35,5 +35,17 @@ namespace App.Models
         public double? AusbauFahrstunden { get; set; }
 
         public string? Notizen { get; set; }
+
+        /// <summary>Reifenbreite in Millimetern (nur für Reifen relevant).</summary>
+        public int? ReifenBreiteMm { get; set; }
+
+        /// <summary>Reifenbreite in Zoll (nur für Reifen relevant).</summary>
+        public double? ReifenBreiteZoll { get; set; }
+
+        /// <summary>Reifenluftdruck in Bar (nur für Reifen relevant).</summary>
+        public double? ReifenDruckBar { get; set; }
+
+        /// <summary>Reifenluftdruck in PSI (nur für Reifen relevant).</summary>
+        public double? ReifenDruckPsi { get; set; }
     }
 }
