@@ -77,6 +77,7 @@ namespace App.Services
 
                 string? gearId = null;
                 double distanceMeters = 0;
+                int movingTimeSeconds = 0;
 
                 try
                 {
@@ -103,6 +104,11 @@ namespace App.Services
                     {
                         distanceMeters = distanceElement.GetDouble();
                     }
+
+                    if (root.TryGetProperty("moving_time", out var movingTimeElement))
+                    {
+                        movingTimeSeconds = movingTimeElement.GetInt32();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -122,6 +128,10 @@ namespace App.Services
 
                 var distanceKm = (int)Math.Round(distanceMeters / 1000.0);
                 bike.Kilometerstand += distanceKm;
+
+                var movingTimeHours = movingTimeSeconds / 3600.0;
+                bike.Fahrstunden += movingTimeHours;
+
                 await _context.SaveChangesAsync();
             }
         }

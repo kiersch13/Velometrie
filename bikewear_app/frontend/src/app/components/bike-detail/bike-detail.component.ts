@@ -3,9 +3,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Bike } from '../../models/bike';
 import { BikeCategory } from '../../models/bike-category';
 import { WearPart } from '../../models/wear-part';
+import { WearPartCategory } from '../../models/wear-part-category';
+import { ServiceEintrag, ServiceTyp } from '../../models/service-eintrag';
 import { BikeService } from '../../services/bike.service';
 import { WearPartService } from '../../services/wear-part.service';
+import { ServiceEintragService } from '../../services/service-eintrag.service';
 import { LifetimeSettingsService } from '../../services/lifetime-settings.service';
+import { FederungServiceSettings } from '../../models/lifetime-settings';
 
 @Component({
   selector: 'app-bike-detail',
@@ -17,6 +21,7 @@ export class BikeDetailComponent implements OnInit {
   wearParts: WearPart[] = [];
   loading = false;
   error = '';
+  Math = Math;
 
   showWearPartForm = false;
 
@@ -38,11 +43,23 @@ export class BikeDetailComponent implements OnInit {
   showDeleteModal = false;
   deleteModalPartId: number | null = null;
 
+  // Service entries per wear part (for Federung)
+  serviceEntriesMap: { [wearPartId: number]: ServiceEintrag[] } = {};
+  readonly ServiceTyp = ServiceTyp;
+  readonly WearPartCategory = WearPartCategory;
+
+  // Add service form state
+  showAddServiceForm: number | null = null; // wearPartId
+  newServiceTyp: ServiceTyp = ServiceTyp.KleinerService;
+  newServiceDatum: string = '';
+  newServiceNotizen: string = '';
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private bikeService: BikeService,
     private wearPartService: WearPartService,
+    private serviceEintragService: ServiceEintragService,
     private lifetimeService: LifetimeSettingsService
   ) {}
 
@@ -68,8 +85,21 @@ export class BikeDetailComponent implements OnInit {
 
   loadWearParts(radId: number): void {
     this.wearPartService.getWearPartsByBike(radId).subscribe({
-      next: parts => this.wearParts = parts,
+      next: parts => {
+        this.wearParts = parts;
+        // Load service entries for all Federung parts
+        parts.filter(p => p.kategorie === WearPartCategory.Federung).forEach(p => {
+          this.loadServiceEntries(p.id);
+        });
+      },
       error: () => this.error = 'Fehler beim Laden der Verschleißteile.'
+    });
+  }
+
+  loadServiceEntries(wearPartId: number): void {
+    this.serviceEintragService.getByWearPart(wearPartId).subscribe({
+      next: entries => this.serviceEntriesMap[wearPartId] = entries,
+      error: () => this.serviceEntriesMap[wearPartId] = []
     });
   }
 
@@ -254,7 +284,9 @@ export class BikeDetailComponent implements OnInit {
 
   getExpectedAusbauDate(part: WearPart): Date | null {
     if (this.weeklyAvgKm == null || this.weeklyAvgKm <= 0) return null;
-    const lifetime = this.lifetimeService.getLifetime(part.kategorie);
+    if (part.kategorie === WearPartCategory.Federung) return null; // Federung uses hours, not date estimate
+    const bikeKat = this.bike?.kategorie ?? BikeCategory.Rennrad;
+    const lifetime = this.lifetimeService.getLifetime(part.kategorie, bikeKat);
     const gefahren = this.getGefahreneKm(part);
     const remaining = lifetime - gefahren;
     if (remaining <= 0) return new Date();
@@ -298,13 +330,159 @@ export class BikeDetailComponent implements OnInit {
   }
 
   getExpectedReplacementKm(part: WearPart): number {
-    return part.einbauKilometerstand + this.lifetimeService.getLifetime(part.kategorie);
+    const bikeKat = this.bike?.kategorie ?? BikeCategory.Rennrad;
+    return part.einbauKilometerstand + this.lifetimeService.getLifetime(part.kategorie, bikeKat);
   }
 
   getLifetimePercent(part: WearPart): number {
-    const lifetime = this.lifetimeService.getLifetime(part.kategorie);
+    // For Federung parts, use hours-based progress
+    if (part.kategorie === WearPartCategory.Federung) {
+      return this.getFederungPercent(part);
+    }
+    const bikeKat = this.bike?.kategorie ?? BikeCategory.Rennrad;
+    const lifetime = this.lifetimeService.getLifetime(part.kategorie, bikeKat);
     if (lifetime <= 0) return 0;
     return this.getGefahreneKm(part) / lifetime;
+  }
+
+  // ── Federung-specific helpers ───────────────────────────────────────────
+
+  isFederung(part: WearPart): boolean {
+    return part.kategorie === WearPartCategory.Federung;
+  }
+
+  /** Total hours on this Federung part since install. */
+  getFederungStunden(part: WearPart): number {
+    if (!this.bike || part.einbauFahrstunden == null) return 0;
+    const currentHours = this.isInstalled(part)
+      ? this.bike.fahrstunden
+      : (part.ausbauFahrstunden ?? this.bike.fahrstunden);
+    return Math.max(0, currentHours - part.einbauFahrstunden);
+  }
+
+  /** Hours since last small service (or since install if none). */
+  getStundenSeitKleinemService(part: WearPart): number {
+    const entries = this.serviceEntriesMap[part.id] ?? [];
+    const lastSmall = entries
+      .filter(e => e.serviceTyp === ServiceTyp.KleinerService || e.serviceTyp === ServiceTyp.GrosserService)
+      .sort((a, b) => new Date(b.datum).getTime() - new Date(a.datum).getTime())[0];
+    const refHours = lastSmall ? lastSmall.beiFahrstunden : (part.einbauFahrstunden ?? 0);
+    const currentHours = this.isInstalled(part)
+      ? (this.bike?.fahrstunden ?? 0)
+      : (part.ausbauFahrstunden ?? this.bike?.fahrstunden ?? 0);
+    return Math.max(0, currentHours - refHours);
+  }
+
+  /** Hours since last big service (or since install if none). */
+  getStundenSeitGrossemService(part: WearPart): number {
+    const entries = this.serviceEntriesMap[part.id] ?? [];
+    const lastBig = entries
+      .filter(e => e.serviceTyp === ServiceTyp.GrosserService)
+      .sort((a, b) => new Date(b.datum).getTime() - new Date(a.datum).getTime())[0];
+    const refHours = lastBig ? lastBig.beiFahrstunden : (part.einbauFahrstunden ?? 0);
+    const currentHours = this.isInstalled(part)
+      ? (this.bike?.fahrstunden ?? 0)
+      : (part.ausbauFahrstunden ?? this.bike?.fahrstunden ?? 0);
+    return Math.max(0, currentHours - refHours);
+  }
+
+  /** Federung service settings (kleiner/grosser Service intervals in hours). */
+  get federungSettings(): FederungServiceSettings {
+    return this.lifetimeService.getFederungServiceSettings();
+  }
+
+  /** Hours remaining until next small service. */
+  getStundenBisKleinerService(part: WearPart): number {
+    return Math.max(0, this.federungSettings.kleinerService - this.getStundenSeitKleinemService(part));
+  }
+
+  /** Hours remaining until next big service. */
+  getStundenBisGrosserService(part: WearPart): number {
+    return Math.max(0, this.federungSettings.grosserService - this.getStundenSeitGrossemService(part));
+  }
+
+  /** Get the closer service type and its progress percentage (for list view). */
+  getFederungPercent(part: WearPart): number {
+    const smallPct = this.federungSettings.kleinerService > 0
+      ? this.getStundenSeitKleinemService(part) / this.federungSettings.kleinerService
+      : 0;
+    const bigPct = this.federungSettings.grosserService > 0
+      ? this.getStundenSeitGrossemService(part) / this.federungSettings.grosserService
+      : 0;
+    return Math.max(smallPct, bigPct);
+  }
+
+  /** Label for the closest upcoming service on a Federung part. */
+  getFederungNextServiceLabel(part: WearPart): string {
+    const smallRemaining = this.getStundenBisKleinerService(part);
+    const bigRemaining = this.getStundenBisGrosserService(part);
+    if (bigRemaining <= smallRemaining) {
+      return 'Großer Service';
+    }
+    return 'Kleiner Service';
+  }
+
+  /** Hours until the closest upcoming service. */
+  getFederungNextServiceHours(part: WearPart): number {
+    return Math.min(this.getStundenBisKleinerService(part), this.getStundenBisGrosserService(part));
+  }
+
+  /** Total accumulated hours display for list view. */
+  getFederungAccumulatedHours(part: WearPart): number {
+    const smallRemaining = this.getStundenBisKleinerService(part);
+    const bigRemaining = this.getStundenBisGrosserService(part);
+    if (bigRemaining <= smallRemaining) {
+      return this.getStundenSeitGrossemService(part);
+    }
+    return this.getStundenSeitKleinemService(part);
+  }
+
+  /** Service interval for the next closest service. */
+  getFederungNextServiceInterval(part: WearPart): number {
+    const smallRemaining = this.getStundenBisKleinerService(part);
+    const bigRemaining = this.getStundenBisGrosserService(part);
+    if (bigRemaining <= smallRemaining) {
+      return this.federungSettings.grosserService;
+    }
+    return this.federungSettings.kleinerService;
+  }
+
+  // ── Service entry CRUD ──────────────────────────────────────────────────
+
+  openAddServiceForm(wearPartId: number): void {
+    this.showAddServiceForm = wearPartId;
+    this.newServiceTyp = ServiceTyp.KleinerService;
+    this.newServiceDatum = new Date().toISOString().substring(0, 10);
+    this.newServiceNotizen = '';
+  }
+
+  cancelAddService(): void {
+    this.showAddServiceForm = null;
+  }
+
+  saveServiceEntry(): void {
+    if (this.showAddServiceForm == null || !this.bike) return;
+    const eintrag: any = {
+      wearPartId: this.showAddServiceForm,
+      serviceTyp: this.newServiceTyp,
+      datum: new Date(this.newServiceDatum),
+      beiFahrstunden: this.bike.fahrstunden,
+      notizen: this.newServiceNotizen || null
+    };
+    this.serviceEintragService.add(eintrag).subscribe({
+      next: () => {
+        this.loadServiceEntries(this.showAddServiceForm!);
+        this.showAddServiceForm = null;
+      },
+      error: () => this.error = 'Fehler beim Speichern des Service-Eintrags.'
+    });
+  }
+
+  deleteServiceEntry(entryId: number, wearPartId: number): void {
+    this.serviceEintragService.delete(entryId).subscribe({
+      next: () => this.loadServiceEntries(wearPartId),
+      error: () => this.error = 'Fehler beim Löschen des Service-Eintrags.'
+    });
   }
 
   getStatusBarClass(part: WearPart): string {

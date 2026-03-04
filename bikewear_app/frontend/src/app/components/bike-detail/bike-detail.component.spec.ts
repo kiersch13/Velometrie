@@ -6,6 +6,7 @@ import { of } from 'rxjs';
 import { BikeDetailComponent } from './bike-detail.component';
 import { BikeService } from '../../services/bike.service';
 import { WearPartService } from '../../services/wear-part.service';
+import { ServiceEintragService } from '../../services/service-eintrag.service';
 import { LifetimeSettingsService } from '../../services/lifetime-settings.service';
 import { BikeCategory } from '../../models/bike-category';
 import { WearPartCategory } from '../../models/wear-part-category';
@@ -23,6 +24,8 @@ function makePart(overrides: Partial<WearPart> = {}): WearPart {
     ausbauKilometerstand: null,
     einbauDatum: new Date('2025-01-01'),
     ausbauDatum: null,
+    einbauFahrstunden: null,
+    ausbauFahrstunden: null,
     notizen: null,
     ...overrides,
   };
@@ -39,7 +42,7 @@ describe('BikeDetailComponent – Reifen-Edit & getPartConfigSummary', () => {
     const routerMock = { navigate: jest.fn() };
     const bikeServiceMock = {
       getBike: jest.fn().mockReturnValue(of({
-        id: 1, name: 'Testauto', kategorie: BikeCategory.Rennrad, kilometerstand: 500, stravaId: null, userId: 1,
+        id: 1, name: 'Testauto', kategorie: BikeCategory.Rennrad, kilometerstand: 500, fahrstunden: 0, stravaId: null, userId: 1,
       })),
       getWeeklyAvgKm: jest.fn().mockReturnValue(of(50)),
       updateBike: jest.fn(),
@@ -52,6 +55,12 @@ describe('BikeDetailComponent – Reifen-Edit & getPartConfigSummary', () => {
     };
     const lifetimeServiceMock = {
       getLifetime: jest.fn().mockReturnValue(10000),
+      getFederungServiceSettings: jest.fn().mockReturnValue({ kleinerService: 50, grosserService: 200 }),
+    };
+    const serviceEintragServiceMock = {
+      getByWearPart: jest.fn().mockReturnValue(of([])),
+      add: jest.fn(),
+      delete: jest.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -61,6 +70,7 @@ describe('BikeDetailComponent – Reifen-Edit & getPartConfigSummary', () => {
         { provide: Router, useValue: routerMock },
         { provide: BikeService, useValue: bikeServiceMock },
         { provide: WearPartService, useValue: wearPartServiceMock },
+        { provide: ServiceEintragService, useValue: serviceEintragServiceMock },
         { provide: LifetimeSettingsService, useValue: lifetimeServiceMock },
       ],
       schemas: [NO_ERRORS_SCHEMA],

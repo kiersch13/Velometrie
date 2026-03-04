@@ -16,6 +16,7 @@ import { forkJoin } from 'rxjs';
 export class WearPartFormComponent implements OnInit {
   @Input() radId!: number;
   @Input() currentKilometerstand: number = 0;
+  @Input() currentFahrstunden: number = 0;
   @Input() existingPart?: WearPart;
   @Input() editMode: boolean = false;
   @Input() bikeKategorie: BikeCategory | null = null;
@@ -62,7 +63,9 @@ export class WearPartFormComponent implements OnInit {
         einbauKilometerstand: this.currentKilometerstand,
         ausbauKilometerstand: 0,
         einbauDatum: new Date(),
-        ausbauDatum: undefined as any
+        ausbauDatum: undefined as any,
+        einbauFahrstunden: this.currentFahrstunden,
+        ausbauFahrstunden: null
       };
     }
   }

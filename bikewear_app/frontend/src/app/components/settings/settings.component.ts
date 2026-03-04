@@ -4,6 +4,7 @@ import { AuthService } from '../../services/auth.service';
 import { LifetimeSettingsService } from '../../services/lifetime-settings.service';
 import { LifetimeSettings, defaultLifetimeSettings } from '../../models/lifetime-settings';
 import { WearPartCategory } from '../../models/wear-part-category';
+import { BikeCategory } from '../../models/bike-category';
 
 @Component({
   selector: 'app-settings',
@@ -17,13 +18,35 @@ export class SettingsComponent implements OnInit {
   showConfirm = false;
 
   lifetimeSettings!: LifetimeSettings;
-  lifetimeCategories: WearPartCategory[] = [
-    WearPartCategory.Reifen,
-    WearPartCategory.Kassette,
-    WearPartCategory.Kettenblatt,
-    WearPartCategory.Kette,
-    WearPartCategory.Sonstiges
+
+  /** Bike categories shown as tabs */
+  bikeCategories: BikeCategory[] = [
+    BikeCategory.Rennrad,
+    BikeCategory.Gravel,
+    BikeCategory.Mountainbike
   ];
+
+  /** Currently selected bike category tab */
+  selectedBikeCategory: BikeCategory = BikeCategory.Rennrad;
+
+  /** Part categories to show per bike category (Federung only for Gravel/MTB) */
+  get lifetimeCategories(): WearPartCategory[] {
+    const base = [
+      WearPartCategory.Reifen,
+      WearPartCategory.Kassette,
+      WearPartCategory.Kettenblatt,
+      WearPartCategory.Kette,
+      WearPartCategory.Sonstiges
+    ];
+    return base;
+  }
+
+  /** Only Gravel and MTB have Federung */
+  get showFederungService(): boolean {
+    return this.selectedBikeCategory === BikeCategory.Gravel
+        || this.selectedBikeCategory === BikeCategory.Mountainbike;
+  }
+
   lifetimeSaved = false;
 
   constructor(

@@ -18,6 +18,10 @@ namespace App.Models
         public string Name { get; set; } = string.Empty;
         public BikeCategory Kategorie { get; set; }
         public int Kilometerstand { get; set; }
+
+        /// <summary>Gesamte Fahrstunden (Moving Time) von Strava in Stunden.</summary>
+        public double Fahrstunden { get; set; }
+
         public string? StravaId { get; set; }
 
         /// <summary>The ID of the user who owns this bike.</summary>

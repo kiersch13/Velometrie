@@ -13,6 +13,7 @@ namespace App.Data
         public DbSet<WearPart> Verschleissteile { get; set; }
         public DbSet<User> Benutzer { get; set; }
         public DbSet<TeilVorlage> Teilvorlagen { get; set; }
+        public DbSet<ServiceEintrag> ServiceEintraege { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -45,6 +46,17 @@ namespace App.Data
                 .WithMany()
                 .HasForeignKey(b => b.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // ServiceEintrag belongs to a WearPart; cascade delete
+            modelBuilder.Entity<ServiceEintrag>()
+                .HasOne<WearPart>()
+                .WithMany()
+                .HasForeignKey(s => s.WearPartId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ServiceEintrag>()
+                .Property(s => s.Datum)
+                .HasColumnType("timestamp without time zone");
         }
     }
 }

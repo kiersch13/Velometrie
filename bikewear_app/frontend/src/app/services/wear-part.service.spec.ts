@@ -33,6 +33,8 @@ describe('WearPartService', () => {
     ausbauKilometerstand: null,
     einbauDatum: new Date('2024-01-01'),
     ausbauDatum: null,
+    einbauFahrstunden: 0,
+    ausbauFahrstunden: null,
     notizen: null,
   };
 

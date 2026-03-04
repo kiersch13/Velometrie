@@ -58,6 +58,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IStravaService, StravaService>();
 builder.Services.AddScoped<IStravaWebhookService, StravaWebhookService>();
 builder.Services.AddScoped<INimEnrichmentService, NimEnrichmentService>();
+builder.Services.AddScoped<IServiceEintragService, ServiceEintragService>();
 
 // Cookie-based authentication.
 // Production (cross-origin Railway deployment): SameSite=None + Secure so the

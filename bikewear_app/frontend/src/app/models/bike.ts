@@ -5,6 +5,7 @@ export interface Bike {
   name: string;
   kategorie: BikeCategory;
   kilometerstand: number;
+  fahrstunden: number;
   stravaId: string;
   userId: number;
 }

@@ -29,6 +29,10 @@
         <div class="text-right">
           <p class="text-xs text-gray-400 mb-0.5">Kilometerstand</p>
           <span class="text-2xl font-bold text-primary dark:text-text-dark">{{ bike.kilometerstand | number:'1.0-0' }} km</span>
+          <p *ngIf="bike.fahrstunden > 0" class="text-xs text-gray-400 mt-0.5">
+            <lucide-icon name="clock" [size]="11" class="inline-block mr-0.5" aria-hidden="true"></lucide-icon>
+            {{ bike.fahrstunden | number:'1.1-1' }} h
+          </p>
         </div>
         <button class="btn-secondary !p-2" aria-label="Rad bearbeiten" (click)="openBikeEdit()">
           <lucide-icon name="pencil" [size]="15" aria-hidden="true"></lucide-icon>
@@ -50,6 +54,7 @@
     *ngIf="showWearPartForm && bike"
     [radId]="bike.id"
     [currentKilometerstand]="bike.kilometerstand"
+    [currentFahrstunden]="bike.fahrstunden"
     [bikeKategorie]="bike.kategorie"
     (saved)="onWearPartAdded()">
   </app-wear-part-form>
@@ -92,29 +97,58 @@
             <td class="px-4 py-3"><span class="badge">{{ part.kategorie }}</span></td>
             <td class="px-4 py-3 text-gray-500 dark:text-text-dark text-xs">{{ part.position || '—' }}</td>
             <td class="px-4 py-3 text-gray-600 dark:text-text-dark">{{ part.einbauDatum | date:'dd.MM.yyyy' }}</td>
-            <!-- Kilometerstand combined column -->
+            <!-- Kilometerstand / Service hours combined column -->
             <td class="px-4 py-3 tabular-nums">
-              <div class="flex items-baseline gap-1">
-                <span class="text-gray-800 dark:text-text-dark font-medium">{{ getGefahreneKm(part) | number:'1.0-0' }} km</span>
-                <span class="text-gray-400 text-xs">/</span>
-                <span class="text-xs" [ngClass]="{
-                  'text-warning font-medium': isInstalled(part) && getLifetimePercent(part) >= 0.8 && getLifetimePercent(part) < 1.0,
-                  'text-error font-semibold': isInstalled(part) && getLifetimePercent(part) >= 1.0,
-                  'text-gray-400': !(isInstalled(part) && getLifetimePercent(part) >= 0.8)
-                }">{{ getExpectedReplacementKm(part) | number:'1.0-0' }} km</span>
-              </div>
-              <!-- Progress bar -->
-              <div class="w-full h-1 bg-gray-100 dark:bg-gray-700 rounded-full mt-1.5 overflow-hidden">
-                <div class="h-full rounded-full transition-all duration-300"
-                     [ngClass]="{
-                       'bg-success/70': getLifetimePercent(part) < 0.8 && isInstalled(part),
-                       'bg-warning/80': getLifetimePercent(part) >= 0.8 && getLifetimePercent(part) < 1.0 && isInstalled(part),
-                       'bg-error/80': getLifetimePercent(part) >= 1.0 && isInstalled(part),
-                       'bg-gray-300 dark:bg-gray-500': !isInstalled(part)
-                     }"
-                     [style.width.%]="(getLifetimePercent(part) * 100) | number:'1.0-0'">
+              <!-- Federung: show hours + service progress -->
+              <ng-container *ngIf="isFederung(part); else kmColumn">
+                <div class="flex items-baseline gap-1">
+                  <span class="text-gray-800 dark:text-text-dark font-medium">{{ getFederungAccumulatedHours(part) | number:'1.1-1' }} h</span>
+                  <span class="text-gray-400 text-xs">/</span>
+                  <span class="text-xs" [ngClass]="{
+                    'text-warning font-medium': isInstalled(part) && getLifetimePercent(part) >= 0.8 && getLifetimePercent(part) < 1.0,
+                    'text-error font-semibold': isInstalled(part) && getLifetimePercent(part) >= 1.0,
+                    'text-gray-400': !(isInstalled(part) && getLifetimePercent(part) >= 0.8)
+                  }">{{ getFederungNextServiceInterval(part) }} h</span>
+                  <span class="text-gray-400 text-xs ml-0.5">({{ getFederungNextServiceLabel(part) }})</span>
                 </div>
-              </div>
+                <!-- Progress bar -->
+                <div class="w-full h-1 bg-gray-100 dark:bg-gray-700 rounded-full mt-1.5 overflow-hidden">
+                  <div class="h-full rounded-full transition-all duration-300"
+                       [ngClass]="{
+                         'bg-success/70': getLifetimePercent(part) < 0.8 && isInstalled(part),
+                         'bg-warning/80': getLifetimePercent(part) >= 0.8 && getLifetimePercent(part) < 1.0 && isInstalled(part),
+                         'bg-error/80': getLifetimePercent(part) >= 1.0 && isInstalled(part),
+                         'bg-gray-300 dark:bg-gray-500': !isInstalled(part)
+                       }"
+                       [style.width.%]="(getLifetimePercent(part) * 100) | number:'1.0-0'">
+                  </div>
+                </div>
+              </ng-container>
+
+              <!-- Non-Federung: show km progress (existing) -->
+              <ng-template #kmColumn>
+                <div class="flex items-baseline gap-1">
+                  <span class="text-gray-800 dark:text-text-dark font-medium">{{ getGefahreneKm(part) | number:'1.0-0' }} km</span>
+                  <span class="text-gray-400 text-xs">/</span>
+                  <span class="text-xs" [ngClass]="{
+                    'text-warning font-medium': isInstalled(part) && getLifetimePercent(part) >= 0.8 && getLifetimePercent(part) < 1.0,
+                    'text-error font-semibold': isInstalled(part) && getLifetimePercent(part) >= 1.0,
+                    'text-gray-400': !(isInstalled(part) && getLifetimePercent(part) >= 0.8)
+                  }">{{ getExpectedReplacementKm(part) | number:'1.0-0' }} km</span>
+                </div>
+                <!-- Progress bar -->
+                <div class="w-full h-1 bg-gray-100 dark:bg-gray-700 rounded-full mt-1.5 overflow-hidden">
+                  <div class="h-full rounded-full transition-all duration-300"
+                       [ngClass]="{
+                         'bg-success/70': getLifetimePercent(part) < 0.8 && isInstalled(part),
+                         'bg-warning/80': getLifetimePercent(part) >= 0.8 && getLifetimePercent(part) < 1.0 && isInstalled(part),
+                         'bg-error/80': getLifetimePercent(part) >= 1.0 && isInstalled(part),
+                         'bg-gray-300 dark:bg-gray-500': !isInstalled(part)
+                       }"
+                       [style.width.%]="(getLifetimePercent(part) * 100) | number:'1.0-0'">
+                  </div>
+                </div>
+              </ng-template>
             </td>
             <!-- Expected or actual removal date -->
             <td class="px-4 py-3 text-gray-600 dark:text-text-dark tabular-nums">
@@ -321,18 +355,19 @@
 
     <!-- Kilometerstand progress -->
     <div class="mb-5 p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+      <!-- Km progress (always shown) -->
       <div class="flex items-baseline justify-between mb-2">
         <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Kilometerstand</span>
         <span class="text-sm font-semibold tabular-nums"
               [ngClass]="{
-                'text-error': getLifetimePercent(detailWearPart) >= 1.0 && isInstalled(detailWearPart),
-                'text-warning': getLifetimePercent(detailWearPart) >= 0.8 && getLifetimePercent(detailWearPart) < 1.0 && isInstalled(detailWearPart),
-                'text-gray-800 dark:text-text-dark': getLifetimePercent(detailWearPart) < 0.8 || !isInstalled(detailWearPart)
+                'text-error': !isFederung(detailWearPart) && getLifetimePercent(detailWearPart) >= 1.0 && isInstalled(detailWearPart),
+                'text-warning': !isFederung(detailWearPart) && getLifetimePercent(detailWearPart) >= 0.8 && getLifetimePercent(detailWearPart) < 1.0 && isInstalled(detailWearPart),
+                'text-gray-800 dark:text-text-dark': isFederung(detailWearPart) || getLifetimePercent(detailWearPart) < 0.8 || !isInstalled(detailWearPart)
               }">
-          {{ getGefahreneKm(detailWearPart) | number:'1.0-0' }} km&nbsp;/&nbsp;{{ getExpectedReplacementKm(detailWearPart) | number:'1.0-0' }} km
+          {{ getGefahreneKm(detailWearPart) | number:'1.0-0' }} km<ng-container *ngIf="!isFederung(detailWearPart)">&nbsp;/&nbsp;{{ getExpectedReplacementKm(detailWearPart) | number:'1.0-0' }} km</ng-container>
         </span>
       </div>
-      <div class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+      <div *ngIf="!isFederung(detailWearPart)" class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
         <div class="h-full rounded-full transition-all duration-300"
              [ngClass]="{
                'bg-success/70': getLifetimePercent(detailWearPart) < 0.8 && isInstalled(detailWearPart),
@@ -343,9 +378,73 @@
              [style.width.%]="(getLifetimePercent(detailWearPart) * 100) | number:'1.0-0'">
         </div>
       </div>
-      <p class="text-xs text-gray-400 mt-1.5 text-right">
+      <p *ngIf="!isFederung(detailWearPart)" class="text-xs text-gray-400 mt-1.5 text-right">
         {{ (getLifetimePercent(detailWearPart) * 100) | number:'1.0-0' }}% der erwarteten Lebensdauer
       </p>
+
+      <!-- Federung: service hour bars -->
+      <ng-container *ngIf="isFederung(detailWearPart) && isInstalled(detailWearPart)">
+        <div class="mt-4 space-y-3">
+          <!-- Kleiner Service -->
+          <div>
+            <div class="flex items-baseline justify-between mb-1">
+              <span class="text-xs font-semibold text-gray-500 flex items-center gap-1">
+                <lucide-icon name="wrench" [size]="12" aria-hidden="true"></lucide-icon>
+                Kleiner Service
+              </span>
+              <span class="text-sm font-semibold tabular-nums"
+                    [ngClass]="{
+                      'text-error': getStundenBisKleinerService(detailWearPart) === 0,
+                      'text-warning': getStundenBisKleinerService(detailWearPart) > 0 && getStundenBisKleinerService(detailWearPart) <= federungSettings.kleinerService * 0.2,
+                      'text-gray-800 dark:text-text-dark': getStundenBisKleinerService(detailWearPart) > federungSettings.kleinerService * 0.2
+                    }">
+                {{ getStundenSeitKleinemService(detailWearPart) | number:'1.1-1' }} h / {{ federungSettings.kleinerService }} h
+              </span>
+            </div>
+            <div class="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+              <div class="h-full rounded-full transition-all duration-300"
+                   [ngClass]="{
+                     'bg-success/70': getStundenSeitKleinemService(detailWearPart) / federungSettings.kleinerService < 0.8,
+                     'bg-warning/80': getStundenSeitKleinemService(detailWearPart) / federungSettings.kleinerService >= 0.8 && getStundenSeitKleinemService(detailWearPart) / federungSettings.kleinerService < 1.0,
+                     'bg-error/80': getStundenSeitKleinemService(detailWearPart) / federungSettings.kleinerService >= 1.0
+                   }"
+                   [style.width.%]="Math.min(100, (getStundenSeitKleinemService(detailWearPart) / federungSettings.kleinerService) * 100) | number:'1.0-0'">
+              </div>
+            </div>
+          </div>
+          <!-- Großer Service -->
+          <div>
+            <div class="flex items-baseline justify-between mb-1">
+              <span class="text-xs font-semibold text-gray-500 flex items-center gap-1">
+                <lucide-icon name="wrench" [size]="12" aria-hidden="true"></lucide-icon>
+                Großer Service
+              </span>
+              <span class="text-sm font-semibold tabular-nums"
+                    [ngClass]="{
+                      'text-error': getStundenBisGrosserService(detailWearPart) === 0,
+                      'text-warning': getStundenBisGrosserService(detailWearPart) > 0 && getStundenBisGrosserService(detailWearPart) <= federungSettings.grosserService * 0.2,
+                      'text-gray-800 dark:text-text-dark': getStundenBisGrosserService(detailWearPart) > federungSettings.grosserService * 0.2
+                    }">
+                {{ getStundenSeitGrossemService(detailWearPart) | number:'1.1-1' }} h / {{ federungSettings.grosserService }} h
+              </span>
+            </div>
+            <div class="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+              <div class="h-full rounded-full transition-all duration-300"
+                   [ngClass]="{
+                     'bg-success/70': getStundenSeitGrossemService(detailWearPart) / federungSettings.grosserService < 0.8,
+                     'bg-warning/80': getStundenSeitGrossemService(detailWearPart) / federungSettings.grosserService >= 0.8 && getStundenSeitGrossemService(detailWearPart) / federungSettings.grosserService < 1.0,
+                     'bg-error/80': getStundenSeitGrossemService(detailWearPart) / federungSettings.grosserService >= 1.0
+                   }"
+                   [style.width.%]="Math.min(100, (getStundenSeitGrossemService(detailWearPart) / federungSettings.grosserService) * 100) | number:'1.0-0'">
+              </div>
+            </div>
+          </div>
+          <!-- Total hours on part -->
+          <div class="text-xs text-gray-400 text-right mt-1">
+            Gesamt: {{ getFederungStunden(detailWearPart) | number:'1.1-1' }} h auf diesem Teil
+          </div>
+        </div>
+      </ng-container>
     </div>
 
     <!-- Info grid -->
@@ -389,6 +488,76 @@
       </div>
       <ng-template #noNotizen>
         <p class="text-sm text-gray-400 italic">Keine Notizen vorhanden.</p>
+      </ng-template>
+    </div>
+
+    <!-- Service-Historie (nur für Federung) -->
+    <div *ngIf="isFederung(detailWearPart)" class="mb-5">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1">
+          <lucide-icon name="wrench" [size]="12" aria-hidden="true"></lucide-icon>
+          Service-Historie
+        </span>
+        <button class="text-xs text-accent hover:underline"
+                (click)="openAddServiceForm(detailWearPart.id)">
+          Service eintragen
+        </button>
+      </div>
+
+      <!-- Add service form -->
+      <div *ngIf="showAddServiceForm === detailWearPart.id"
+           class="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg mb-3">
+        <div class="grid grid-cols-2 gap-3 mb-3">
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-gray-500">Service-Typ</label>
+            <select [(ngModel)]="newServiceTyp" class="form-input text-sm">
+              <option [value]="ServiceTyp.KleinerService">Kleiner Service</option>
+              <option [value]="ServiceTyp.GrosserService">Großer Service</option>
+            </select>
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-gray-500">Datum</label>
+            <input type="date" [(ngModel)]="newServiceDatum" class="form-input text-sm" />
+          </div>
+        </div>
+        <div class="flex flex-col gap-1 mb-3">
+          <label class="text-xs font-semibold text-gray-500">Notizen <span class="font-normal text-gray-400">(optional)</span></label>
+          <input type="text" [(ngModel)]="newServiceNotizen" class="form-input text-sm" placeholder="z.B. Ölwechsel, Dichtungen..." />
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="btn-primary text-xs py-1.5 px-3" (click)="saveServiceEntry()">
+            <lucide-icon name="check" [size]="12" aria-hidden="true"></lucide-icon>
+            Speichern
+          </button>
+          <button class="btn-secondary text-xs py-1.5 px-3" (click)="cancelAddService()">Abbrechen</button>
+        </div>
+      </div>
+
+      <!-- Service entries list -->
+      <div *ngIf="(serviceEntriesMap[detailWearPart.id] ?? []).length > 0; else noServices"
+           class="space-y-2">
+        <div *ngFor="let entry of serviceEntriesMap[detailWearPart.id]"
+             class="flex items-center justify-between p-2.5 bg-gray-50 dark:bg-gray-800/50 rounded-lg text-sm">
+          <div class="flex items-center gap-2">
+            <span class="badge text-xs"
+                  [ngClass]="{
+                    'bg-accent/10 text-accent': entry.serviceTyp === ServiceTyp.GrosserService,
+                    'bg-primary/10 text-primary dark:text-text-dark': entry.serviceTyp === ServiceTyp.KleinerService
+                  }">
+              {{ entry.serviceTyp === ServiceTyp.KleinerService ? 'Klein' : 'Groß' }}
+            </span>
+            <div>
+              <span class="text-gray-800 dark:text-text-dark">{{ entry.datum | date:'dd.MM.yyyy' }}</span>
+              <span class="text-gray-400 text-xs ml-1.5">bei {{ entry.beiFahrstunden | number:'1.1-1' }} h</span>
+            </div>
+          </div>
+          <button class="btn-secondary !p-1" aria-label="Löschen" (click)="deleteServiceEntry(entry.id, detailWearPart.id)">
+            <lucide-icon name="trash-2" [size]="12" aria-hidden="true"></lucide-icon>
+          </button>
+        </div>
+      </div>
+      <ng-template #noServices>
+        <p class="text-sm text-gray-400 italic">Noch kein Service durchgeführt.</p>
       </ng-template>
     </div>
 

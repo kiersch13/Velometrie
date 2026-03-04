@@ -52,6 +52,9 @@ namespace App.Services
             existing.AusbauKilometerstand = wearPart.AusbauKilometerstand;
             existing.EinbauDatum = wearPart.EinbauDatum;
             existing.AusbauDatum = wearPart.AusbauDatum;
+            existing.EinbauFahrstunden = wearPart.EinbauFahrstunden;
+            existing.AusbauFahrstunden = wearPart.AusbauFahrstunden;
+            existing.Notizen = wearPart.Notizen;
             await _context.SaveChangesAsync();
             return existing;
         }

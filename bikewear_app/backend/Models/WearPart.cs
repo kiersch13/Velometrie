@@ -27,6 +27,13 @@ namespace App.Models
         public int? AusbauKilometerstand { get; set; }
         public DateTime EinbauDatum { get; set; }
         public DateTime? AusbauDatum { get; set; }
+
+        /// <summary>Fahrstunden des Rades zum Einbauzeitpunkt (nur für Federung relevant).</summary>
+        public double? EinbauFahrstunden { get; set; }
+
+        /// <summary>Fahrstunden des Rades zum Ausbauzeitpunkt (nur für Federung relevant).</summary>
+        public double? AusbauFahrstunden { get; set; }
+
         public string? Notizen { get; set; }
     }
 }
