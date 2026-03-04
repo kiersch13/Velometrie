@@ -14,6 +14,7 @@ namespace App.Data
         public DbSet<User> Benutzer { get; set; }
         public DbSet<TeilVorlage> Teilvorlagen { get; set; }
         public DbSet<ServiceEintrag> ServiceEintraege { get; set; }
+        public DbSet<WearPartGruppe> WearPartGruppen { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -57,6 +58,27 @@ namespace App.Data
             modelBuilder.Entity<ServiceEintrag>()
                 .Property(s => s.Datum)
                 .HasColumnType("timestamp without time zone");
+
+            // WearPartGruppe belongs to a Bike; cascade delete
+            modelBuilder.Entity<WearPartGruppe>()
+                .HasOne<Bike>()
+                .WithMany()
+                .HasForeignKey(g => g.RadId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // WearPart optionally belongs to a WearPartGruppe; set null on group delete
+            modelBuilder.Entity<WearPart>()
+                .HasOne<WearPartGruppe>()
+                .WithMany()
+                .HasForeignKey(w => w.GruppeId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // Self-referencing FK for move history chain
+            modelBuilder.Entity<WearPart>()
+                .HasOne<WearPart>()
+                .WithMany()
+                .HasForeignKey(w => w.VorgaengerId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

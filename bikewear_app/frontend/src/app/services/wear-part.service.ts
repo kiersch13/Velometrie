@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { WearPart } from '../models/wear-part';
+import { WearPart, MoveWearPartRequest } from '../models/wear-part';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -35,5 +35,13 @@ export class WearPartService {
 
   deleteWearPart(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  moveWearPart(id: number, request: MoveWearPartRequest): Observable<WearPart> {
+    return this.http.post<WearPart>(`${this.apiUrl}/${id}/move`, request);
+  }
+
+  getWearPartHistory(id: number): Observable<WearPart[]> {
+    return this.http.get<WearPart[]>(`${this.apiUrl}/${id}/history`);
   }
 }

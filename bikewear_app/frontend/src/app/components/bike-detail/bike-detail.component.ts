@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Bike } from '../../models/bike';
 import { BikeCategory } from '../../models/bike-category';
-import { WearPart } from '../../models/wear-part';
+import { WearPart, MoveWearPartRequest } from '../../models/wear-part';
 import { WearPartCategory } from '../../models/wear-part-category';
+import { WearPartGruppe } from '../../models/wear-part-gruppe';
 import { ServiceEintrag, ServiceTyp } from '../../models/service-eintrag';
 import { BikeService } from '../../services/bike.service';
 import { WearPartService } from '../../services/wear-part.service';
+import { WearPartGruppeService } from '../../services/wear-part-gruppe.service';
 import { ServiceEintragService } from '../../services/service-eintrag.service';
 import { LifetimeSettingsService } from '../../services/lifetime-settings.service';
 import { FederungServiceSettings } from '../../models/lifetime-settings';
@@ -57,11 +59,41 @@ export class BikeDetailComponent implements OnInit {
   newServiceDatum: string = '';
   newServiceNotizen: string = '';
 
+  // Move part modal state
+  showMoveModal = false;
+  movePartId: number | null = null;
+  movePartName = '';
+  moveZielRadId: number | null = null;
+  moveAusbauKm = 0;
+  moveAusbauDatumStr = '';
+  moveEinbauKm = 0;
+  moveEinbauDatumStr = '';
+  moveAusbauFahrstunden: number | null = null;
+  moveEinbauFahrstunden: number | null = null;
+  moveIsFederung = false;
+  userBikes: Bike[] = [];
+  loadingMoveAusbauOdometer = false;
+  loadingMoveEinbauOdometer = false;
+
+  // Groups
+  gruppen: WearPartGruppe[] = [];
+  showAddGruppe = false;
+  newGruppeName = '';
+  editingGruppeId: number | null = null;
+  editingGruppeName = '';
+
+  // History modal
+  showHistoryModal = false;
+  historyParts: WearPart[] = [];
+  historyBikes: { [radId: number]: Bike } = {};
+  historyPartName = '';
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private bikeService: BikeService,
     private wearPartService: WearPartService,
+    private wearPartGruppeService: WearPartGruppeService,
     private serviceEintragService: ServiceEintragService,
     private lifetimeService: LifetimeSettingsService
   ) {}
@@ -74,6 +106,7 @@ export class BikeDetailComponent implements OnInit {
         this.bike = bike;
         this.loading = false;
         this.loadWearParts(id);
+        this.loadGruppen(id);
         this.bikeService.getWeeklyAvgKm(id).subscribe({
           next: avg => this.weeklyAvgKm = avg,
           error: () => this.weeklyAvgKm = null
@@ -522,5 +555,192 @@ export class BikeDetailComponent implements OnInit {
     if (pct >= 1.0) return 'bg-error/60';
     if (pct >= 0.8) return 'bg-warning/70';
     return 'bg-success/50';
+  }
+
+  // ── Groups ──────────────────────────────────────────────────────────────
+
+  loadGruppen(radId: number): void {
+    this.wearPartGruppeService.getByBike(radId).subscribe({
+      next: gruppen => this.gruppen = gruppen,
+      error: () => this.gruppen = []
+    });
+  }
+
+  getGruppeName(gruppeId: number | null): string | null {
+    if (gruppeId == null) return null;
+    return this.gruppen.find(g => g.id === gruppeId)?.name ?? null;
+  }
+
+  getPartsInGroup(gruppeId: number): WearPart[] {
+    return this.sortedWearParts.filter(p => p.gruppeId === gruppeId);
+  }
+
+  getUngroupedParts(): WearPart[] {
+    return this.sortedWearParts.filter(p => p.gruppeId == null);
+  }
+
+  openAddGruppe(): void {
+    this.showAddGruppe = true;
+    this.newGruppeName = '';
+  }
+
+  cancelAddGruppe(): void {
+    this.showAddGruppe = false;
+  }
+
+  saveGruppe(): void {
+    if (!this.bike || !this.newGruppeName.trim()) return;
+    const gruppe: any = { name: this.newGruppeName.trim(), radId: this.bike.id };
+    this.wearPartGruppeService.add(gruppe).subscribe({
+      next: () => {
+        this.showAddGruppe = false;
+        this.loadGruppen(this.bike!.id);
+      },
+      error: () => this.error = 'Fehler beim Erstellen der Gruppe.'
+    });
+  }
+
+  startEditGruppe(gruppe: WearPartGruppe): void {
+    this.editingGruppeId = gruppe.id;
+    this.editingGruppeName = gruppe.name;
+  }
+
+  cancelEditGruppe(): void {
+    this.editingGruppeId = null;
+  }
+
+  saveEditGruppe(gruppe: WearPartGruppe): void {
+    if (!this.editingGruppeName.trim()) return;
+    this.wearPartGruppeService.update(gruppe.id, { ...gruppe, name: this.editingGruppeName.trim() }).subscribe({
+      next: () => {
+        this.editingGruppeId = null;
+        this.loadGruppen(this.bike!.id);
+      },
+      error: () => this.error = 'Fehler beim Speichern der Gruppe.'
+    });
+  }
+
+  deleteGruppe(gruppeId: number): void {
+    this.wearPartGruppeService.delete(gruppeId).subscribe({
+      next: () => {
+        this.loadGruppen(this.bike!.id);
+        this.loadWearParts(this.bike!.id);
+      },
+      error: () => this.error = 'Fehler beim Löschen der Gruppe.'
+    });
+  }
+
+  assignToGroup(part: WearPart, gruppeId: number | null): void {
+    const updated = { ...part, gruppeId };
+    this.wearPartService.updateWearPart(part.id, updated).subscribe({
+      next: () => this.loadWearParts(this.bike!.id),
+      error: () => this.error = 'Fehler beim Zuweisen der Gruppe.'
+    });
+  }
+
+  // ── Move part ───────────────────────────────────────────────────────────
+
+  openMoveModal(part: WearPart): void {
+    this.movePartId = part.id;
+    this.movePartName = part.name;
+    this.moveIsFederung = part.kategorie === WearPartCategory.Federung;
+    this.moveAusbauKm = this.bike?.kilometerstand ?? 0;
+    this.moveAusbauDatumStr = new Date().toISOString().substring(0, 10);
+    this.moveEinbauKm = 0;
+    this.moveEinbauDatumStr = new Date().toISOString().substring(0, 10);
+    this.moveAusbauFahrstunden = this.moveIsFederung ? (this.bike?.fahrstunden ?? null) : null;
+    this.moveEinbauFahrstunden = null;
+    this.moveZielRadId = null;
+    this.showMoveModal = true;
+
+    // Load all user bikes (except the current one)
+    this.bikeService.getBikes().subscribe({
+      next: bikes => this.userBikes = bikes.filter(b => b.id !== this.bike?.id),
+      error: () => this.userBikes = []
+    });
+  }
+
+  closeMoveModal(): void {
+    this.showMoveModal = false;
+    this.movePartId = null;
+  }
+
+  onMoveAusbauDatumChange(): void {
+    if (this.moveAusbauDatumStr && this.bike) {
+      this.loadingMoveAusbauOdometer = true;
+      this.bikeService.getOdometerAt(this.bike.id, this.moveAusbauDatumStr).subscribe({
+        next: km => { this.moveAusbauKm = km; this.loadingMoveAusbauOdometer = false; },
+        error: () => this.loadingMoveAusbauOdometer = false
+      });
+    }
+  }
+
+  onMoveEinbauDatumChange(): void {
+    if (this.moveEinbauDatumStr && this.moveZielRadId) {
+      this.loadingMoveEinbauOdometer = true;
+      this.bikeService.getOdometerAt(this.moveZielRadId, this.moveEinbauDatumStr).subscribe({
+        next: km => { this.moveEinbauKm = km; this.loadingMoveEinbauOdometer = false; },
+        error: () => this.loadingMoveEinbauOdometer = false
+      });
+    }
+  }
+
+  onMoveZielRadChange(): void {
+    // Auto-fetch target bike odometer on target change
+    this.onMoveEinbauDatumChange();
+  }
+
+  confirmMove(): void {
+    if (this.movePartId == null || this.moveZielRadId == null) return;
+    const request: MoveWearPartRequest = {
+      zielRadId: this.moveZielRadId,
+      ausbauKilometerstand: this.moveAusbauKm,
+      ausbauDatum: new Date(this.moveAusbauDatumStr),
+      einbauKilometerstand: this.moveEinbauKm,
+      einbauDatum: new Date(this.moveEinbauDatumStr),
+      ausbauFahrstunden: this.moveAusbauFahrstunden,
+      einbauFahrstunden: this.moveEinbauFahrstunden,
+    };
+    this.wearPartService.moveWearPart(this.movePartId, request).subscribe({
+      next: () => {
+        this.showMoveModal = false;
+        this.editingWearPart = null;
+        this.detailWearPart = null;
+        this.movePartId = null;
+        if (this.bike) this.loadWearParts(this.bike.id);
+      },
+      error: () => this.error = 'Fehler beim Verschieben des Teils.'
+    });
+  }
+
+  // ── History ─────────────────────────────────────────────────────────────
+
+  openHistory(part: WearPart): void {
+    this.historyPartName = part.name;
+    this.historyParts = [];
+    this.historyBikes = {};
+    this.showHistoryModal = true;
+    this.wearPartService.getWearPartHistory(part.id).subscribe({
+      next: parts => {
+        this.historyParts = parts;
+        // Load bike info for all unique radIds
+        const radIds = [...new Set(parts.map(p => p.radId))];
+        radIds.forEach(radId => {
+          this.bikeService.getBike(radId).subscribe({
+            next: bike => this.historyBikes[radId] = bike,
+            error: () => {}
+          });
+        });
+      },
+      error: () => this.error = 'Fehler beim Laden der Historie.'
+    });
+  }
+
+  closeHistory(): void {
+    this.showHistoryModal = false;
+  }
+
+  hasHistory(part: WearPart): boolean {
+    return part.vorgaengerId != null;
   }
 }

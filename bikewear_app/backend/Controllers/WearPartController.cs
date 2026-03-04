@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using App.Models;
 using App.Services;
@@ -17,6 +18,11 @@ namespace App.Controllers
         public WearPartController(IWearPartService wearPartService)
         {
             _wearPartService = wearPartService;
+        }
+
+        private int GetCurrentUserId()
+        {
+            return int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         }
 
         [HttpGet]
@@ -69,6 +75,25 @@ namespace App.Controllers
                 return NotFound();
             }
             return NoContent();
+        }
+
+        [HttpPost("{id}/move")]
+        public async Task<ActionResult<WearPart>> MoveWearPart(int id, MoveWearPartRequest request)
+        {
+            var userId = GetCurrentUserId();
+            var newPart = await _wearPartService.MoveWearPartAsync(id, request, userId);
+            if (newPart == null)
+            {
+                return NotFound();
+            }
+            return CreatedAtAction(nameof(GetWearPartById), new { id = newPart.Id }, newPart);
+        }
+
+        [HttpGet("{id}/history")]
+        public async Task<ActionResult<IEnumerable<WearPart>>> GetWearPartHistory(int id)
+        {
+            var history = await _wearPartService.GetWearPartHistoryAsync(id);
+            return Ok(history);
         }
     }
 }
