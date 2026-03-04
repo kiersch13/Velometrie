@@ -108,7 +108,7 @@ export class SettingsComponent implements OnInit {
   }
 
   resetLifetimeSettings(): void {
-    this.lifetimeSettings = { ...defaultLifetimeSettings };
+    this.lifetimeSettings = JSON.parse(JSON.stringify(defaultLifetimeSettings));
     this.lifetimeService.saveSettings(this.lifetimeSettings);
     this.lifetimeSaved = true;
     setTimeout(() => this.lifetimeSaved = false, 2500);
