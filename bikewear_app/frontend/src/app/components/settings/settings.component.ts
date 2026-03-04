@@ -17,6 +17,10 @@ export class SettingsComponent implements OnInit {
   success = '';
   showConfirm = false;
 
+  kontoOpen = true;
+  verbindungenOpen = true;
+  einstellungenOpen = true;
+
   lifetimeSettings!: LifetimeSettings;
 
   /** Bike categories shown as tabs */
