@@ -55,6 +55,7 @@ export class TeilBibliothekComponent implements OnInit {
   addToBikeLoading = false;
   addToBikeError: string | null = null;
   addToBikeSuccess = false;
+  loadingOdometerBibliothek = false;
 
   private readonly newTeilDefault: Partial<TeilVorlage> = {
     id: 0,
@@ -257,8 +258,23 @@ export class TeilBibliothekComponent implements OnInit {
   onAddToBikeRadChange(): void {
     const bike = this.bikes.find(b => b.id === Number(this.addToBikePart.radId));
     if (bike) {
-      this.addToBikePart.einbauKilometerstand = bike.kilometerstand;
       this.addToBikePart.einbauFahrstunden = bike.fahrstunden;
+      const datumStr = this.addToBikeEinbauDatumStr;
+      if (datumStr) {
+        this.loadingOdometerBibliothek = true;
+        this.bikeService.getOdometerAt(bike.id, datumStr).subscribe({
+          next: (km) => {
+            this.addToBikePart.einbauKilometerstand = km;
+            this.loadingOdometerBibliothek = false;
+          },
+          error: () => {
+            this.addToBikePart.einbauKilometerstand = bike.kilometerstand;
+            this.loadingOdometerBibliothek = false;
+          }
+        });
+      } else {
+        this.addToBikePart.einbauKilometerstand = bike.kilometerstand;
+      }
     }
   }
 
@@ -269,6 +285,22 @@ export class TeilBibliothekComponent implements OnInit {
 
   set addToBikeEinbauDatumStr(val: string) {
     this.addToBikePart.einbauDatum = val ? new Date(val) : (undefined as any);
+    if (val && this.addToBikePart.radId) {
+      this.loadingOdometerBibliothek = true;
+      this.bikeService.getOdometerAt(Number(this.addToBikePart.radId), val).subscribe({
+        next: (km) => {
+          this.addToBikePart.einbauKilometerstand = km;
+          this.loadingOdometerBibliothek = false;
+        },
+        error: () => {
+          const bike = this.bikes.find(b => b.id === Number(this.addToBikePart.radId));
+          if (bike) {
+            this.addToBikePart.einbauKilometerstand = bike.kilometerstand;
+          }
+          this.loadingOdometerBibliothek = false;
+        }
+      });
+    }
   }
 
   get addToBikeShowPositionDropdown(): boolean {
