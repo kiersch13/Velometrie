@@ -74,6 +74,7 @@ export class TeilBibliothekComponent implements OnInit {
   enriching = false;
   enrichError: string | null = null;
   addSuccess = false;
+  isEnriched = false;
 
   // Validation dialog state
   showValidationDialog = false;
@@ -327,6 +328,7 @@ export class TeilBibliothekComponent implements OnInit {
     this.enrichError = null;
     this.addSuccess = false;
     this.supportRequestSent = false;
+    this.isEnriched = false;
   }
 
   enrichTeil(): void {
@@ -334,6 +336,10 @@ export class TeilBibliothekComponent implements OnInit {
       this.enrichError = 'Bitte zuerst einen Namen eingeben.';
       return;
     }
+    this.runEnrichment();
+  }
+
+  private runEnrichment(afterSuccess?: () => void): void {
     this.enriching = true;
     this.enrichError = null;
     this.supportRequestSent = false;
@@ -341,6 +347,8 @@ export class TeilBibliothekComponent implements OnInit {
       next: (enriched) => {
         this.newTeil = { ...enriched };
         this.enriching = false;
+        this.isEnriched = true;
+        afterSuccess?.();
       },
       error: (err) => {
         this.enriching = false;
@@ -376,6 +384,18 @@ export class TeilBibliothekComponent implements OnInit {
   }
 
   saveTeil(): void {
+    if (!this.newTeil.name?.trim()) {
+      this.addError = 'Name ist ein Pflichtfeld.';
+      return;
+    }
+    if (!this.isEnriched) {
+      this.runEnrichment(() => this.doSaveTeil());
+      return;
+    }
+    this.doSaveTeil();
+  }
+
+  private doSaveTeil(): void {
     if (!this.newTeil.name?.trim() || !this.newTeil.hersteller?.trim() || !this.newTeil.fahrradKategorien?.trim()) {
       this.addError = 'Name, Hersteller und Fahrradkategorien sind Pflichtfelder.';
       return;

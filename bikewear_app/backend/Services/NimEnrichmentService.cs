@@ -20,6 +20,7 @@ namespace App.Services
         private const string SystemPrompt =
             "Du bist ein Fahrradkomponenten-Experte. Deine Aufgabe ist es, unvollständige Teilvorlagen für eine Fahrrad-Verschleißteil-Bibliothek zu vervollständigen.\n" +
             "Gib ausschließlich ein JSON-Objekt zurück – keinen erklärenden Text.\n\n" +
+            "Nutze dein Wissen über Fahrradteile aus bekannten Online-Shops wie bike-discount.de, bike24.de, bike-components.de und r2bike.de sowie anderen einschlägigen Quellen, um genaue Produktinformationen bereitzustellen.\n\n" +
             "Das JSON muss folgende Felder enthalten:\n" +
             "- \"name\": string – produktgenauer Name, z. B. \"Shimano Ultegra 12s Kette\"\n" +
             "- \"hersteller\": string – Hersteller, z. B. \"Shimano\"\n" +
