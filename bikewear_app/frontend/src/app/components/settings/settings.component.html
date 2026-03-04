@@ -5,7 +5,7 @@
 
 <!-- Konto Accordion -->
 <div class="card max-w-lg overflow-hidden mb-6">
-  <button class="w-full px-6 pt-6 pb-4 flex items-center gap-3 text-left" (click)="kontoOpen = !kontoOpen"
+  <button type="button" class="w-full px-6 pt-6 pb-4 flex items-center gap-3 text-left" (click)="kontoOpen = !kontoOpen"
           [attr.aria-expanded]="kontoOpen" aria-controls="konto-panel">
     <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
       <lucide-icon name="user" [size]="18" class="text-primary dark:text-text-dark" aria-hidden="true"></lucide-icon>
@@ -37,7 +37,7 @@
 
 <!-- Verbindungen Accordion -->
 <div class="card max-w-lg overflow-hidden mb-6">
-  <button class="w-full px-6 pt-6 pb-4 flex items-center gap-3 text-left" (click)="verbindungenOpen = !verbindungenOpen"
+  <button type="button" class="w-full px-6 pt-6 pb-4 flex items-center gap-3 text-left" (click)="verbindungenOpen = !verbindungenOpen"
           [attr.aria-expanded]="verbindungenOpen" aria-controls="verbindungen-panel">
     <div class="w-9 h-9 rounded-lg bg-orange-50 flex items-center justify-center flex-shrink-0">
       <lucide-icon name="cable" [size]="18" class="text-primary dark:text-text-dark" aria-hidden="true"></lucide-icon>
@@ -133,7 +133,7 @@
 
 <!-- Einstellungen Accordion -->
 <div class="card max-w-lg overflow-hidden">
-  <button class="w-full px-6 pt-6 pb-4 flex items-center gap-3 text-left" (click)="einstellungenOpen = !einstellungenOpen"
+  <button type="button" class="w-full px-6 pt-6 pb-4 flex items-center gap-3 text-left" (click)="einstellungenOpen = !einstellungenOpen"
           [attr.aria-expanded]="einstellungenOpen" aria-controls="einstellungen-panel">
     <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
       <lucide-icon name="sliders" [size]="18" class="text-primary dark:text-text-dark" aria-hidden="true"></lucide-icon>
