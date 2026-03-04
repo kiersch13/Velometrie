@@ -17,9 +17,9 @@ export class SettingsComponent implements OnInit {
   success = '';
   showConfirm = false;
 
-  kontoOpen = true;
-  verbindungenOpen = true;
-  einstellungenOpen = true;
+  kontoOpen = false;
+  verbindungenOpen = false;
+  einstellungenOpen = false;
 
   lifetimeSettings!: LifetimeSettings;
 
