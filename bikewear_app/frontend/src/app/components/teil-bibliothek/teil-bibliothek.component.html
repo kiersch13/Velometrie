@@ -102,10 +102,11 @@
   <!-- Actions -->
   <div class="flex justify-end gap-3 mt-4">
     <button class="btn-secondary text-sm" (click)="toggleAddForm()">Abbrechen</button>
-    <button class="btn-primary text-sm flex items-center gap-2" [disabled]="addLoading" (click)="saveTeil()">
-      <lucide-icon *ngIf="addLoading" name="loader-2" [size]="14" class="animate-spin" aria-hidden="true"></lucide-icon>
-      <lucide-icon *ngIf="!addLoading" name="check" [size]="14" aria-hidden="true"></lucide-icon>
-      {{ addLoading ? 'Speichert...' : 'Speichern' }}
+    <button class="btn-primary text-sm flex items-center gap-2" [disabled]="addLoading || enriching" (click)="saveTeil()">
+      <lucide-icon *ngIf="addLoading || enriching" name="loader-2" [size]="14" class="animate-spin" aria-hidden="true"></lucide-icon>
+      <lucide-icon *ngIf="!addLoading && !enriching && isEnriched" name="check" [size]="14" aria-hidden="true"></lucide-icon>
+      <lucide-icon *ngIf="!addLoading && !enriching && !isEnriched" name="sparkles" [size]="14" aria-hidden="true"></lucide-icon>
+      {{ addLoading ? 'Speichert...' : (enriching ? 'Wird angereichert...' : (isEnriched ? 'Speichern' : 'KI-Anreicherung & Speichern')) }}
     </button>
   </div>
 </div>
