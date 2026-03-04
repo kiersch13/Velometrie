@@ -27,6 +27,8 @@ export class TeilBibliothekComponent implements OnInit {
   // Autocomplete
   autocompleteItems: string[] = [];
   showAutocomplete = false;
+  herstellerSuggestions: string[] = [];
+  showHerstellerSuggestions = false;
   private allNamen: string[] = [];
   private searchInput$ = new Subject<string>();
 
@@ -36,6 +38,7 @@ export class TeilBibliothekComponent implements OnInit {
     WearPartCategory.Kassette,
     WearPartCategory.Kettenblatt,
     WearPartCategory.Reifen,
+    WearPartCategory.Federung,
     WearPartCategory.Sonstiges
   ];
 
@@ -118,6 +121,7 @@ export class TeilBibliothekComponent implements OnInit {
   onDocumentClick(event: MouseEvent): void {
     if (!this.elRef.nativeElement.contains(event.target)) {
       this.showAutocomplete = false;
+      this.showHerstellerSuggestions = false;
     }
   }
 
@@ -152,10 +156,31 @@ export class TeilBibliothekComponent implements OnInit {
 
   onFilterChange(): void {
     this.selectedHersteller = '';
+    this.showHerstellerSuggestions = false;
     this.loadTeile();
   }
 
   onHerstellerChange(): void {
+    this.loadTeile();
+  }
+
+  onHerstellerInput(): void {
+    const term = this.selectedHersteller.toLowerCase();
+    if (!term) {
+      this.herstellerSuggestions = [];
+      this.showHerstellerSuggestions = false;
+      this.loadTeile();
+      return;
+    }
+    this.herstellerSuggestions = this.hersteller
+      .filter(h => h.toLowerCase().includes(term))
+      .slice(0, 8);
+    this.showHerstellerSuggestions = this.herstellerSuggestions.length > 0;
+  }
+
+  selectHersteller(h: string): void {
+    this.selectedHersteller = h;
+    this.showHerstellerSuggestions = false;
     this.loadTeile();
   }
 
@@ -165,6 +190,7 @@ export class TeilBibliothekComponent implements OnInit {
     this.selectedHersteller = '';
     this.suchbegriff = '';
     this.showAutocomplete = false;
+    this.showHerstellerSuggestions = false;
     this.loadTeile();
   }
 

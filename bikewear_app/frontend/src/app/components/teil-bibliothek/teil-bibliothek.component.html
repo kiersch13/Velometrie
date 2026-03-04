@@ -177,15 +177,31 @@
       </select>
     </div>
     <!-- Manufacturer -->
-    <div>
+    <div class="relative">
       <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Hersteller</label>
-      <select
+      <input
+        type="text"
         class="form-input w-full text-sm"
+        placeholder="Alle Hersteller"
         [(ngModel)]="selectedHersteller"
-        (ngModelChange)="onHerstellerChange()">
-        <option value="">Alle Hersteller</option>
-        <option *ngFor="let h of hersteller" [value]="h">{{ h }}</option>
-      </select>
+        (ngModelChange)="onHerstellerInput()"
+        (blur)="onHerstellerChange()"
+        autocomplete="off"
+        aria-label="Hersteller filtern"
+        [attr.aria-expanded]="showHerstellerSuggestions" />
+      <ul
+        *ngIf="showHerstellerSuggestions"
+        class="absolute z-20 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg overflow-hidden"
+        role="listbox">
+        <li
+          *ngFor="let h of herstellerSuggestions"
+          class="px-4 py-2 text-sm cursor-pointer hover:bg-accent/10 dark:hover:bg-accent/20 text-primary dark:text-text-dark"
+          role="option"
+          (mousedown)="$event.preventDefault()"
+          (click)="selectHersteller(h)">
+          {{ h }}
+        </li>
+      </ul>
     </div>
   </div>
   <!-- Active filter summary + clear -->
