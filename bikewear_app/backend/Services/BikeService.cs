@@ -58,6 +58,7 @@ namespace App.Services
             existing.Name = bike.Name;
             existing.Kategorie = bike.Kategorie;
             existing.Kilometerstand = bike.Kilometerstand;
+            existing.Fahrstunden = bike.Fahrstunden;
             existing.StravaId = bike.StravaId;
             await _context.SaveChangesAsync();
             return existing;

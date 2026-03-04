@@ -36,6 +36,7 @@ export class BikeDetailComponent implements OnInit {
   editBikeName = '';
   editBikeKategorie: BikeCategory = BikeCategory.Rennrad;
   editBikeKilometerstand = 0;
+  editBikeFahrstunden = 0;
 
   weeklyAvgKm: number | null = null;
 
@@ -108,6 +109,7 @@ export class BikeDetailComponent implements OnInit {
     this.editBikeName = this.bike.name;
     this.editBikeKategorie = this.bike.kategorie;
     this.editBikeKilometerstand = this.bike.kilometerstand;
+    this.editBikeFahrstunden = this.bike.fahrstunden;
     this.showBikeEditModal = true;
   }
 
@@ -121,7 +123,8 @@ export class BikeDetailComponent implements OnInit {
       ...this.bike,
       name: this.editBikeName,
       kategorie: this.editBikeKategorie,
-      kilometerstand: this.editBikeKilometerstand
+      kilometerstand: this.editBikeKilometerstand,
+      fahrstunden: this.editBikeFahrstunden
     };
     this.bikeService.updateBike(this.bike.id, updatedBike).subscribe({
       next: updated => {
