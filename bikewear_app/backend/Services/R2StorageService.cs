@@ -37,18 +37,49 @@ namespace App.Services
                 "R2 is not configured. Set R2__AccountId, R2__AccessKeyId, R2__SecretAccessKey, and R2__BucketName.");
         }
 
-        public async Task UploadAsync(string key, Stream content, string contentType, long contentLength)
+        internal static PutObjectRequest CreatePutObjectRequest(
+            string bucketName,
+            string key,
+            Stream content,
+            string contentType,
+            long contentLength)
         {
-            var client = GetClientOrThrow();
             var request = new PutObjectRequest
             {
-                BucketName = _options.BucketName,
+                BucketName = bucketName,
                 Key = key,
                 InputStream = content,
                 ContentType = contentType,
-                AutoCloseStream = false
+                AutoCloseStream = false,
+                // Cloudflare R2 does not support the streaming SigV4 payload signing
+                // path used by the AWS .NET SDK defaults.
+                DisablePayloadSigning = true,
+                DisableDefaultChecksumValidation = true
             };
             request.Headers.ContentLength = contentLength;
+
+            return request;
+        }
+
+        internal static async Task<R2ObjectData> CreateObjectDataAsync(Stream content, string? contentType)
+        {
+            var buffer = new MemoryStream();
+            await content.CopyToAsync(buffer);
+            buffer.Position = 0;
+
+            return new R2ObjectData
+            {
+                Content = buffer,
+                ContentType = string.IsNullOrWhiteSpace(contentType)
+                    ? "application/octet-stream"
+                    : contentType
+            };
+        }
+
+        public async Task UploadAsync(string key, Stream content, string contentType, long contentLength)
+        {
+            var client = GetClientOrThrow();
+            var request = CreatePutObjectRequest(_options.BucketName, key, content, contentType, contentLength);
 
             await client.PutObjectAsync(request);
         }
@@ -58,14 +89,8 @@ namespace App.Services
             var client = GetClientOrThrow();
             try
             {
-                var response = await client.GetObjectAsync(_options.BucketName, key);
-                return new R2ObjectData
-                {
-                    Content = response.ResponseStream,
-                    ContentType = string.IsNullOrWhiteSpace(response.Headers.ContentType)
-                        ? "application/octet-stream"
-                        : response.Headers.ContentType
-                };
+                using var response = await client.GetObjectAsync(_options.BucketName, key);
+                return await CreateObjectDataAsync(response.ResponseStream, response.Headers.ContentType);
             }
             catch (AmazonS3Exception ex) when (ex.StatusCode == HttpStatusCode.NotFound)
             {
