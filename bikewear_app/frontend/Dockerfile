@@ -26,11 +26,23 @@ ENV PORT=80
 # Copy compiled Angular app into Nginx's web root
 COPY --from=build /app/dist/frontend /usr/share/nginx/html
 
-# Copy Nginx config (handles Angular client-side routing)
-# Uses the nginx template mechanism so the PORT env variable (injected by Railway)
-# is substituted at container startup via 20-envsubst-on-templates.sh.
+# Copy Nginx config template (handles Angular client-side routing)
+# The runtime startup script injects the PORT value before nginx starts.
 COPY nginx.conf /etc/nginx/templates/default.conf.template
+
+# Create config deterministically from PORT and then start nginx in foreground.
+RUN printf '%s\n' \
+	'#!/bin/sh' \
+	'set -eu' \
+	': "${PORT:=80}"' \
+	'sed "s/__PORT__/${PORT}/g" /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf' \
+	'nginx -t' \
+	'exec nginx -g "daemon off;"' \
+	> /docker-entrypoint-custom.sh \
+	&& chmod +x /docker-entrypoint-custom.sh
 
 # Default port; Railway overrides this via the $PORT env variable at runtime.
 # Docker's EXPOSE does not support variable substitution, so 80 is the fallback.
 EXPOSE 80
+
+CMD ["/docker-entrypoint-custom.sh"]
