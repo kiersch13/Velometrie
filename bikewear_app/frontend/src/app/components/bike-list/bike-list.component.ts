@@ -81,4 +81,26 @@ export class BikeListComponent implements OnInit {
         return 'badge';
     }
   }
+
+  hasPhoto(bike: Bike): boolean {
+    return !!bike.fotoStorageKey;
+  }
+
+  getBikePhotoUrl(bike: Bike): string {
+    const updatedAt = bike.fotoAktualisiertAm ? new Date(bike.fotoAktualisiertAm).getTime() : 0;
+    return `${this.bikeService.getBikePhotoUrl(bike.id)}?v=${updatedAt}`;
+  }
+
+  getCategoryOverlayClass(kategorie: BikeCategory): string {
+    switch (kategorie) {
+      case BikeCategory.Rennrad:
+        return 'bg-accent/45';
+      case BikeCategory.Gravel:
+        return 'bg-success/45';
+      case BikeCategory.Mountainbike:
+        return 'bg-blue-600/45';
+      default:
+        return 'bg-primary/45';
+    }
+  }
 }

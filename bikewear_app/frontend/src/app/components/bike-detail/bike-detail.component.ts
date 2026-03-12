@@ -57,6 +57,8 @@ export class BikeDetailComponent implements OnInit {
   weeklyAvgKm: number | null = null;
   loadingOdometerEdit = false;
   loadingOdometerAusbauEdit = false;
+  photoUploading = false;
+  photoError = '';
 
   // Delete wear part confirmation modal
   showDeleteModal = false;
@@ -161,6 +163,51 @@ export class BikeDetailComponent implements OnInit {
     this.editBikeFahrstunden = this.bike.fahrstunden;
     this.editBikeIndoorKilometerstand = this.bike.indoorKilometerstand;
     this.showBikeEditModal = true;
+  }
+
+  getBikePhotoUrl(bike: Bike): string {
+    const updatedAt = bike.fotoAktualisiertAm ? new Date(bike.fotoAktualisiertAm).getTime() : 0;
+    return `${this.bikeService.getBikePhotoUrl(bike.id)}?v=${updatedAt}`;
+  }
+
+  onBikePhotoSelected(event: Event): void {
+    if (!this.bike) return;
+
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.photoUploading = true;
+    this.photoError = '';
+    this.bikeService.uploadBikePhoto(this.bike.id, file).subscribe({
+      next: updated => {
+        this.bike = updated;
+        this.photoUploading = false;
+        input.value = '';
+      },
+      error: () => {
+        this.photoError = 'Foto konnte nicht hochgeladen werden.';
+        this.photoUploading = false;
+        input.value = '';
+      }
+    });
+  }
+
+  removeBikePhoto(): void {
+    if (!this.bike || !this.bike.fotoStorageKey) return;
+
+    this.photoUploading = true;
+    this.photoError = '';
+    this.bikeService.deleteBikePhoto(this.bike.id).subscribe({
+      next: updated => {
+        this.bike = updated;
+        this.photoUploading = false;
+      },
+      error: () => {
+        this.photoError = 'Foto konnte nicht gelöscht werden.';
+        this.photoUploading = false;
+      }
+    });
   }
 
   closeBikeEdit(): void {

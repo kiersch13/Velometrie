@@ -60,6 +60,8 @@ builder.Services.AddScoped<IStravaWebhookService, StravaWebhookService>();
 builder.Services.AddScoped<INimEnrichmentService, NimEnrichmentService>();
 builder.Services.AddScoped<IServiceEintragService, ServiceEintragService>();
 builder.Services.AddScoped<IWearPartGruppeService, WearPartGruppeService>();
+builder.Services.Configure<R2Options>(builder.Configuration.GetSection("R2"));
+builder.Services.AddScoped<IR2StorageService, R2StorageService>();
 
 // Cookie-based authentication.
 // Production (cross-origin Railway deployment): SameSite=None + Secure so the

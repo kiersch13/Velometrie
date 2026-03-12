@@ -37,6 +37,20 @@ export class BikeService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
+  uploadBikePhoto(id: number, file: File): Observable<Bike> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<Bike>(`${this.apiUrl}/${id}/photo`, formData);
+  }
+
+  deleteBikePhoto(id: number): Observable<Bike> {
+    return this.http.delete<Bike>(`${this.apiUrl}/${id}/photo`);
+  }
+
+  getBikePhotoUrl(id: number): string {
+    return `${this.apiUrl}/${id}/photo`;
+  }
+
   getOdometerAt(bikeId: number, date: string): Observable<number> {
     return this.http.get<number>(`${this.apiUrl}/${bikeId}/odometer-at?date=${date}`);
   }

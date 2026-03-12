@@ -62,5 +62,20 @@ namespace App.Models
 
         /// <summary>Radstand in mm.</summary>
         public int? Radstand { get; set; }
+
+        /// <summary>Storage key of the bike photo in object storage.</summary>
+        public string? FotoStorageKey { get; set; }
+
+        /// <summary>Original file name of the bike photo.</summary>
+        public string? FotoDateiname { get; set; }
+
+        /// <summary>MIME type of the bike photo.</summary>
+        public string? FotoMimeType { get; set; }
+
+        /// <summary>File size of the bike photo in bytes.</summary>
+        public long? FotoGroesseBytes { get; set; }
+
+        /// <summary>Last update timestamp for the bike photo (UTC).</summary>
+        public DateTime? FotoAktualisiertAm { get; set; }
     }
 }

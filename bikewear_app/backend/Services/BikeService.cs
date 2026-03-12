@@ -75,6 +75,42 @@ namespace App.Services
             return existing;
         }
 
+        public async Task<Bike?> UpdateBikePhotoAsync(int id, int userId, string storageKey, string fileName, string mimeType, long fileSize, DateTime updatedAtUtc)
+        {
+            var existing = await _context.Rads.FirstOrDefaultAsync(b => b.Id == id && b.UserId == userId);
+            if (existing == null)
+            {
+                return null;
+            }
+
+            existing.FotoStorageKey = storageKey;
+            existing.FotoDateiname = fileName;
+            existing.FotoMimeType = mimeType;
+            existing.FotoGroesseBytes = fileSize;
+            existing.FotoAktualisiertAm = updatedAtUtc;
+
+            await _context.SaveChangesAsync();
+            return existing;
+        }
+
+        public async Task<Bike?> RemoveBikePhotoAsync(int id, int userId)
+        {
+            var existing = await _context.Rads.FirstOrDefaultAsync(b => b.Id == id && b.UserId == userId);
+            if (existing == null)
+            {
+                return null;
+            }
+
+            existing.FotoStorageKey = null;
+            existing.FotoDateiname = null;
+            existing.FotoMimeType = null;
+            existing.FotoGroesseBytes = null;
+            existing.FotoAktualisiertAm = null;
+
+            await _context.SaveChangesAsync();
+            return existing;
+        }
+
         public async Task<bool> DeleteBikeAsync(int id, int userId)
         {
             var bike = await _context.Rads.FirstOrDefaultAsync(b => b.Id == id && b.UserId == userId);

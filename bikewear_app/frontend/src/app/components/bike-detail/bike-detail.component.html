@@ -20,9 +20,37 @@
   <!-- Bike header -->
   <div class="card p-6 mb-8">
     <div class="flex justify-between items-start flex-wrap gap-4">
-      <div>
-        <span class="badge mb-2">{{ bike.kategorie }}</span>
-        <h2 class="mt-1 text-3xl font-bold text-primary dark:text-text-dark">{{ bike.name }}</h2>
+      <div class="min-w-0 flex-1">
+        <div class="flex items-start gap-4">
+          <div class="w-24 h-24 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800 shrink-0">
+            <img
+              *ngIf="bike.fotoStorageKey"
+              [src]="getBikePhotoUrl(bike)"
+              alt="Radfoto"
+              class="w-full h-full object-cover"
+            />
+            <div *ngIf="!bike.fotoStorageKey" class="w-full h-full flex items-center justify-center text-gray-400">
+              <lucide-icon name="bike" [size]="28" aria-hidden="true"></lucide-icon>
+            </div>
+          </div>
+          <div class="min-w-0">
+            <span class="badge mb-2">{{ bike.kategorie }}</span>
+            <h2 class="mt-1 text-3xl font-bold text-primary dark:text-text-dark break-words">{{ bike.name }}</h2>
+            <div class="mt-3 flex items-center gap-2 flex-wrap">
+              <input #bikePhotoInput type="file" accept="image/jpeg,image/png,image/webp" class="hidden" (change)="onBikePhotoSelected($event)" />
+              <button type="button" class="btn-secondary text-xs" (click)="bikePhotoInput.click()" [disabled]="photoUploading">
+                <lucide-icon name="plus" [size]="12" aria-hidden="true"></lucide-icon>
+                {{ bike.fotoStorageKey ? 'Foto ersetzen' : 'Foto hochladen' }}
+              </button>
+              <button type="button" *ngIf="bike.fotoStorageKey" class="btn-secondary text-xs" (click)="removeBikePhoto()" [disabled]="photoUploading">
+                <lucide-icon name="trash-2" [size]="12" aria-hidden="true"></lucide-icon>
+                Foto entfernen
+              </button>
+              <span *ngIf="photoUploading" class="text-xs text-gray-400">Lade Foto…</span>
+              <span *ngIf="photoError" class="text-xs text-error">{{ photoError }}</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="flex items-center gap-3">

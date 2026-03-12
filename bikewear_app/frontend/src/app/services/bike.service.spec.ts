@@ -110,4 +110,52 @@ describe('BikeService', () => {
     expect(req.request.method).toBe('GET');
     req.flush(2549);
   });
+
+  it('uploadBikePhoto() sends a POST multipart request to the photo endpoint', () => {
+    const file = new File(['fake-image'], 'bike.jpg', { type: 'image/jpeg' });
+
+    service.uploadBikePhoto(4, file).subscribe(result => {
+      expect(result.id).toBe(4);
+      expect(result.fotoStorageKey).toBe('bikes/4/photo-abc.jpg');
+    });
+
+    const req = httpMock.expectOne(`${apiUrl}/4/photo`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body instanceof FormData).toBe(true);
+    req.flush({
+      id: 4,
+      name: 'Foto Bike',
+      kategorie: BikeCategory.Rennrad,
+      kilometerstand: 1200,
+      fahrstunden: 0,
+      stravaId: null,
+      userId: 1,
+      ...defaultBikeFields,
+      fotoStorageKey: 'bikes/4/photo-abc.jpg',
+    });
+  });
+
+  it('deleteBikePhoto() sends a DELETE request to the photo endpoint', () => {
+    service.deleteBikePhoto(8).subscribe(result => {
+      expect(result.id).toBe(8);
+    });
+
+    const req = httpMock.expectOne(`${apiUrl}/8/photo`);
+    expect(req.request.method).toBe('DELETE');
+    req.flush({
+      id: 8,
+      name: 'Ohne Foto',
+      kategorie: BikeCategory.Gravel,
+      kilometerstand: 20,
+      fahrstunden: 0,
+      stravaId: null,
+      userId: 1,
+      ...defaultBikeFields,
+      fotoStorageKey: null,
+    });
+  });
+
+  it('getBikePhotoUrl() returns the correct bike photo endpoint URL', () => {
+    expect(service.getBikePhotoUrl(3)).toBe(`${apiUrl}/3/photo`);
+  });
 });

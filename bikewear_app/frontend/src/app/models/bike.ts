@@ -19,4 +19,9 @@ export interface Bike {
   reach: number | null;
   stack: number | null;
   radstand: number | null;
+  fotoStorageKey?: string | null;
+  fotoDateiname?: string | null;
+  fotoMimeType?: string | null;
+  fotoGroesseBytes?: number | null;
+  fotoAktualisiertAm?: string | null;
 }

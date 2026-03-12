@@ -21,6 +21,18 @@ file class FakeStravaService : IStravaService
         => Task.FromResult(0.0);
 }
 
+file class FakeR2StorageService : IR2StorageService
+{
+    public Task UploadAsync(string key, Stream content, string contentType, long contentLength)
+        => Task.CompletedTask;
+
+    public Task<R2ObjectData?> GetAsync(string key)
+        => Task.FromResult<R2ObjectData?>(null);
+
+    public Task DeleteAsync(string key)
+        => Task.CompletedTask;
+}
+
 /// <summary>
 /// Integration tests for BikeController.
 /// Each test wires a real BikeService to an in-memory database and calls controller
@@ -39,7 +51,7 @@ public class BikeControllerTests
     private static BikeController CreateController(AppDbContext context, int userId = 1)
     {
         var service = new BikeService(context, new FakeStravaService());
-        var controller = new BikeController(service);
+        var controller = new BikeController(service, new FakeR2StorageService());
         controller.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
