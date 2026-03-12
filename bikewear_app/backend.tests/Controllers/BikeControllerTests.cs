@@ -9,6 +9,7 @@ using App.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace BackendTests.Controllers;
@@ -51,7 +52,7 @@ public class BikeControllerTests
     private static BikeController CreateController(AppDbContext context, int userId = 1)
     {
         var service = new BikeService(context, new FakeStravaService());
-        var controller = new BikeController(service, new FakeR2StorageService());
+        var controller = new BikeController(service, new FakeR2StorageService(), NullLogger<BikeController>.Instance);
         controller.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
