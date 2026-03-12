@@ -35,4 +35,4 @@ COPY --from=build /app/dist/frontend /app
 # Docker's EXPOSE does not support variable substitution, so 80 is the fallback.
 EXPOSE 80
 
-CMD ["sh", "-c", "serve -s /app -l ${PORT}"]
+CMD ["sh", "-c", "serve -s /app -l tcp://0.0.0.0:${PORT}"]
