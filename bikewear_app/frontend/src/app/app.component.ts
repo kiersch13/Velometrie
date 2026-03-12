@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AuthService } from './services/auth.service';
+import { LanguageService } from './services/language.service';
 
 @Component({
   selector: 'app-root',
@@ -12,9 +13,14 @@ export class AppComponent implements OnInit {
   title = 'Velometrie';
   isLanding = false;
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private languageService: LanguageService,
+  ) {}
 
   ngOnInit(): void {
+    this.languageService.init();
     // Restore session from HttpOnly cookie silently on startup
     this.authService.loadCurrentUser();
 

@@ -5,6 +5,7 @@ import { LifetimeSettingsService } from '../../services/lifetime-settings.servic
 import { LifetimeSettings, defaultLifetimeSettings } from '../../models/lifetime-settings';
 import { WearPartCategory } from '../../models/wear-part-category';
 import { BikeCategory } from '../../models/bike-category';
+import { LanguageService, Language } from '../../services/language.service';
 
 @Component({
   selector: 'app-settings',
@@ -20,6 +21,7 @@ export class SettingsComponent implements OnInit {
   kontoOpen = false;
   verbindungenOpen = false;
   einstellungenOpen = false;
+  spracheOpen = false;
 
   lifetimeSettings!: LifetimeSettings;
 
@@ -55,6 +57,7 @@ export class SettingsComponent implements OnInit {
 
   constructor(
     public authService: AuthService,
+    public languageService: LanguageService,
     private lifetimeService: LifetimeSettingsService,
     private router: Router
   ) {}

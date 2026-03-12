@@ -19,11 +19,11 @@
     </div>
     <a *ngIf="authService.isLoggedIn" routerLink="/bikes"
        class="text-white/50 hover:text-white text-sm transition-colors duration-150 cursor-pointer">
-      Zur App
+      {{ 'LANDING.TO_APP' | translate }}
     </a>
     <a *ngIf="!authService.isLoggedIn" routerLink="/login"
        class="text-white/50 hover:text-white text-sm transition-colors duration-150 cursor-pointer">
-      Anmelden
+      {{ 'LANDING.SIGN_IN' | translate }}
     </a>
   </header>
 
@@ -35,12 +35,12 @@
 
     <!-- Primary tagline -->
     <p class="text-xl md:text-2xl text-white/60 font-light max-w-md mb-3 leading-relaxed">
-      Deine Verschleißteile im Blick.
+      {{ 'LANDING.TAGLINE' | translate }}
     </p>
 
     <!-- Sub-tagline -->
     <p class="text-sm text-white/35 max-w-sm mb-8 leading-relaxed">
-      Ketten, Reifen, Kassetten und mehr — für jedes Rad, jeden Kilometer.
+      {{ 'LANDING.SUB_TAGLINE' | translate }}
     </p>
 
     <!-- CTA: not logged in -->
@@ -48,11 +48,11 @@
       <div class="flex items-center gap-3">
         <a routerLink="/login" class="btn-primary text-base px-7 py-3 gap-2 shadow-lg shadow-accent/20">
           <lucide-icon name="log-in" [size]="18" aria-hidden="true"></lucide-icon>
-          Anmelden
+          {{ 'LANDING.SIGN_IN' | translate }}
         </a>
         <a routerLink="/register" class="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors duration-150">
           <lucide-icon name="user-plus" [size]="16" aria-hidden="true"></lucide-icon>
-          Registrieren
+          {{ 'LANDING.REGISTER' | translate }}
         </a>
       </div>
     </ng-container>
@@ -60,11 +60,11 @@
     <!-- CTA: logged in -->
     <ng-container *ngIf="authService.isLoggedIn">
       <button (click)="enter()" class="btn-primary text-base px-7 py-3 gap-2 shadow-lg shadow-accent/20">
-        Zur App
+        {{ 'LANDING.TO_APP' | translate }}
         <lucide-icon name="arrow-right" [size]="18" aria-hidden="true"></lucide-icon>
       </button>
       <p class="mt-4 text-xs text-white/40">
-        Angemeldet als {{ authService.currentUser?.anzeigename ?? authService.currentUser?.email }}
+        {{ 'LANDING.LOGGED_IN_AS' | translate }} {{ authService.currentUser?.anzeigename ?? authService.currentUser?.email }}
       </p>
     </ng-container>
 

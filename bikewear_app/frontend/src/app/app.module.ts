@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader, TRANSLATE_HTTP_LOADER_CONFIG } from '@ngx-translate/http-loader';
 import { AppRoutingModule } from './app-routing.module';
 import {
   LucideAngularModule,
@@ -45,6 +47,13 @@ import { CredentialsInterceptor } from './interceptors/credentials.interceptor';
     FormsModule,
     HttpClientModule,
     AppRoutingModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useClass: TranslateHttpLoader,
+      },
+      defaultLanguage: 'de',
+    }),
     LucideAngularModule.pick({
       Bike, Settings, Plus, ArrowLeft, Pencil, Check,
       Inbox, AlertCircle, Loader2, CheckCircle2, XCircle,
@@ -59,6 +68,10 @@ import { CredentialsInterceptor } from './interceptors/credentials.interceptor';
       provide: HTTP_INTERCEPTORS,
       useClass: CredentialsInterceptor,
       multi: true,
+    },
+    {
+      provide: TRANSLATE_HTTP_LOADER_CONFIG,
+      useValue: { prefix: './assets/i18n/', suffix: '.json' },
     },
   ],
   bootstrap: [AppComponent]
