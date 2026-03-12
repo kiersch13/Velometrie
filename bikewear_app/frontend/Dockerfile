@@ -16,23 +16,20 @@ RUN npm run build:prod
 
 # ──────────────────────────────────────────────
 # Stage 2: Serve
-# Uses a lightweight Node static server to reliably bind Railway's dynamic PORT
+# Uses Nginx to serve the compiled static files
 # ──────────────────────────────────────────────
-FROM node:20-alpine AS runtime
-
-WORKDIR /app
+FROM nginx:alpine AS runtime
 
 # Default port for environments that do not inject PORT.
-ENV PORT=80
+ENV PORT=8080
 
-# Install static file server with SPA fallback support
-RUN npm install -g serve
+# Copy compiled Angular app into Nginx web root
+COPY --from=build /app/dist/frontend /usr/share/nginx/html
 
-# Copy compiled Angular app
-COPY --from=build /app/dist/frontend /app
+# Copy Nginx config template and let nginx entrypoint envsubst PORT
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
 # Default port; Railway overrides this via the $PORT env variable at runtime.
-# Docker's EXPOSE does not support variable substitution, so 80 is the fallback.
-EXPOSE 80
+# Docker's EXPOSE does not support variable substitution, so 8080 is used.
+EXPOSE 8080
 
-CMD ["sh", "-c", "serve -s /app -l tcp://0.0.0.0:${PORT}"]
