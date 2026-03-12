@@ -19,6 +19,11 @@ import { FederungServiceSettings } from '../../models/lifetime-settings';
   styleUrls: ['./bike-detail.component.css']
 })
 export class BikeDetailComponent implements OnInit {
+  private readonly bikePhotoMaxDimension = 1920;
+  private readonly bikePhotoTargetBytes = 1_000_000;
+  private readonly bikePhotoStartQuality = 0.82;
+  private readonly bikePhotoMinQuality = 0.6;
+
   bike: Bike | null = null;
   wearParts: WearPart[] = [];
   loading = false;
@@ -179,17 +184,124 @@ export class BikeDetailComponent implements OnInit {
 
     this.photoUploading = true;
     this.photoError = '';
-    this.bikeService.uploadBikePhoto(this.bike.id, file).subscribe({
-      next: updated => {
-        this.bike = updated;
+    this.optimizeBikePhoto(file)
+      .then(optimizedFile => {
+        if (!this.bike) {
+          this.photoUploading = false;
+          input.value = '';
+          return;
+        }
+
+        this.bikeService.uploadBikePhoto(this.bike.id, optimizedFile).subscribe({
+          next: updated => {
+            this.bike = updated;
+            this.photoUploading = false;
+            input.value = '';
+          },
+          error: () => {
+            this.photoError = 'Foto konnte nicht hochgeladen werden.';
+            this.photoUploading = false;
+            input.value = '';
+          }
+        });
+      })
+      .catch(() => {
+        this.photoError = 'Foto konnte nicht verarbeitet werden.';
         this.photoUploading = false;
         input.value = '';
-      },
-      error: () => {
-        this.photoError = 'Foto konnte nicht hochgeladen werden.';
-        this.photoUploading = false;
-        input.value = '';
-      }
+      });
+  }
+
+  private async optimizeBikePhoto(file: File): Promise<File> {
+    if (!file.type.startsWith('image/')) {
+      return file;
+    }
+
+    const image = await this.loadImage(file);
+    const dimensions = this.scaleImageDimensions(image.width, image.height, this.bikePhotoMaxDimension);
+    const canvas = document.createElement('canvas');
+    canvas.width = dimensions.width;
+    canvas.height = dimensions.height;
+
+    const context = canvas.getContext('2d');
+    if (!context) {
+      throw new Error('Canvas context not available');
+    }
+
+    context.drawImage(image, 0, 0, dimensions.width, dimensions.height);
+
+    let outputType = file.type === 'image/webp' || file.type === 'image/png' ? 'image/webp' : 'image/jpeg';
+    let quality = this.bikePhotoStartQuality;
+    let blob: Blob;
+
+    try {
+      blob = await this.canvasToBlob(canvas, outputType, quality);
+    } catch {
+      outputType = 'image/jpeg';
+      blob = await this.canvasToBlob(canvas, outputType, quality);
+    }
+
+    while (blob.size > this.bikePhotoTargetBytes && quality > this.bikePhotoMinQuality) {
+      quality = Math.max(this.bikePhotoMinQuality, quality - 0.08);
+      blob = await this.canvasToBlob(canvas, outputType, quality);
+    }
+
+    const isSameDimensions = dimensions.width === image.width && dimensions.height === image.height;
+    if (isSameDimensions && blob.size >= file.size) {
+      return file;
+    }
+
+    const baseName = file.name.replace(/\.[^.]+$/, '');
+    const extension = outputType === 'image/webp' ? 'webp' : 'jpg';
+    const optimizedName = `${baseName || 'bike-photo'}.${extension}`;
+
+    return new File([blob], optimizedName, {
+      type: outputType,
+      lastModified: Date.now()
+    });
+  }
+
+  private scaleImageDimensions(width: number, height: number, maxDimension: number): { width: number; height: number } {
+    const largestSide = Math.max(width, height);
+    if (largestSide <= maxDimension) {
+      return { width, height };
+    }
+
+    const scale = maxDimension / largestSide;
+    return {
+      width: Math.max(1, Math.round(width * scale)),
+      height: Math.max(1, Math.round(height * scale))
+    };
+  }
+
+  private loadImage(file: File): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      const objectUrl = URL.createObjectURL(file);
+
+      image.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        resolve(image);
+      };
+
+      image.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        reject(new Error('Image could not be loaded'));
+      };
+
+      image.src = objectUrl;
+    });
+  }
+
+  private canvasToBlob(canvas: HTMLCanvasElement, type: string, quality: number): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      canvas.toBlob(blob => {
+        if (blob) {
+          resolve(blob);
+        } else {
+          reject(new Error('Canvas export failed'));
+        }
+      }, type, quality);
     });
   }
 
