@@ -20,6 +20,9 @@ RUN npm run build:prod
 # ──────────────────────────────────────────────
 FROM nginx:alpine AS runtime
 
+# Default port for environments that do not inject PORT.
+ENV PORT=80
+
 # Copy compiled Angular app into Nginx's web root
 COPY --from=build /app/dist/frontend /usr/share/nginx/html
 
