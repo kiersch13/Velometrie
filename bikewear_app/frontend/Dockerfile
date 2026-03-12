@@ -24,6 +24,10 @@ FROM nginx:alpine AS runtime
 COPY --from=build /app/dist/frontend /usr/share/nginx/html
 
 # Copy Nginx config (handles Angular client-side routing)
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Uses the nginx template mechanism so the PORT env variable (injected by Railway)
+# is substituted at container startup via 20-envsubst-on-templates.sh.
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
+# Default port; Railway overrides this via the $PORT env variable at runtime.
+# Docker's EXPOSE does not support variable substitution, so 80 is the fallback.
 EXPOSE 80
