@@ -60,6 +60,17 @@ namespace App.Services
             existing.Kilometerstand = bike.Kilometerstand;
             existing.Fahrstunden = bike.Fahrstunden;
             existing.StravaId = bike.StravaId;
+            existing.IndoorKilometerstand = bike.IndoorKilometerstand;
+            existing.Sattelhoehe = bike.Sattelhoehe;
+            existing.Sattelversatz = bike.Sattelversatz;
+            existing.Vorbaulaenge = bike.Vorbaulaenge;
+            existing.Vorbauwinkel = bike.Vorbauwinkel;
+            existing.Kurbellaenge = bike.Kurbellaenge;
+            existing.Lenkerbreite = bike.Lenkerbreite;
+            existing.Spacer = bike.Spacer;
+            existing.Reach = bike.Reach;
+            existing.Stack = bike.Stack;
+            existing.Radstand = bike.Radstand;
             await _context.SaveChangesAsync();
             return existing;
         }

@@ -19,6 +19,9 @@ export interface WearPart {
   reifenBreiteZoll?: number | null;
   reifenDruckBar?: number | null;
   reifenDruckPsi?: number | null;
+  indoorIgnorieren: boolean;
+  einbauIndoorKilometerstand: number;
+  ausbauIndoorKilometerstand: number | null;
 }
 
 export interface MoveWearPartRequest {

@@ -78,6 +78,8 @@ namespace App.Services
                 string? gearId = null;
                 double distanceMeters = 0;
                 int movingTimeSeconds = 0;
+                string? activityType = null;
+                bool isTrainer = false;
 
                 try
                 {
@@ -109,6 +111,17 @@ namespace App.Services
                     {
                         movingTimeSeconds = movingTimeElement.GetInt32();
                     }
+
+                    if (root.TryGetProperty("type", out var typeElement))
+                    {
+                        activityType = typeElement.GetString();
+                    }
+
+                    if (root.TryGetProperty("trainer", out var trainerElement)
+                        && trainerElement.ValueKind == JsonValueKind.True)
+                    {
+                        isTrainer = true;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -131,6 +144,11 @@ namespace App.Services
 
                 var movingTimeHours = movingTimeSeconds / 3600.0;
                 bike.Fahrstunden += movingTimeHours;
+
+                if (activityType == "VirtualRide" || isTrainer)
+                {
+                    bike.IndoorKilometerstand += distanceKm;
+                }
 
                 await _context.SaveChangesAsync();
             }

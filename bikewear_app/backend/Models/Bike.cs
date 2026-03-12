@@ -27,5 +27,40 @@ namespace App.Models
         /// <summary>The ID of the user who owns this bike.</summary>
         [Required]
         public int UserId { get; set; }
+
+        /// <summary>Kumulative Indoor-Kilometer (VirtualRide / Trainer).</summary>
+        public int IndoorKilometerstand { get; set; }
+
+        // ── Bike Fit ──────────────────────────────────────────────────────
+
+        /// <summary>Sattelhöhe in mm (Mitte Tretlager bis Oberkante Sattel).</summary>
+        public double? Sattelhoehe { get; set; }
+
+        /// <summary>Sattelversatz (Setback) in mm.</summary>
+        public double? Sattelversatz { get; set; }
+
+        /// <summary>Vorbaulänge in mm.</summary>
+        public int? Vorbaulaenge { get; set; }
+
+        /// <summary>Vorbauwinkel in Grad.</summary>
+        public double? Vorbauwinkel { get; set; }
+
+        /// <summary>Kurbellänge in mm (z.B. 170, 172.5, 175).</summary>
+        public double? Kurbellaenge { get; set; }
+
+        /// <summary>Lenkerbreite in mm (c-c).</summary>
+        public int? Lenkerbreite { get; set; }
+
+        /// <summary>Spacer-Stapelhöhe unter dem Vorbau in mm.</summary>
+        public int? Spacer { get; set; }
+
+        /// <summary>Rahmen-Reach in mm.</summary>
+        public int? Reach { get; set; }
+
+        /// <summary>Rahmen-Stack in mm.</summary>
+        public int? Stack { get; set; }
+
+        /// <summary>Radstand in mm.</summary>
+        public int? Radstand { get; set; }
     }
 }

@@ -60,6 +60,9 @@ namespace App.Services
             existing.ReifenBreiteZoll = wearPart.ReifenBreiteZoll;
             existing.ReifenDruckBar = wearPart.ReifenDruckBar;
             existing.ReifenDruckPsi = wearPart.ReifenDruckPsi;
+            existing.IndoorIgnorieren = wearPart.IndoorIgnorieren;
+            existing.EinbauIndoorKilometerstand = wearPart.EinbauIndoorKilometerstand;
+            existing.AusbauIndoorKilometerstand = wearPart.AusbauIndoorKilometerstand;
             await _context.SaveChangesAsync();
             return existing;
         }
@@ -91,10 +94,14 @@ namespace App.Services
                 return null;
             }
 
+            // Look up the source bike for indoor km snapshot
+            var sourceBike = await _context.Rads.FirstOrDefaultAsync(b => b.Id == existing.RadId);
+
             // Close the current installation
             existing.AusbauKilometerstand = request.AusbauKilometerstand;
             existing.AusbauDatum = request.AusbauDatum;
             existing.AusbauFahrstunden = request.AusbauFahrstunden;
+            existing.AusbauIndoorKilometerstand = sourceBike?.IndoorKilometerstand ?? 0;
 
             // Create a new installation on the target bike
             var newPart = new WearPart
@@ -112,6 +119,8 @@ namespace App.Services
                 ReifenDruckBar = existing.ReifenDruckBar,
                 ReifenDruckPsi = existing.ReifenDruckPsi,
                 VorgaengerId = existing.Id,
+                IndoorIgnorieren = existing.IndoorIgnorieren,
+                EinbauIndoorKilometerstand = targetBike.IndoorKilometerstand,
                 // GruppeId intentionally null — groups are per-bike
             };
 

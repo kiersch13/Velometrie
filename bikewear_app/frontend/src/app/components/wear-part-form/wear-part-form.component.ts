@@ -20,6 +20,7 @@ export class WearPartFormComponent implements OnInit {
   @Input() existingPart?: WearPart;
   @Input() editMode: boolean = false;
   @Input() bikeKategorie: BikeCategory | null = null;
+  @Input() currentIndoorKilometerstand: number = 0;
   @Output() saved = new EventEmitter<void>();
 
   readonly WearPartCategory = WearPartCategory;
@@ -66,7 +67,10 @@ export class WearPartFormComponent implements OnInit {
         einbauDatum: new Date(),
         ausbauDatum: undefined as any,
         einbauFahrstunden: this.currentFahrstunden,
-        ausbauFahrstunden: null
+        ausbauFahrstunden: null,
+        indoorIgnorieren: false,
+        einbauIndoorKilometerstand: this.currentIndoorKilometerstand,
+        ausbauIndoorKilometerstand: null
       };
     }
   }

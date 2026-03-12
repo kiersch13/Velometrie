@@ -25,9 +25,14 @@ describe('BikeService', () => {
     httpMock.verify();
   });
 
+  const defaultBikeFields = {
+    indoorKilometerstand: 0, sattelhoehe: null, sattelversatz: null, vorbaulaenge: null,
+    vorbauwinkel: null, kurbellaenge: null, lenkerbreite: null, spacer: null, reach: null, stack: null, radstand: null,
+  };
+
   it('getBikes() sends a GET request to the correct endpoint', () => {
     const mockBikes: Bike[] = [
-      { id: 1, name: 'Rennmaschine', kategorie: BikeCategory.Rennrad, kilometerstand: 1000, fahrstunden: 0, stravaId: null as any, userId: 1 },
+      { id: 1, name: 'Rennmaschine', kategorie: BikeCategory.Rennrad, kilometerstand: 1000, fahrstunden: 0, stravaId: null as any, userId: 1, ...defaultBikeFields },
     ];
 
     service.getBikes().subscribe(bikes => {
@@ -43,7 +48,7 @@ describe('BikeService', () => {
   });
 
   it('getBike(id) sends a GET request with the correct id in the URL', () => {
-    const mockBike: Bike = { id: 2, name: 'Gravelbike', kategorie: BikeCategory.Gravel, kilometerstand: 500, fahrstunden: 0, stravaId: null as any, userId: 1 };
+    const mockBike: Bike = { id: 2, name: 'Gravelbike', kategorie: BikeCategory.Gravel, kilometerstand: 500, fahrstunden: 0, stravaId: null as any, userId: 1, ...defaultBikeFields };
 
     service.getBike(2).subscribe(bike => {
       expect(bike.name).toBe('Gravelbike');
@@ -55,7 +60,7 @@ describe('BikeService', () => {
   });
 
   it('addBike() sends a POST request with the bike in the body', () => {
-    const newBike: Bike = { id: 0, name: 'Neues Rad', kategorie: BikeCategory.Mountainbike, kilometerstand: 0, fahrstunden: 0, stravaId: null as any, userId: 1 };
+    const newBike: Bike = { id: 0, name: 'Neues Rad', kategorie: BikeCategory.Mountainbike, kilometerstand: 0, fahrstunden: 0, stravaId: null as any, userId: 1, ...defaultBikeFields };
 
     service.addBike(newBike).subscribe(result => {
       expect(result.id).toBe(3); // server assigns the real ID
@@ -76,7 +81,7 @@ describe('BikeService', () => {
   });
 
   it('updateBike() sends a PUT request to the correct URL with the bike body', () => {
-    const bike: Bike = { id: 5, name: 'Geändertes Rad', kategorie: BikeCategory.Gravel, kilometerstand: 300, fahrstunden: 0, stravaId: null as any, userId: 1 };
+    const bike: Bike = { id: 5, name: 'Geändertes Rad', kategorie: BikeCategory.Gravel, kilometerstand: 300, fahrstunden: 0, stravaId: null as any, userId: 1, ...defaultBikeFields };
 
     service.updateBike(5, bike).subscribe(result => {
       expect(result.name).toBe('Geändertes Rad');

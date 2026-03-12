@@ -38,6 +38,9 @@ describe('WearPartService', () => {
     notizen: null,
     vorgaengerId: null,
     gruppeId: null,
+    indoorIgnorieren: false,
+    einbauIndoorKilometerstand: 0,
+    ausbauIndoorKilometerstand: null,
   };
 
   it('getWearParts() sends a GET request to the correct endpoint', () => {

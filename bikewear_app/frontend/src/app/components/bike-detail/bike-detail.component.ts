@@ -39,6 +39,20 @@ export class BikeDetailComponent implements OnInit {
   editBikeKategorie: BikeCategory = BikeCategory.Rennrad;
   editBikeKilometerstand = 0;
   editBikeFahrstunden = 0;
+  editBikeIndoorKilometerstand = 0;
+
+  // Bike Fit modal
+  showBikeFitModal = false;
+  fitSattelhoehe: number | null = null;
+  fitSattelversatz: number | null = null;
+  fitVorbaulaenge: number | null = null;
+  fitVorbauwinkel: number | null = null;
+  fitKurbellaenge: number | null = null;
+  fitLenkerbreite: number | null = null;
+  fitSpacer: number | null = null;
+  fitReach: number | null = null;
+  fitStack: number | null = null;
+  fitRadstand: number | null = null;
 
   weeklyAvgKm: number | null = null;
   loadingOdometerEdit = false;
@@ -145,6 +159,7 @@ export class BikeDetailComponent implements OnInit {
     this.editBikeKategorie = this.bike.kategorie;
     this.editBikeKilometerstand = this.bike.kilometerstand;
     this.editBikeFahrstunden = this.bike.fahrstunden;
+    this.editBikeIndoorKilometerstand = this.bike.indoorKilometerstand;
     this.showBikeEditModal = true;
   }
 
@@ -159,7 +174,8 @@ export class BikeDetailComponent implements OnInit {
       name: this.editBikeName,
       kategorie: this.editBikeKategorie,
       kilometerstand: this.editBikeKilometerstand,
-      fahrstunden: this.editBikeFahrstunden
+      fahrstunden: this.editBikeFahrstunden,
+      indoorKilometerstand: this.editBikeIndoorKilometerstand
     };
     this.bikeService.updateBike(this.bike.id, updatedBike).subscribe({
       next: updated => {
@@ -384,11 +400,19 @@ export class BikeDetailComponent implements OnInit {
   getGefahreneKm(part: WearPart): number {
     if (!this.isInstalled(part)) {
       if (part.ausbauKilometerstand != null && part.ausbauKilometerstand > 0) {
-        return Math.max(0, part.ausbauKilometerstand - part.einbauKilometerstand);
+        let km = part.ausbauKilometerstand - part.einbauKilometerstand;
+        if (part.indoorIgnorieren && part.ausbauIndoorKilometerstand != null) {
+          km -= (part.ausbauIndoorKilometerstand - part.einbauIndoorKilometerstand);
+        }
+        return Math.max(0, km);
       }
       return 0;
     }
-    return Math.max(0, (this.bike?.kilometerstand ?? part.einbauKilometerstand) - part.einbauKilometerstand);
+    let km = (this.bike?.kilometerstand ?? part.einbauKilometerstand) - part.einbauKilometerstand;
+    if (part.indoorIgnorieren && this.bike) {
+      km -= (this.bike.indoorKilometerstand - part.einbauIndoorKilometerstand);
+    }
+    return Math.max(0, km);
   }
 
   getExpectedReplacementKm(part: WearPart): number {
@@ -742,5 +766,59 @@ export class BikeDetailComponent implements OnInit {
 
   hasHistory(part: WearPart): boolean {
     return part.vorgaengerId != null;
+  }
+
+  // ── Bike Fit ─────────────────────────────────────────────────────────
+
+  hasBikeFitData(): boolean {
+    if (!this.bike) return false;
+    return this.bike.sattelhoehe != null || this.bike.sattelversatz != null ||
+           this.bike.vorbaulaenge != null || this.bike.vorbauwinkel != null ||
+           this.bike.kurbellaenge != null || this.bike.lenkerbreite != null ||
+           this.bike.spacer != null || this.bike.reach != null ||
+           this.bike.stack != null || this.bike.radstand != null;
+  }
+
+  openBikeFitEdit(): void {
+    if (!this.bike) return;
+    this.fitSattelhoehe = this.bike.sattelhoehe;
+    this.fitSattelversatz = this.bike.sattelversatz;
+    this.fitVorbaulaenge = this.bike.vorbaulaenge;
+    this.fitVorbauwinkel = this.bike.vorbauwinkel;
+    this.fitKurbellaenge = this.bike.kurbellaenge;
+    this.fitLenkerbreite = this.bike.lenkerbreite;
+    this.fitSpacer = this.bike.spacer;
+    this.fitReach = this.bike.reach;
+    this.fitStack = this.bike.stack;
+    this.fitRadstand = this.bike.radstand;
+    this.showBikeFitModal = true;
+  }
+
+  closeBikeFitEdit(): void {
+    this.showBikeFitModal = false;
+  }
+
+  saveBikeFitEdit(): void {
+    if (!this.bike) return;
+    const updatedBike: Bike = {
+      ...this.bike,
+      sattelhoehe: this.fitSattelhoehe,
+      sattelversatz: this.fitSattelversatz,
+      vorbaulaenge: this.fitVorbaulaenge,
+      vorbauwinkel: this.fitVorbauwinkel,
+      kurbellaenge: this.fitKurbellaenge,
+      lenkerbreite: this.fitLenkerbreite,
+      spacer: this.fitSpacer,
+      reach: this.fitReach,
+      stack: this.fitStack,
+      radstand: this.fitRadstand,
+    };
+    this.bikeService.updateBike(this.bike.id, updatedBike).subscribe({
+      next: updated => {
+        this.bike = updated;
+        this.showBikeFitModal = false;
+      },
+      error: () => this.error = 'Fehler beim Speichern der Bike-Fit-Daten.'
+    });
   }
 }

@@ -53,5 +53,14 @@ namespace App.Models
 
         /// <summary>Reifenluftdruck in PSI (nur für Reifen relevant).</summary>
         public double? ReifenDruckPsi { get; set; }
+
+        /// <summary>True = Indoor-/Trainer-Kilometer nicht als Verschleiß zählen.</summary>
+        public bool IndoorIgnorieren { get; set; }
+
+        /// <summary>IndoorKilometerstand des Rades zum Einbauzeitpunkt.</summary>
+        public int EinbauIndoorKilometerstand { get; set; }
+
+        /// <summary>IndoorKilometerstand des Rades zum Ausbauzeitpunkt.</summary>
+        public int? AusbauIndoorKilometerstand { get; set; }
     }
 }

@@ -30,6 +30,9 @@ function makePart(overrides: Partial<WearPart> = {}): WearPart {
     notizen: null,
     vorgaengerId: null,
     gruppeId: null,
+    indoorIgnorieren: false,
+    einbauIndoorKilometerstand: 0,
+    ausbauIndoorKilometerstand: null,
     ...overrides,
   };
 }
@@ -46,6 +49,8 @@ describe('BikeDetailComponent – Reifen-Edit & getPartConfigSummary', () => {
     const bikeServiceMock = {
       getBike: jest.fn().mockReturnValue(of({
         id: 1, name: 'Testauto', kategorie: BikeCategory.Rennrad, kilometerstand: 500, fahrstunden: 0, stravaId: null, userId: 1,
+        indoorKilometerstand: 0, sattelhoehe: null, sattelversatz: null, vorbaulaenge: null, vorbauwinkel: null,
+        kurbellaenge: null, lenkerbreite: null, spacer: null, reach: null, stack: null, radstand: null,
       })),
       getWeeklyAvgKm: jest.fn().mockReturnValue(of(50)),
       updateBike: jest.fn(),
