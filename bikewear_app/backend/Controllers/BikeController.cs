@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Amazon.S3;
 using App.Models;
 using App.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -173,6 +174,16 @@ namespace App.Controllers
 
                 return Ok(updatedBike);
             }
+            catch (AmazonS3Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Bike photo upload R2 error for bike {BikeId}. Status={StatusCode}, ErrorCode={ErrorCode}",
+                    id,
+                    ex.StatusCode,
+                    ex.ErrorCode);
+                return StatusCode(502,
+                    $"R2-Uploadfehler: {(string.IsNullOrWhiteSpace(ex.ErrorCode) ? "Unknown" : ex.ErrorCode)}");
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Bike photo upload failed for bike {BikeId}", id);
@@ -198,6 +209,16 @@ namespace App.Controllers
                 }
 
                 return File(stored.Content, stored.ContentType, enableRangeProcessing: true);
+            }
+            catch (AmazonS3Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Bike photo fetch R2 error for bike {BikeId}. Status={StatusCode}, ErrorCode={ErrorCode}",
+                    id,
+                    ex.StatusCode,
+                    ex.ErrorCode);
+                return StatusCode(502,
+                    $"R2-Ladefehler: {(string.IsNullOrWhiteSpace(ex.ErrorCode) ? "Unknown" : ex.ErrorCode)}");
             }
             catch (Exception ex)
             {
@@ -230,6 +251,16 @@ namespace App.Controllers
                 }
 
                 return Ok(updatedBike);
+            }
+            catch (AmazonS3Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Bike photo delete R2 error for bike {BikeId}. Status={StatusCode}, ErrorCode={ErrorCode}",
+                    id,
+                    ex.StatusCode,
+                    ex.ErrorCode);
+                return StatusCode(502,
+                    $"R2-Löschfehler: {(string.IsNullOrWhiteSpace(ex.ErrorCode) ? "Unknown" : ex.ErrorCode)}");
             }
             catch (Exception ex)
             {
