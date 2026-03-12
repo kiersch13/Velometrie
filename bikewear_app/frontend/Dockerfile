@@ -26,10 +26,10 @@ ENV PORT=8080
 # Copy compiled Angular app into Nginx web root
 COPY --from=build /app/dist/frontend /usr/share/nginx/html
 
-# Copy Nginx config template and let nginx entrypoint envsubst PORT
-COPY nginx.conf /etc/nginx/templates/default.conf.template
+# Copy Nginx config directly
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Default port; Railway overrides this via the $PORT env variable at runtime.
-# Docker's EXPOSE does not support variable substitution, so 8080 is used.
-EXPOSE 8080
+# Docker's EXPOSE does not support variable substitution, so 80 is used.
+EXPOSE 80
 
