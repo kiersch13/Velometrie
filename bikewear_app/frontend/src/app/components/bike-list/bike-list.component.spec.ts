@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { of, throwError } from 'rxjs';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { BikeListComponent } from './bike-list.component';
 import { BikeService } from '../../services/bike.service';
@@ -34,6 +35,7 @@ describe('BikeListComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [BikeListComponent],
+      imports: [TranslateModule.forRoot()],
       providers: [
         { provide: BikeService, useValue: bikeServiceMock },
         { provide: Router, useValue: routerMock },

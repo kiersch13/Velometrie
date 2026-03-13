@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { of, throwError } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { TeilBibliothekComponent } from './teil-bibliothek.component';
 import { TeilVorlageService } from '../../services/teil-vorlage.service';
@@ -31,6 +32,7 @@ describe('TeilBibliothekComponent – Kilometerstand-Berechnung beim Hinzufügen
 
     await TestBed.configureTestingModule({
       declarations: [TeilBibliothekComponent],
+      imports: [TranslateModule.forRoot()],
       providers: [
         { provide: BikeService, useValue: bikeServiceMock },
         { provide: TeilVorlageService, useValue: teilVorlageServiceMock },
