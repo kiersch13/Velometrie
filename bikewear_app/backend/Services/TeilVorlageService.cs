@@ -35,8 +35,8 @@ namespace App.Services
 
             if (!string.IsNullOrWhiteSpace(suche))
             {
-                var sucheLower = suche.ToLower();
-                query = query.Where(t => (t.Name != null && t.Name.ToLower().Contains(sucheLower)) || (t.Hersteller != null && t.Hersteller.ToLower().Contains(sucheLower)));
+                var sucheLower = suche.ToLowerInvariant();
+                query = query.Where(t => (t.Name != null && t.Name.ToLowerInvariant().Contains(sucheLower)) || (t.Hersteller != null && t.Hersteller.ToLowerInvariant().Contains(sucheLower)));
             }
 
             return await query.OrderBy(t => t.Hersteller).ThenBy(t => t.Name).ToListAsync();
