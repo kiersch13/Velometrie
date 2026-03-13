@@ -27,6 +27,7 @@ import { TeilBibliothekComponent } from './components/teil-bibliothek/teil-bibli
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { CredentialsInterceptor } from './interceptors/credentials.interceptor';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 @NgModule({
   declarations: [
@@ -67,6 +68,11 @@ import { CredentialsInterceptor } from './interceptors/credentials.interceptor';
     {
       provide: HTTP_INTERCEPTORS,
       useClass: CredentialsInterceptor,
+      multi: true,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
       multi: true,
     },
     {
