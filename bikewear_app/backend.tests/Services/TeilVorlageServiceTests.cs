@@ -170,12 +170,19 @@ public class TeilVorlageServiceTests
 
         var service = new TeilVorlageService(context);
 
-        // Act: search with lowercase "shimano" (stored as "Shimano")
-        var result = await service.GetAllAsync(suche: "shimano");
+        // Act: search with lowercase "shimano" (stored as "Shimano") – exercises the Hersteller branch
+        var resultByHersteller = await service.GetAllAsync(suche: "shimano");
 
         // Assert: should find the Shimano item despite different casing
-        Assert.Single(result);
-        Assert.Equal("Ultegra Kette", result.First().Name);
+        Assert.Single(resultByHersteller);
+        Assert.Equal("Ultegra Kette", resultByHersteller.First().Name);
+
+        // Act: search with uppercase "ULTEGRA" (stored as "Ultegra Kette") – exercises the Name branch
+        var resultByName = await service.GetAllAsync(suche: "ULTEGRA");
+
+        // Assert: should find the item by name despite different casing
+        Assert.Single(resultByName);
+        Assert.Equal("Ultegra Kette", resultByName.First().Name);
     }
 
     [Fact]
