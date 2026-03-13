@@ -34,7 +34,10 @@ namespace App.Services
                 query = query.Where(t => t.FahrradKategorien.Contains(fahrradKategorie));
 
             if (!string.IsNullOrWhiteSpace(suche))
-                query = query.Where(t => (t.Name != null && t.Name.Contains(suche)) || (t.Hersteller != null && t.Hersteller.Contains(suche)));
+            {
+                var sucheLower = suche.ToLower();
+                query = query.Where(t => (t.Name != null && t.Name.ToLower().Contains(sucheLower)) || (t.Hersteller != null && t.Hersteller.ToLower().Contains(sucheLower)));
+            }
 
             return await query.OrderBy(t => t.Hersteller).ThenBy(t => t.Name).ToListAsync();
         }

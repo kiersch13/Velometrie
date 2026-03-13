@@ -157,6 +157,28 @@ public class TeilVorlageServiceTests
     }
 
     [Fact]
+    public async Task GetAllAsync_WithSuche_IsCaseInsensitive()
+    {
+        // Arrange: seed entries with mixed-case names and manufacturers
+        using var context = CreateInMemoryContext("GetAll_Search_CaseInsensitive");
+        context.Teilvorlagen.AddRange(
+            new TeilVorlage { Name = "Ultegra Kette", Hersteller = "Shimano", Kategorie = WearPartCategory.Kette, FahrradKategorien = "Rennrad" },
+            new TeilVorlage { Name = "KMC Kette", Hersteller = "KMC", Kategorie = WearPartCategory.Kette, FahrradKategorien = "Mountainbike" },
+            new TeilVorlage { Name = "Grand Prix", Hersteller = "Continental", Kategorie = WearPartCategory.Reifen, FahrradKategorien = "Rennrad" }
+        );
+        await context.SaveChangesAsync();
+
+        var service = new TeilVorlageService(context);
+
+        // Act: search with lowercase "shimano" (stored as "Shimano")
+        var result = await service.GetAllAsync(suche: "shimano");
+
+        // Assert: should find the Shimano item despite different casing
+        Assert.Single(result);
+        Assert.Equal("Ultegra Kette", result.First().Name);
+    }
+
+    [Fact]
     public async Task GetAllAsync_ReturnsOrderedByHerstellerThenName()
     {
         // Arrange: seed entries in non-alphabetical order
