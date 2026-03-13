@@ -5,7 +5,7 @@ import { LifetimeSettingsService } from '../../services/lifetime-settings.servic
 import { LifetimeSettings, defaultLifetimeSettings } from '../../models/lifetime-settings';
 import { WearPartCategory } from '../../models/wear-part-category';
 import { BikeCategory } from '../../models/bike-category';
-import { LanguageService, Language } from '../../services/language.service';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-settings',
