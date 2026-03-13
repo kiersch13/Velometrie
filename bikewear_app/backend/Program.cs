@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using App.Data;
 using App.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using System.Text.Json.Serialization;
 
@@ -51,6 +52,13 @@ else
 
 builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseNpgsql(connectionString));
+
+// Persist data protection keys to the database so session cookies survive deployments.
+// Without this, keys are regenerated on every restart, invalidating all existing cookies.
+builder.Services.AddDataProtection()
+    .SetApplicationName("bikewear")
+    .PersistKeysToDbContext<AppDbContext>();
+
 builder.Services.AddScoped<IBikeService, BikeService>();
 builder.Services.AddScoped<IWearPartService, WearPartService>();
 builder.Services.AddScoped<ITeilVorlageService, TeilVorlageService>();

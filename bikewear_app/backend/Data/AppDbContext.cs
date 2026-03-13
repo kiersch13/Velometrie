@@ -1,9 +1,10 @@
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using App.Models;
 
 namespace App.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : DbContext, IDataProtectionKeyContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -15,6 +16,7 @@ namespace App.Data
         public DbSet<TeilVorlage> Teilvorlagen { get; set; }
         public DbSet<ServiceEintrag> ServiceEintraege { get; set; }
         public DbSet<WearPartGruppe> WearPartGruppen { get; set; }
+        public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
