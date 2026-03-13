@@ -41,11 +41,21 @@ describe('AuthService', () => {
     expect(service.isLoggedIn).toBe(true);
   });
 
-  it('loadCurrentUser() silently swallows errors and leaves currentUser null', () => {
+  it('loadCurrentUser() silently swallows 401 and leaves currentUser null', () => {
     service.loadCurrentUser();
 
     const req = httpMock.expectOne(`${apiUrl}/me`);
     req.flush('Unauthorized', { status: 401, statusText: 'Unauthorized' });
+
+    expect(service.currentUser).toBeNull();
+    expect(service.isLoggedIn).toBe(false);
+  });
+
+  it('loadCurrentUser() silently swallows non-401 errors and leaves currentUser null', () => {
+    service.loadCurrentUser();
+
+    const req = httpMock.expectOne(`${apiUrl}/me`);
+    req.flush('Internal Server Error', { status: 500, statusText: 'Internal Server Error' });
 
     expect(service.currentUser).toBeNull();
     expect(service.isLoggedIn).toBe(false);

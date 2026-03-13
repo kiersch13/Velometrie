@@ -33,7 +33,8 @@ export class AuthService {
 
   /**
    * Called on app startup to restore the session from the server-side cookie.
-   * Silently swallows 401 (not logged in).
+   * Silently swallows all HTTP errors (e.g. 401 when not logged in) and leaves
+   * currentUser as null, so the app can start in a logged-out state without throwing.
    */
   loadCurrentUser(): void {
     this.http.get<User>(`${this.apiUrl}/me`).pipe(
