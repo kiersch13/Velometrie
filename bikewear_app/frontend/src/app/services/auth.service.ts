@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of, tap, catchError } from 'rxjs';
+import { BehaviorSubject, Observable, of, tap, catchError, filter, take } from 'rxjs';
 import { User } from '../models/user';
 import { StravaGear } from '../models/strava-gear';
 import { environment } from '../../environments/environment';
@@ -16,6 +16,15 @@ export class AuthService {
 
   private readonly _currentUser = new BehaviorSubject<User | null>(null);
   readonly currentUser$ = this._currentUser.asObservable();
+
+  /**
+   * Emits `true` once the initial session check (loadCurrentUser) has completed.
+   * Guards should wait for this before evaluating isLoggedIn to avoid a race
+   * condition on slow mobile networks where the HTTP response arrives after
+   * the router has already tried to activate a protected route.
+   */
+  private readonly _authReady = new BehaviorSubject<boolean>(false);
+  readonly authReady$ = this._authReady.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -34,11 +43,24 @@ export class AuthService {
   /**
    * Called on app startup to restore the session from the server-side cookie.
    * Silently swallows 401 (not logged in).
+   * Sets authReady$ to true once the check completes so that AuthGuard can
+   * make an accurate decision without a race condition on slow connections.
    */
   loadCurrentUser(): void {
     this.http.get<User>(`${this.apiUrl}/me`).pipe(
       catchError(() => of(null))
-    ).subscribe(user => this._currentUser.next(user));
+    ).subscribe(user => {
+      this._currentUser.next(user);
+      this._authReady.next(true);
+    });
+  }
+
+  /**
+   * Clears the in-memory user state without calling the server.
+   * Used by the auth interceptor when a 401 is received on a protected endpoint.
+   */
+  clearUser(): void {
+    this._currentUser.next(null);
   }
 
   // ── App-level auth ──────────────────────────────────────────────────────

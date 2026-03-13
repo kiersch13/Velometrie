@@ -30,6 +30,40 @@ describe('AuthService', () => {
     stravaVerbunden: false,
   };
 
+  it('loadCurrentUser() sets authReady$ to true after the response', () => {
+    let ready = false;
+    service.authReady$.subscribe(v => (ready = v));
+
+    expect(ready).toBe(false);
+    service.loadCurrentUser();
+
+    const req = httpMock.expectOne(`${apiUrl}/me`);
+    req.flush(mockUser);
+
+    expect(ready).toBe(true);
+  });
+
+  it('loadCurrentUser() sets authReady$ to true even when the request fails', () => {
+    let ready = false;
+    service.authReady$.subscribe(v => (ready = v));
+
+    service.loadCurrentUser();
+    httpMock.expectOne(`${apiUrl}/me`).flush('Unauthorized', { status: 401, statusText: 'Unauthorized' });
+
+    expect(ready).toBe(true);
+  });
+
+  it('clearUser() sets currentUser to null and isLoggedIn to false', () => {
+    service.login('test@example.com', 'password123').subscribe();
+    httpMock.expectOne(`${apiUrl}/login`).flush(mockUser);
+    expect(service.isLoggedIn).toBe(true);
+
+    service.clearUser();
+
+    expect(service.currentUser).toBeNull();
+    expect(service.isLoggedIn).toBe(false);
+  });
+
   it('loadCurrentUser() sends a GET to /me and updates currentUser', () => {
     service.loadCurrentUser();
 
