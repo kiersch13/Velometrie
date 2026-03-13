@@ -1,7 +1,7 @@
 <!-- Loading -->
 <div *ngIf="loading" class="flex flex-col items-center justify-center mt-20 text-gray-400 gap-3">
   <lucide-icon name="loader-2" [size]="36" class="animate-spin" aria-hidden="true"></lucide-icon>
-  <span class="text-sm">Lädt...</span>
+  <span class="text-sm">{{ 'COMMON.LOADING' | translate }}</span>
 </div>
 
 <!-- Error -->
@@ -14,7 +14,7 @@
   <!-- Back link -->
   <button class="btn-secondary text-xs mb-6 border-0 px-0 hover:border-0" (click)="goBack()">
     <lucide-icon name="arrow-left" [size]="14" aria-hidden="true"></lucide-icon>
-    Zurück zur Übersicht
+    {{ 'BIKE_DETAIL.BACK' | translate }}
   </button>
 
   <!-- Bike header -->
@@ -40,13 +40,13 @@
               <input #bikePhotoInput type="file" accept="image/jpeg,image/png,image/webp" class="hidden" (change)="onBikePhotoSelected($event)" />
               <button type="button" class="btn-secondary text-xs" (click)="bikePhotoInput.click()" [disabled]="photoUploading">
                 <lucide-icon name="plus" [size]="12" aria-hidden="true"></lucide-icon>
-                {{ bike.fotoStorageKey ? 'Foto ersetzen' : 'Foto hochladen' }}
+                {{ bike.fotoStorageKey ? ('BIKE_DETAIL.PHOTO_REPLACE' | translate) : ('BIKE_DETAIL.PHOTO_UPLOAD' | translate) }}
               </button>
               <button type="button" *ngIf="bike.fotoStorageKey" class="btn-secondary text-xs" (click)="removeBikePhoto()" [disabled]="photoUploading">
                 <lucide-icon name="trash-2" [size]="12" aria-hidden="true"></lucide-icon>
-                Foto entfernen
+                {{ 'BIKE_DETAIL.PHOTO_REMOVE' | translate }}
               </button>
-              <span *ngIf="photoUploading" class="text-xs text-gray-400">Lade Foto…</span>
+              <span *ngIf="photoUploading" class="text-xs text-gray-400">{{ 'BIKE_DETAIL.PHOTO_LOADING' | translate }}</span>
               <span *ngIf="photoError" class="text-xs text-error">{{ photoError }}</span>
             </div>
           </div>
@@ -55,17 +55,17 @@
 
       <div class="flex items-center gap-3">
         <div class="text-right">
-          <p class="text-xs text-gray-400 mb-0.5">Kilometerstand</p>
+          <p class="text-xs text-gray-400 mb-0.5">{{ 'BIKE_DETAIL.ODOMETER_LABEL' | translate }}</p>
           <span class="text-2xl font-bold text-primary dark:text-text-dark">{{ bike.kilometerstand | number:'1.0-0' }} km</span>
           <p *ngIf="bike.fahrstunden > 0" class="text-xs text-gray-400 mt-0.5">
             <lucide-icon name="clock" [size]="11" class="inline-block mr-0.5" aria-hidden="true"></lucide-icon>
             {{ bike.fahrstunden | number:'1.1-1' }} h
           </p>
           <p *ngIf="bike.indoorKilometerstand > 0" class="text-xs text-gray-400 mt-0.5">
-            davon {{ bike.indoorKilometerstand | number:'1.0-0' }} km indoor
+            {{ 'BIKE_DETAIL.INDOOR_OF' | translate: { km: (bike.indoorKilometerstand | number:'1.0-0') } }}
           </p>
         </div>
-        <button class="btn-secondary !p-2" aria-label="Rad bearbeiten" (click)="openBikeEdit()">
+        <button class="btn-secondary !p-2" [attr.aria-label]="'BIKE_DETAIL.ARIA_EDIT' | translate" (click)="openBikeEdit()">
           <lucide-icon name="pencil" [size]="15" aria-hidden="true"></lucide-icon>
         </button>
       </div>
@@ -77,73 +77,70 @@
     <div class="flex items-center justify-between mb-3">
       <h3 class="text-sm font-semibold text-primary dark:text-text-dark flex items-center gap-1.5">
         <lucide-icon name="sliders" [size]="14" class="text-accent" aria-hidden="true"></lucide-icon>
-        Bike Fit
+        {{ 'BIKE_DETAIL.BIKE_FIT' | translate }}
       </h3>
       <button class="text-xs text-accent hover:underline flex items-center gap-1" (click)="openBikeFitEdit()">
         <lucide-icon name="pencil" [size]="12" aria-hidden="true"></lucide-icon>
-        Bearbeiten
+        {{ 'BIKE_DETAIL.EDIT' | translate }}
       </button>
     </div>
 
-    <div *ngIf="!hasBikeFitData()" class="text-xs text-gray-400 italic">Noch keine Bike-Fit-Daten erfasst.</div>
+    <div *ngIf="!hasBikeFitData()" class="text-xs text-gray-400 italic">{{ 'BIKE_DETAIL.BIKE_FIT_NO_DATA' | translate }}</div>
 
     <ng-container *ngIf="hasBikeFitData()">
-      <!-- Sitzposition -->
       <div *ngIf="bike.sattelhoehe != null || bike.sattelversatz != null || bike.kurbellaenge != null" class="mb-3">
-        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Sitzposition</p>
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">{{ 'BIKE_DETAIL.SEAT_POSITION' | translate }}</p>
         <div class="grid grid-cols-3 gap-3 text-sm">
           <div *ngIf="bike.sattelhoehe != null" class="flex flex-col gap-0.5">
-            <span class="text-xs text-gray-400">Sattelhoehe</span>
+            <span class="text-xs text-gray-400">{{ 'BIKE_DETAIL.SADDLE_HEIGHT' | translate }}</span>
             <span class="text-gray-800 dark:text-text-dark font-medium tabular-nums">{{ bike.sattelhoehe }} mm</span>
           </div>
           <div *ngIf="bike.sattelversatz != null" class="flex flex-col gap-0.5">
-            <span class="text-xs text-gray-400">Sattelversatz</span>
+            <span class="text-xs text-gray-400">{{ 'BIKE_DETAIL.SADDLE_OFFSET' | translate }}</span>
             <span class="text-gray-800 dark:text-text-dark font-medium tabular-nums">{{ bike.sattelversatz }} mm</span>
           </div>
           <div *ngIf="bike.kurbellaenge != null" class="flex flex-col gap-0.5">
-            <span class="text-xs text-gray-400">Kurbellaenge</span>
+            <span class="text-xs text-gray-400">{{ 'BIKE_DETAIL.CRANK_LENGTH' | translate }}</span>
             <span class="text-gray-800 dark:text-text-dark font-medium tabular-nums">{{ bike.kurbellaenge }} mm</span>
           </div>
         </div>
       </div>
 
-      <!-- Cockpit -->
       <div *ngIf="bike.vorbaulaenge != null || bike.vorbauwinkel != null || bike.lenkerbreite != null || bike.spacer != null" class="mb-3">
-        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Cockpit</p>
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">{{ 'BIKE_DETAIL.COCKPIT' | translate }}</p>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
           <div *ngIf="bike.vorbaulaenge != null" class="flex flex-col gap-0.5">
-            <span class="text-xs text-gray-400">Vorbaulaenge</span>
+            <span class="text-xs text-gray-400">{{ 'BIKE_DETAIL.STEM_LENGTH' | translate }}</span>
             <span class="text-gray-800 dark:text-text-dark font-medium tabular-nums">{{ bike.vorbaulaenge }} mm</span>
           </div>
           <div *ngIf="bike.vorbauwinkel != null" class="flex flex-col gap-0.5">
-            <span class="text-xs text-gray-400">Vorbauwinkel</span>
+            <span class="text-xs text-gray-400">{{ 'BIKE_DETAIL.STEM_ANGLE' | translate }}</span>
             <span class="text-gray-800 dark:text-text-dark font-medium tabular-nums">{{ bike.vorbauwinkel }}°</span>
           </div>
           <div *ngIf="bike.lenkerbreite != null" class="flex flex-col gap-0.5">
-            <span class="text-xs text-gray-400">Lenkerbreite</span>
+            <span class="text-xs text-gray-400">{{ 'BIKE_DETAIL.HANDLEBAR_WIDTH' | translate }}</span>
             <span class="text-gray-800 dark:text-text-dark font-medium tabular-nums">{{ bike.lenkerbreite }} mm</span>
           </div>
           <div *ngIf="bike.spacer != null" class="flex flex-col gap-0.5">
-            <span class="text-xs text-gray-400">Spacer</span>
+            <span class="text-xs text-gray-400">{{ 'BIKE_DETAIL.SPACER' | translate }}</span>
             <span class="text-gray-800 dark:text-text-dark font-medium tabular-nums">{{ bike.spacer }} mm</span>
           </div>
         </div>
       </div>
 
-      <!-- Rahmengeometrie -->
       <div *ngIf="bike.reach != null || bike.stack != null || bike.radstand != null">
-        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Rahmengeometrie</p>
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">{{ 'BIKE_DETAIL.FRAME_GEOMETRY' | translate }}</p>
         <div class="grid grid-cols-3 gap-3 text-sm">
           <div *ngIf="bike.reach != null" class="flex flex-col gap-0.5">
-            <span class="text-xs text-gray-400">Reach</span>
+            <span class="text-xs text-gray-400">{{ 'BIKE_DETAIL.REACH' | translate }}</span>
             <span class="text-gray-800 dark:text-text-dark font-medium tabular-nums">{{ bike.reach }} mm</span>
           </div>
           <div *ngIf="bike.stack != null" class="flex flex-col gap-0.5">
-            <span class="text-xs text-gray-400">Stack</span>
+            <span class="text-xs text-gray-400">{{ 'BIKE_DETAIL.STACK' | translate }}</span>
             <span class="text-gray-800 dark:text-text-dark font-medium tabular-nums">{{ bike.stack }} mm</span>
           </div>
           <div *ngIf="bike.radstand != null" class="flex flex-col gap-0.5">
-            <span class="text-xs text-gray-400">Radstand</span>
+            <span class="text-xs text-gray-400">{{ 'BIKE_DETAIL.WHEELBASE' | translate }}</span>
             <span class="text-gray-800 dark:text-text-dark font-medium tabular-nums">{{ bike.radstand }} mm</span>
           </div>
         </div>
@@ -156,17 +153,16 @@
     <div class="flex items-center justify-between mb-3">
       <h3 class="text-sm font-semibold text-primary dark:text-text-dark flex items-center gap-1.5">
         <lucide-icon name="folder-open" [size]="14" class="text-accent" aria-hidden="true"></lucide-icon>
-        Teilegruppen
+        {{ 'BIKE_DETAIL.GROUPS_TITLE' | translate }}
       </h3>
       <button class="text-xs text-accent hover:underline flex items-center gap-1" (click)="openAddGruppe()">
         <lucide-icon name="folder-plus" [size]="12" aria-hidden="true"></lucide-icon>
-        Neue Gruppe
+        {{ 'BIKE_DETAIL.NEW_GROUP' | translate }}
       </button>
     </div>
 
-    <!-- Add group form -->
     <div *ngIf="showAddGruppe" class="flex items-center gap-2 mb-3">
-      <input type="text" [(ngModel)]="newGruppeName" class="form-input text-sm flex-1" placeholder="Gruppenname (z.B. Hinterrad)" />
+      <input type="text" [(ngModel)]="newGruppeName" class="form-input text-sm flex-1" [placeholder]="'BIKE_DETAIL.GROUP_PLACEHOLDER' | translate" />
       <button class="btn-primary text-xs py-1.5 px-3" (click)="saveGruppe()" [disabled]="!newGruppeName.trim()">
         <lucide-icon name="check" [size]="12" aria-hidden="true"></lucide-icon>
       </button>
@@ -175,20 +171,19 @@
       </button>
     </div>
 
-    <!-- Groups list -->
     <div *ngIf="gruppen.length > 0" class="space-y-1.5">
       <div *ngFor="let gruppe of gruppen" class="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg text-sm">
         <ng-container *ngIf="editingGruppeId !== gruppe.id">
           <div class="flex items-center gap-2">
             <lucide-icon name="folder-open" [size]="14" class="text-gray-400" aria-hidden="true"></lucide-icon>
             <span class="font-medium text-gray-700 dark:text-text-dark">{{ gruppe.name }}</span>
-            <span class="text-xs text-gray-400">({{ getPartsInGroup(gruppe.id).length }} Teile)</span>
+            <span class="text-xs text-gray-400">{{ 'BIKE_DETAIL.PARTS_COUNT' | translate: { count: getPartsInGroup(gruppe.id).length } }}</span>
           </div>
           <div class="flex items-center gap-1">
-            <button class="btn-secondary !p-1" aria-label="Bearbeiten" (click)="startEditGruppe(gruppe)">
+            <button class="btn-secondary !p-1" [attr.aria-label]="'BIKE_DETAIL.ARIA_EDIT_GROUP' | translate" (click)="startEditGruppe(gruppe)">
               <lucide-icon name="pencil" [size]="11" aria-hidden="true"></lucide-icon>
             </button>
-            <button class="btn-secondary !p-1" aria-label="Löschen" (click)="deleteGruppe(gruppe.id)">
+            <button class="btn-secondary !p-1" [attr.aria-label]="'BIKE_DETAIL.ARIA_DELETE_GROUP' | translate" (click)="deleteGruppe(gruppe.id)">
               <lucide-icon name="trash-2" [size]="11" aria-hidden="true"></lucide-icon>
             </button>
           </div>
@@ -206,15 +201,15 @@
         </ng-container>
       </div>
     </div>
-    <p *ngIf="gruppen.length === 0 && !showAddGruppe" class="text-xs text-gray-400 italic">Noch keine Gruppen erstellt.</p>
+    <p *ngIf="gruppen.length === 0 && !showAddGruppe" class="text-xs text-gray-400 italic">{{ 'BIKE_DETAIL.NO_GROUPS' | translate }}</p>
   </div>
 
   <!-- Wear parts header -->
   <div class="flex justify-between items-center mb-4">
-    <h3 class="text-lg font-semibold text-primary dark:text-text-dark">Verschleißteile</h3>
+    <h3 class="text-lg font-semibold text-primary dark:text-text-dark">{{ 'BIKE_DETAIL.WEAR_PARTS_TITLE' | translate }}</h3>
     <button class="btn-primary" (click)="showWearPartForm = !showWearPartForm">
       <lucide-icon name="plus" [size]="14" aria-hidden="true"></lucide-icon>
-      {{ showWearPartForm ? 'Abbrechen' : 'Verschleißteil hinzufügen' }}
+      {{ showWearPartForm ? ('BIKE_DETAIL.CANCEL' | translate) : ('BIKE_DETAIL.ADD_WEAR_PART' | translate) }}
     </button>
   </div>
 
@@ -233,8 +228,8 @@
        class="flex flex-col items-center justify-center py-16 text-gray-400 gap-3">
     <lucide-icon name="inbox" [size]="40" class="text-gray-300" aria-hidden="true"></lucide-icon>
     <div class="text-center">
-      <p class="font-semibold text-gray-500 text-sm">Noch keine Verschleißteile</p>
-      <p class="text-xs mt-1">Füge das erste Verschleißteil hinzu.</p>
+      <p class="font-semibold text-gray-500 text-sm">{{ 'BIKE_DETAIL.NO_WEAR_PARTS_TITLE' | translate }}</p>
+      <p class="text-xs mt-1">{{ 'BIKE_DETAIL.NO_WEAR_PARTS_BODY' | translate }}</p>
     </div>
   </div>
 
@@ -245,12 +240,12 @@
         <thead>
           <tr class="border-b border-gray-100 dark:border-gray-700">
             <th class="bg-gray-50 dark:bg-gray-800/60 w-1 p-0"></th>
-            <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Name</th>
-            <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Kategorie</th>
-            <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Position</th>
-            <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Einbau</th>
-            <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Kilometerstand</th>
-            <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Ausbau</th>
+            <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ 'BIKE_DETAIL.TABLE_NAME' | translate }}</th>
+            <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ 'BIKE_DETAIL.TABLE_CATEGORY' | translate }}</th>
+            <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ 'BIKE_DETAIL.TABLE_POSITION' | translate }}</th>
+            <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ 'BIKE_DETAIL.TABLE_INSTALL' | translate }}</th>
+            <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ 'BIKE_DETAIL.TABLE_ODOMETER' | translate }}</th>
+            <th class="bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ 'BIKE_DETAIL.TABLE_REMOVAL' | translate }}</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -258,7 +253,6 @@
               class="hover:bg-gray-50/60 dark:hover:bg-gray-800/30 transition-colors duration-100 cursor-pointer"
               [ngClass]="{'opacity-50': !isInstalled(part)}"
               (click)="openWearPartDetail(part)">
-            <!-- Status bar -->
             <td class="w-1 p-0">
               <div class="w-1 min-h-[2.75rem] rounded-sm" [ngClass]="getStatusBarClass(part)"></div>
             </td>
@@ -268,14 +262,12 @@
                 <lucide-icon name="folder-open" [size]="10" class="inline-block mr-0.5" aria-hidden="true"></lucide-icon>
                 {{ getGruppeName(part.gruppeId) }}
               </span>
-              <lucide-icon *ngIf="hasHistory(part)" name="history" [size]="12" class="inline-block ml-1 text-accent/60" aria-hidden="true" title="Umgebaut von einem anderen Rad"></lucide-icon>
+              <lucide-icon *ngIf="hasHistory(part)" name="history" [size]="12" class="inline-block ml-1 text-accent/60" aria-hidden="true" [title]="'BIKE_DETAIL.MOVED_FROM_BADGE' | translate"></lucide-icon>
             </td>
             <td class="px-4 py-3"><span class="badge">{{ part.kategorie }}</span></td>
             <td class="px-4 py-3 text-gray-500 dark:text-text-dark text-xs">{{ part.position || '—' }}</td>
             <td class="px-4 py-3 text-gray-600 dark:text-text-dark">{{ part.einbauDatum | date:'dd.MM.yyyy' }}</td>
-            <!-- Kilometerstand / Service hours combined column -->
             <td class="px-4 py-3 tabular-nums">
-              <!-- Federung: show hours + service progress -->
               <ng-container *ngIf="isFederung(part); else kmColumn">
                 <div class="flex items-baseline gap-1">
                   <span class="text-gray-800 dark:text-text-dark font-medium">{{ getFederungAccumulatedHours(part) | number:'1.1-1' }} h</span>
@@ -287,7 +279,6 @@
                   }">{{ getFederungNextServiceInterval(part) }} h</span>
                   <span class="text-gray-400 text-xs ml-0.5">({{ getFederungNextServiceLabel(part) }})</span>
                 </div>
-                <!-- Progress bar -->
                 <div class="w-full h-1 bg-gray-100 dark:bg-gray-700 rounded-full mt-1.5 overflow-hidden">
                   <div class="h-full rounded-full transition-all duration-300"
                        [ngClass]="{
@@ -300,8 +291,6 @@
                   </div>
                 </div>
               </ng-container>
-
-              <!-- Non-Federung: show km progress (existing) -->
               <ng-template #kmColumn>
                 <div class="flex items-baseline gap-1">
                   <span class="text-gray-800 dark:text-text-dark font-medium">{{ getGefahreneKm(part) | number:'1.0-0' }} km</span>
@@ -312,7 +301,6 @@
                     'text-gray-400': !(isInstalled(part) && getLifetimePercent(part) >= 0.8)
                   }">{{ getExpectedReplacementKm(part) | number:'1.0-0' }} km</span>
                 </div>
-                <!-- Progress bar -->
                 <div class="w-full h-1 bg-gray-100 dark:bg-gray-700 rounded-full mt-1.5 overflow-hidden">
                   <div class="h-full rounded-full transition-all duration-300"
                        [ngClass]="{
@@ -326,14 +314,13 @@
                 </div>
               </ng-template>
             </td>
-            <!-- Expected or actual removal date -->
             <td class="px-4 py-3 text-gray-600 dark:text-text-dark tabular-nums">
               <ng-container *ngIf="!isInstalled(part)">
                 <span>{{ part.ausbauDatum | date:'dd.MM.yyyy' }}</span>
               </ng-container>
               <ng-container *ngIf="isInstalled(part)">
                 <ng-container *ngIf="getExpectedAusbauDate(part) as expDate; else noAvg">
-                  <span class="text-xs text-gray-400">erw.</span>
+                  <span class="text-xs text-gray-400">{{ 'BIKE_DETAIL.EXP_PREFIX' | translate }}</span>
                   <span class="ml-1" [ngClass]="{
                     'text-error font-semibold': getLifetimePercent(part) >= 1.0,
                     'text-warning font-medium': getLifetimePercent(part) >= 0.8 && getLifetimePercent(part) < 1.0
@@ -359,20 +346,20 @@
     <div class="flex items-center justify-between mb-5">
       <h3 class="text-base font-semibold text-primary dark:text-text-dark flex items-center gap-2">
         <lucide-icon name="pencil" [size]="14" class="text-accent" aria-hidden="true"></lucide-icon>
-        Verschleißteil bearbeiten
+        {{ 'BIKE_DETAIL.EDIT_WEAR_PART_TITLE' | translate }}
       </h3>
-      <button class="btn-secondary !p-1.5" aria-label="Schließen" (click)="editingWearPart = null">
+      <button class="btn-secondary !p-1.5" [attr.aria-label]="'BIKE_DETAIL.ARIA_CLOSE' | translate" (click)="editingWearPart = null">
         <lucide-icon name="x" [size]="15" aria-hidden="true"></lucide-icon>
       </button>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div class="flex flex-col gap-1">
-        <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Name</label>
+        <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.NAME' | translate }}</label>
         <input type="text" [(ngModel)]="editingWearPart.name" class="form-input" />
       </div>
       <div class="flex flex-col gap-1">
-        <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Kategorie</label>
+        <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.CATEGORY' | translate }}</label>
         <select [(ngModel)]="editingWearPart.kategorie" (ngModelChange)="onEditKategorieChange()" class="form-input">
           <option value="Reifen">Reifen</option>
           <option value="Kassette">Kassette</option>
@@ -384,16 +371,15 @@
       </div>
     </div>
 
-    <!-- Position for Reifen / Kettenblatt / Federung -->
     <div *ngIf="editingWearPart.kategorie === 'Reifen' || editingWearPart.kategorie === 'Kettenblatt' || editingWearPart.kategorie === 'Federung'"
          class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div class="flex flex-col gap-1">
         <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">
-          Position
-          <span class="font-normal text-gray-400 ml-1">(optional)</span>
+          {{ 'BIKE_DETAIL.POSITION' | translate }}
+          <span class="font-normal text-gray-400 ml-1">{{ 'BIKE_DETAIL.POSITION_OPTIONAL' | translate }}</span>
         </label>
         <select [(ngModel)]="editingWearPart.position" class="form-input">
-          <option [ngValue]="null">– keine Angabe –</option>
+          <option [ngValue]="null">{{ 'BIKE_DETAIL.NO_POSITION' | translate }}</option>
           <ng-container *ngIf="editingWearPart.kategorie === 'Reifen'">
             <option value="Vorderrad">Vorderrad</option>
             <option value="Hinterrad">Hinterrad</option>
@@ -415,13 +401,13 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div class="flex flex-col gap-1">
         <label class="text-xs font-semibold text-gray-500 dark:text-text-dark flex items-center gap-1.5">
-          Einbau Kilometerstand
+          {{ 'BIKE_DETAIL.INSTALL_KM' | translate }}
           <lucide-icon *ngIf="loadingOdometerEdit" name="loader-2" [size]="12" class="animate-spin text-accent" aria-hidden="true"></lucide-icon>
         </label>
         <input type="number" [(ngModel)]="editingWearPart.einbauKilometerstand" min="0" class="form-input" [disabled]="loadingOdometerEdit" />
       </div>
       <div class="flex flex-col gap-1">
-        <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Einbau Datum</label>
+        <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.INSTALL_DATE' | translate }}</label>
         <input type="date" [(ngModel)]="editEinbauDatumStr" class="form-input" />
       </div>
     </div>
@@ -429,115 +415,111 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div class="flex flex-col gap-1">
         <label class="text-xs font-semibold text-gray-500 dark:text-text-dark flex items-center gap-1.5">
-          Ausbau Kilometerstand
+          {{ 'BIKE_DETAIL.REMOVAL_KM' | translate }}
           <lucide-icon *ngIf="loadingOdometerAusbauEdit" name="loader-2" [size]="12" class="animate-spin text-accent" aria-hidden="true"></lucide-icon>
-          <span *ngIf="!loadingOdometerAusbauEdit" class="font-normal text-gray-400 ml-1">(optional)</span>
+          <span *ngIf="!loadingOdometerAusbauEdit" class="font-normal text-gray-400 ml-1">{{ 'BIKE_DETAIL.REMOVAL_OPTIONAL' | translate }}</span>
         </label>
         <input type="number" [(ngModel)]="editingWearPart.ausbauKilometerstand" min="0" class="form-input" [disabled]="loadingOdometerAusbauEdit" />
       </div>
       <div class="flex flex-col gap-1">
         <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">
-          Ausbau Datum
-          <span class="font-normal text-gray-400 ml-1">(optional)</span>
+          {{ 'BIKE_DETAIL.REMOVAL_DATE' | translate }}
+          <span class="font-normal text-gray-400 ml-1">{{ 'BIKE_DETAIL.REMOVAL_OPTIONAL' | translate }}</span>
         </label>
         <input type="date" [(ngModel)]="editAusbauDatumStr" class="form-input" />
       </div>
     </div>
 
-    <!-- Reifen-spezifische Felder -->
     <div *ngIf="editingWearPart.kategorie === 'Reifen'" class="mb-4">
       <p class="text-xs font-semibold text-gray-500 dark:text-text-dark mb-3 flex items-center gap-1.5">
         <lucide-icon name="circle" [size]="12" class="text-accent" aria-hidden="true"></lucide-icon>
-        Reifen-Konfiguration
-        <span class="font-normal text-gray-400">(optional)</span>
+        {{ 'BIKE_DETAIL.TYRE_CONFIG' | translate }}
+        <span class="font-normal text-gray-400">{{ 'BIKE_DETAIL.TYRE_CONFIG_OPTIONAL' | translate }}</span>
       </p>
       <div class="grid grid-cols-2 gap-3 mb-3">
         <div class="flex flex-col gap-1">
-          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Breite (mm)</label>
+          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.WIDTH_MM' | translate }}</label>
           <input type="number" [(ngModel)]="editingWearPart.reifenBreiteMm" (ngModelChange)="onEditReifenBreiteMmChange()" min="0" class="form-input" placeholder="z.B. 28" />
         </div>
         <div class="flex flex-col gap-1">
-          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Breite (Zoll)</label>
+          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.WIDTH_INCH' | translate }}</label>
           <input type="number" [(ngModel)]="editingWearPart.reifenBreiteZoll" (ngModelChange)="onEditReifenBreiteZollChange()" min="0" step="0.1" class="form-input" placeholder="z.B. 1.1" />
         </div>
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div class="flex flex-col gap-1">
-          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Luftdruck (bar)</label>
+          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.PRESSURE_BAR' | translate }}</label>
           <input type="number" [(ngModel)]="editingWearPart.reifenDruckBar" (ngModelChange)="onEditReifenDruckBarChange()" min="0" step="0.1" class="form-input" placeholder="z.B. 5.0" />
         </div>
         <div class="flex flex-col gap-1">
-          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Luftdruck (PSI)</label>
+          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.PRESSURE_PSI' | translate }}</label>
           <input type="number" [(ngModel)]="editingWearPart.reifenDruckPsi" (ngModelChange)="onEditReifenDruckPsiChange()" min="0" class="form-input" placeholder="z.B. 73" />
         </div>
       </div>
     </div>
 
-    <!-- Federung: Fahrstunden -->
     <div *ngIf="editingWearPart.kategorie === 'Federung'" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div class="flex flex-col gap-1">
         <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">
-          Einbau Fahrstunden
-          <span class="font-normal text-gray-400 ml-1">(optional)</span>
+          {{ 'BIKE_DETAIL.FEDERUNG_INSTALL_HOURS' | translate }}
+          <span class="font-normal text-gray-400 ml-1">{{ 'BIKE_DETAIL.FEDERUNG_OPTIONAL' | translate }}</span>
         </label>
         <input type="number" [(ngModel)]="editingWearPart.einbauFahrstunden" min="0" step="0.1" class="form-input" />
       </div>
       <div class="flex flex-col gap-1">
         <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">
-          Ausbau Fahrstunden
-          <span class="font-normal text-gray-400 ml-1">(optional)</span>
+          {{ 'BIKE_DETAIL.FEDERUNG_REMOVAL_HOURS' | translate }}
+          <span class="font-normal text-gray-400 ml-1">{{ 'BIKE_DETAIL.FEDERUNG_OPTIONAL' | translate }}</span>
         </label>
         <input type="number" [(ngModel)]="editingWearPart.ausbauFahrstunden" min="0" step="0.1" class="form-input" />
       </div>
     </div>
 
-    <!-- Group assignment -->
     <div *ngIf="gruppen.length > 0" class="flex flex-col gap-1 mb-4">
       <label class="text-xs font-semibold text-gray-500 dark:text-text-dark flex items-center gap-1.5">
         <lucide-icon name="folder-open" [size]="12" class="text-accent" aria-hidden="true"></lucide-icon>
-        Gruppe
-        <span class="font-normal text-gray-400">(optional)</span>
+        {{ 'BIKE_DETAIL.GROUP_ASSIGNMENT' | translate }}
+        <span class="font-normal text-gray-400">{{ 'BIKE_DETAIL.GROUP_ASSIGNMENT_OPTIONAL' | translate }}</span>
       </label>
       <select [(ngModel)]="editingWearPart.gruppeId" class="form-input">
-        <option [ngValue]="null">– keine Gruppe –</option>
+        <option [ngValue]="null">{{ 'BIKE_DETAIL.NO_GROUP' | translate }}</option>
         <option *ngFor="let g of gruppen" [ngValue]="g.id">{{ g.name }}</option>
       </select>
     </div>
 
-    <!-- Indoor ignorieren -->
     <div class="flex items-center gap-2 mb-4">
       <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-600 dark:text-text-dark select-none">
         <input type="checkbox" [(ngModel)]="editingWearPart.indoorIgnorieren"
           class="w-4 h-4 rounded border-gray-300 text-accent focus:ring-accent" />
-        Indoor ignorieren
+        {{ 'BIKE_DETAIL.INDOOR_IGNORE' | translate }}
       </label>
-      <span class="text-xs text-gray-400">(Trainer-km nicht als Verschleiss zaehlen)</span>
+      <span class="text-xs text-gray-400">{{ 'BIKE_DETAIL.INDOOR_IGNORE_HINT' | translate }}</span>
     </div>
 
     <div class="flex flex-col gap-1 mb-5">
       <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">
-        Notizen
-        <span class="font-normal text-gray-400 ml-1">(optional)</span>
+        {{ 'BIKE_DETAIL.NOTES' | translate }}
+        <span class="font-normal text-gray-400 ml-1">{{ 'BIKE_DETAIL.NOTES_OPTIONAL' | translate }}</span>
       </label>
-      <textarea [(ngModel)]="editingWearPart.notizen" rows="3" class="form-input resize-none" placeholder="Notizen zum Teil…"></textarea>
+      <textarea [(ngModel)]="editingWearPart.notizen" rows="3" class="form-input resize-none" [placeholder]="'BIKE_DETAIL.NOTES_TEXTAREA_PLACEHOLDER' | translate"></textarea>
     </div>
 
     <div class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
       <div class="flex items-center gap-2">
         <button class="btn-danger" (click)="openDeleteModal(editingWearPart.id)">
           <lucide-icon name="trash-2" [size]="14" aria-hidden="true"></lucide-icon>
-          Löschen
+          {{ 'BIKE_DETAIL.DELETE' | translate }}
         </button>
         <button class="btn-secondary" (click)="openMoveModal(editingWearPart)">
           <lucide-icon name="move-right" [size]="14" aria-hidden="true"></lucide-icon>
-          Umbauen
+          {{ 'BIKE_DETAIL.MOVE' | translate }}
         </button>
       </div>
       <div class="flex items-center gap-2">
-        <button class="btn-secondary" (click)="editingWearPart = null">Abbrechen</button>
+        <button class="btn-secondary" (click)="editingWearPart = null">{{ 'COMMON.CANCEL' | translate }}</button>
         <button class="btn-primary" (click)="saveWearPart()">
           <lucide-icon name="check" [size]="14" aria-hidden="true"></lucide-icon>
-          Speichern
+          {{ 'BIKE_DETAIL.SAVE' | translate }}
         </button>
       </div>
     </div>
@@ -551,47 +533,45 @@
     <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-card w-full max-w-md p-6"
          (click)="$event.stopPropagation()">
       <div class="flex items-center justify-between mb-5">
-        <h3 class="text-base font-semibold text-primary dark:text-text-dark">Rad bearbeiten</h3>
-        <button class="btn-secondary !p-1.5" aria-label="Schließen" (click)="closeBikeEdit()">
+        <h3 class="text-base font-semibold text-primary dark:text-text-dark">{{ 'BIKE_DETAIL.EDIT_BIKE_TITLE' | translate }}</h3>
+        <button class="btn-secondary !p-1.5" [attr.aria-label]="'BIKE_DETAIL.ARIA_CLOSE' | translate" (click)="closeBikeEdit()">
           <lucide-icon name="x" [size]="15" aria-hidden="true"></lucide-icon>
         </button>
       </div>
-
       <div class="flex flex-col gap-4">
         <div class="flex flex-col gap-1">
-          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Name</label>
+          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.EDIT_BIKE_NAME' | translate }}</label>
           <input type="text" [(ngModel)]="editBikeName" class="form-input" />
         </div>
         <div class="flex flex-col gap-1">
-          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Kategorie</label>
+          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.EDIT_BIKE_CATEGORY' | translate }}</label>
           <select [(ngModel)]="editBikeKategorie" class="form-input">
             <option *ngFor="let cat of bikeCategories" [value]="cat">{{ cat }}</option>
           </select>
         </div>
         <div class="flex flex-col gap-1">
-          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Kilometerstand</label>
+          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.EDIT_BIKE_KM' | translate }}</label>
           <input type="number" [(ngModel)]="editBikeKilometerstand" min="0" class="form-input" />
         </div>
         <div class="flex flex-col gap-1">
-          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Fahrstunden</label>
+          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.EDIT_BIKE_HOURS' | translate }}</label>
           <input type="number" [(ngModel)]="editBikeFahrstunden" min="0" step="0.1" class="form-input" />
         </div>
         <div class="flex flex-col gap-1">
-          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Indoor Kilometerstand</label>
+          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.EDIT_BIKE_INDOOR_KM' | translate }}</label>
           <input type="number" [(ngModel)]="editBikeIndoorKilometerstand" min="0" class="form-input" />
         </div>
       </div>
-
       <div class="flex items-center justify-between pt-5 mt-5 border-t border-gray-100 dark:border-gray-700">
         <button class="btn-danger" (click)="deleteBike()">
           <lucide-icon name="trash-2" [size]="14" aria-hidden="true"></lucide-icon>
-          Rad löschen
+          {{ 'BIKE_DETAIL.DELETE_BIKE' | translate }}
         </button>
         <div class="flex items-center gap-2">
-          <button class="btn-secondary" (click)="closeBikeEdit()">Abbrechen</button>
+          <button class="btn-secondary" (click)="closeBikeEdit()">{{ 'COMMON.CANCEL' | translate }}</button>
           <button class="btn-primary" (click)="saveBikeEdit()">
             <lucide-icon name="check" [size]="14" aria-hidden="true"></lucide-icon>
-            Speichern
+            {{ 'BIKE_DETAIL.SAVE' | translate }}
           </button>
         </div>
       </div>
@@ -607,73 +587,70 @@
       <div class="flex items-center justify-between mb-5">
         <h3 class="text-base font-semibold text-primary dark:text-text-dark flex items-center gap-2">
           <lucide-icon name="sliders" [size]="14" class="text-accent" aria-hidden="true"></lucide-icon>
-          Bike Fit bearbeiten
+          {{ 'BIKE_DETAIL.BIKE_FIT_EDIT_TITLE' | translate }}
         </h3>
-        <button class="btn-secondary !p-1.5" aria-label="Schliessen" (click)="closeBikeFitEdit()">
+        <button class="btn-secondary !p-1.5" [attr.aria-label]="'BIKE_DETAIL.ARIA_CLOSE' | translate" (click)="closeBikeFitEdit()">
           <lucide-icon name="x" [size]="15" aria-hidden="true"></lucide-icon>
         </button>
       </div>
 
-      <!-- Sitzposition -->
-      <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Sitzposition</p>
+      <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{{ 'BIKE_DETAIL.SEAT_POSITION' | translate }}</p>
       <div class="grid grid-cols-3 gap-4 mb-5">
         <div class="flex flex-col gap-1">
-          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Sattelhoehe (mm)</label>
+          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.SADDLE_HEIGHT_MM' | translate }}</label>
           <input type="number" [(ngModel)]="fitSattelhoehe" min="0" step="0.1" class="form-input" />
         </div>
         <div class="flex flex-col gap-1">
-          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Sattelversatz (mm)</label>
+          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.SADDLE_OFFSET_MM' | translate }}</label>
           <input type="number" [(ngModel)]="fitSattelversatz" min="0" step="0.1" class="form-input" />
         </div>
         <div class="flex flex-col gap-1">
-          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Kurbellaenge (mm)</label>
+          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.CRANK_LENGTH_MM' | translate }}</label>
           <input type="number" [(ngModel)]="fitKurbellaenge" min="0" step="0.5" class="form-input" />
         </div>
       </div>
 
-      <!-- Cockpit -->
-      <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Cockpit</p>
+      <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{{ 'BIKE_DETAIL.COCKPIT' | translate }}</p>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
         <div class="flex flex-col gap-1">
-          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Vorbaulaenge (mm)</label>
+          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.STEM_LENGTH_MM' | translate }}</label>
           <input type="number" [(ngModel)]="fitVorbaulaenge" min="0" class="form-input" />
         </div>
         <div class="flex flex-col gap-1">
-          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Vorbauwinkel</label>
+          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.STEM_ANGLE_DEG' | translate }}</label>
           <input type="number" [(ngModel)]="fitVorbauwinkel" step="0.5" class="form-input" />
         </div>
         <div class="flex flex-col gap-1">
-          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Lenkerbreite (mm)</label>
+          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.HANDLEBAR_WIDTH_MM' | translate }}</label>
           <input type="number" [(ngModel)]="fitLenkerbreite" min="0" class="form-input" />
         </div>
         <div class="flex flex-col gap-1">
-          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Spacer (mm)</label>
+          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.SPACER_MM' | translate }}</label>
           <input type="number" [(ngModel)]="fitSpacer" min="0" class="form-input" />
         </div>
       </div>
 
-      <!-- Rahmengeometrie -->
-      <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Rahmengeometrie</p>
+      <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{{ 'BIKE_DETAIL.FRAME_GEOMETRY' | translate }}</p>
       <div class="grid grid-cols-3 gap-4 mb-5">
         <div class="flex flex-col gap-1">
-          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Reach (mm)</label>
+          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.REACH_MM' | translate }}</label>
           <input type="number" [(ngModel)]="fitReach" min="0" class="form-input" />
         </div>
         <div class="flex flex-col gap-1">
-          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Stack (mm)</label>
+          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.STACK_MM' | translate }}</label>
           <input type="number" [(ngModel)]="fitStack" min="0" class="form-input" />
         </div>
         <div class="flex flex-col gap-1">
-          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Radstand (mm)</label>
+          <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.WHEELBASE_MM' | translate }}</label>
           <input type="number" [(ngModel)]="fitRadstand" min="0" class="form-input" />
         </div>
       </div>
 
       <div class="flex items-center justify-end gap-2 pt-4 border-t border-gray-100 dark:border-gray-700">
-        <button class="btn-secondary" (click)="closeBikeFitEdit()">Abbrechen</button>
+        <button class="btn-secondary" (click)="closeBikeFitEdit()">{{ 'COMMON.CANCEL' | translate }}</button>
         <button class="btn-primary" (click)="saveBikeFitEdit()">
           <lucide-icon name="check" [size]="14" aria-hidden="true"></lucide-icon>
-          Speichern
+          {{ 'BIKE_DETAIL.SAVE' | translate }}
         </button>
       </div>
     </div>
@@ -686,23 +663,20 @@
      (click)="closeWearPartDetail()">
   <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-card w-full max-w-lg p-6"
        (click)="$event.stopPropagation()">
-    <!-- Header -->
     <div class="flex items-start justify-between mb-5">
       <div>
         <span class="badge mb-1">{{ detailWearPart.kategorie }}</span>
         <h3 class="text-lg font-bold text-primary dark:text-text-dark mt-1">{{ detailWearPart.name }}</h3>
         <p *ngIf="detailWearPart.position" class="text-xs text-gray-400 mt-0.5">{{ detailWearPart.position }}</p>
       </div>
-      <button class="btn-secondary !p-1.5 shrink-0" aria-label="Schließen" (click)="closeWearPartDetail()">
+      <button class="btn-secondary !p-1.5 shrink-0" [attr.aria-label]="'BIKE_DETAIL.ARIA_CLOSE' | translate" (click)="closeWearPartDetail()">
         <lucide-icon name="x" [size]="15" aria-hidden="true"></lucide-icon>
       </button>
     </div>
 
-    <!-- Kilometerstand progress -->
     <div class="mb-5 p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50">
-      <!-- Km progress (always shown) -->
       <div class="flex items-baseline justify-between mb-2">
-        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Kilometerstand</span>
+        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ 'BIKE_DETAIL.ODOMETER_LABEL' | translate }}</span>
         <span class="text-sm font-semibold tabular-nums"
               [ngClass]="{
                 'text-error': !isFederung(detailWearPart) && getLifetimePercent(detailWearPart) >= 1.0 && isInstalled(detailWearPart),
@@ -724,18 +698,16 @@
         </div>
       </div>
       <p *ngIf="!isFederung(detailWearPart)" class="text-xs text-gray-400 mt-1.5 text-right">
-        {{ (getLifetimePercent(detailWearPart) * 100) | number:'1.0-0' }}% der erwarteten Lebensdauer
+        {{ 'BIKE_DETAIL.EXPECTED_LIFE_PCT' | translate: { pct: ((getLifetimePercent(detailWearPart) * 100) | number:'1.0-0') } }}
       </p>
 
-      <!-- Federung: service hour bars -->
       <ng-container *ngIf="isFederung(detailWearPart) && isInstalled(detailWearPart)">
         <div class="mt-4 space-y-3">
-          <!-- Kleiner Service -->
           <div>
             <div class="flex items-baseline justify-between mb-1">
               <span class="text-xs font-semibold text-gray-500 flex items-center gap-1">
                 <lucide-icon name="wrench" [size]="12" aria-hidden="true"></lucide-icon>
-                Kleiner Service
+                {{ 'BIKE_DETAIL.SMALL_SERVICE' | translate }}
               </span>
               <span class="text-sm font-semibold tabular-nums"
                     [ngClass]="{
@@ -757,12 +729,11 @@
               </div>
             </div>
           </div>
-          <!-- Großer Service -->
           <div>
             <div class="flex items-baseline justify-between mb-1">
               <span class="text-xs font-semibold text-gray-500 flex items-center gap-1">
                 <lucide-icon name="wrench" [size]="12" aria-hidden="true"></lucide-icon>
-                Großer Service
+                {{ 'BIKE_DETAIL.BIG_SERVICE' | translate }}
               </span>
               <span class="text-sm font-semibold tabular-nums"
                     [ngClass]="{
@@ -784,35 +755,32 @@
               </div>
             </div>
           </div>
-          <!-- Total hours on part -->
           <div class="text-xs text-gray-400 text-right mt-1">
-            Gesamt: {{ getFederungStunden(detailWearPart) | number:'1.1-1' }} h auf diesem Teil
+            {{ 'BIKE_DETAIL.FEDERUNG_TOTAL' | translate: { h: (getFederungStunden(detailWearPart) | number:'1.1-1') } }}
           </div>
         </div>
       </ng-container>
     </div>
 
-    <!-- Info grid -->
     <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
       <div class="flex flex-col gap-0.5">
-        <span class="text-xs text-gray-400">Einbau</span>
+        <span class="text-xs text-gray-400">{{ 'BIKE_DETAIL.INSTALL_AT' | translate }}</span>
         <span class="text-gray-800 dark:text-text-dark font-medium">{{ detailWearPart.einbauDatum | date:'dd.MM.yyyy' }}</span>
         <span class="text-xs text-gray-400 tabular-nums">bei {{ detailWearPart.einbauKilometerstand | number:'1.0-0' }} km</span>
       </div>
       <div class="flex flex-col gap-0.5">
-        <span class="text-xs text-gray-400">{{ isInstalled(detailWearPart) ? 'Erw. Ausbau' : 'Ausbau' }}</span>
+        <span class="text-xs text-gray-400">{{ isInstalled(detailWearPart) ? ('BIKE_DETAIL.EXP_REMOVAL' | translate) : ('BIKE_DETAIL.ACTUAL_REMOVAL' | translate) }}</span>
         <ng-container *ngIf="!isInstalled(detailWearPart)">
           <span class="text-gray-800 dark:text-text-dark font-medium">{{ detailWearPart.ausbauDatum | date:'dd.MM.yyyy' }}</span>
           <span *ngIf="detailWearPart.ausbauKilometerstand" class="text-xs text-gray-400 tabular-nums">bei {{ detailWearPart.ausbauKilometerstand | number:'1.0-0' }} km</span>
         </ng-container>
         <ng-container *ngIf="isInstalled(detailWearPart)">
           <ng-container *ngIf="getExpectedAusbauDate(detailWearPart) as expDate; else detailNoAvg">
-            <span class="font-medium"
-                  [ngClass]="{
-                    'text-error': getLifetimePercent(detailWearPart) >= 1.0,
-                    'text-warning': getLifetimePercent(detailWearPart) >= 0.8 && getLifetimePercent(detailWearPart) < 1.0,
-                    'text-gray-800 dark:text-text-dark': getLifetimePercent(detailWearPart) < 0.8
-                  }">{{ expDate | date:'dd.MM.yyyy' }}</span>
+            <span class="font-medium" [ngClass]="{
+                'text-error': getLifetimePercent(detailWearPart) >= 1.0,
+                'text-warning': getLifetimePercent(detailWearPart) >= 0.8 && getLifetimePercent(detailWearPart) < 1.0,
+                'text-gray-800 dark:text-text-dark': getLifetimePercent(detailWearPart) < 0.8
+              }">{{ expDate | date:'dd.MM.yyyy' }}</span>
           </ng-container>
           <ng-template #detailNoAvg>
             <span class="text-gray-400">—</span>
@@ -821,18 +789,17 @@
       </div>
     </div>
 
-    <!-- Reifen-Konfiguration im Detail-Modal -->
     <div *ngIf="detailWearPart.kategorie === 'Reifen' && (detailWearPart.reifenBreiteMm != null || detailWearPart.reifenDruckBar != null)" class="mb-5">
-      <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Reifen-Konfiguration</span>
+      <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ 'BIKE_DETAIL.TYRE_CONFIG' | translate }}</span>
       <div class="mt-2 grid grid-cols-2 gap-3">
         <div *ngIf="detailWearPart.reifenBreiteMm != null" class="flex flex-col gap-0.5">
-          <span class="text-xs text-gray-400">Breite</span>
+          <span class="text-xs text-gray-400">{{ 'BIKE_DETAIL.WIDTH_MM' | translate }}</span>
           <span class="text-gray-800 dark:text-text-dark font-medium tabular-nums">{{ detailWearPart.reifenBreiteMm }} mm
             <span *ngIf="detailWearPart.reifenBreiteZoll != null" class="text-xs text-gray-400">({{ detailWearPart.reifenBreiteZoll | number:'1.1-1' }}")</span>
           </span>
         </div>
         <div *ngIf="detailWearPart.reifenDruckBar != null" class="flex flex-col gap-0.5">
-          <span class="text-xs text-gray-400">Luftdruck</span>
+          <span class="text-xs text-gray-400">{{ 'BIKE_DETAIL.PRESSURE_BAR' | translate }}</span>
           <span class="text-gray-800 dark:text-text-dark font-medium tabular-nums">{{ detailWearPart.reifenDruckBar | number:'1.1-1' }} bar
             <span *ngIf="detailWearPart.reifenDruckPsi != null" class="text-xs text-gray-400">({{ detailWearPart.reifenDruckPsi | number:'1.0-0' }} PSI)</span>
           </span>
@@ -840,66 +807,60 @@
       </div>
     </div>
 
-    <!-- Notizen -->
     <div class="mb-5">
       <div class="flex items-center justify-between mb-1.5">
-        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Notizen</span>
-        <button class="text-xs text-accent hover:underline" (click)="startEditWearPart(detailWearPart!); closeWearPartDetail()">Bearbeiten</button>
+        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ 'BIKE_DETAIL.NOTES' | translate }}</span>
+        <button class="text-xs text-accent hover:underline" (click)="startEditWearPart(detailWearPart!); closeWearPartDetail()">{{ 'BIKE_DETAIL.EDIT' | translate }}</button>
       </div>
       <div *ngIf="detailWearPart.notizen; else noNotizen"
            class="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg text-sm text-gray-700 dark:text-text-dark whitespace-pre-wrap">
         {{ detailWearPart.notizen }}
       </div>
       <ng-template #noNotizen>
-        <p class="text-sm text-gray-400 italic">Keine Notizen vorhanden.</p>
+        <p class="text-sm text-gray-400 italic">{{ 'BIKE_DETAIL.NO_NOTES' | translate }}</p>
       </ng-template>
     </div>
 
-    <!-- Service-Historie (nur für Federung) -->
     <div *ngIf="isFederung(detailWearPart)" class="mb-5">
       <div class="flex items-center justify-between mb-2">
         <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1">
           <lucide-icon name="wrench" [size]="12" aria-hidden="true"></lucide-icon>
-          Service-Historie
+          {{ 'BIKE_DETAIL.SERVICE_HISTORY' | translate }}
         </span>
-        <button class="text-xs text-accent hover:underline"
-                (click)="openAddServiceForm(detailWearPart.id)">
-          Service eintragen
+        <button class="text-xs text-accent hover:underline" (click)="openAddServiceForm(detailWearPart.id)">
+          {{ 'BIKE_DETAIL.LOG_SERVICE' | translate }}
         </button>
       </div>
 
-      <!-- Add service form -->
       <div *ngIf="showAddServiceForm === detailWearPart.id"
            class="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg mb-3">
         <div class="grid grid-cols-2 gap-3 mb-3">
           <div class="flex flex-col gap-1">
-            <label class="text-xs font-semibold text-gray-500">Service-Typ</label>
+            <label class="text-xs font-semibold text-gray-500">{{ 'BIKE_DETAIL.SERVICE_TYPE' | translate }}</label>
             <select [(ngModel)]="newServiceTyp" class="form-input text-sm">
-              <option [value]="ServiceTyp.KleinerService">Kleiner Service</option>
-              <option [value]="ServiceTyp.GrosserService">Großer Service</option>
+              <option [value]="ServiceTyp.KleinerService">{{ 'BIKE_DETAIL.SMALL_SERVICE' | translate }}</option>
+              <option [value]="ServiceTyp.GrosserService">{{ 'BIKE_DETAIL.BIG_SERVICE' | translate }}</option>
             </select>
           </div>
           <div class="flex flex-col gap-1">
-            <label class="text-xs font-semibold text-gray-500">Datum</label>
+            <label class="text-xs font-semibold text-gray-500">{{ 'BIKE_DETAIL.DATE' | translate }}</label>
             <input type="date" [(ngModel)]="newServiceDatum" class="form-input text-sm" />
           </div>
         </div>
         <div class="flex flex-col gap-1 mb-3">
-          <label class="text-xs font-semibold text-gray-500">Notizen <span class="font-normal text-gray-400">(optional)</span></label>
-          <input type="text" [(ngModel)]="newServiceNotizen" class="form-input text-sm" placeholder="z.B. Ölwechsel, Dichtungen..." />
+          <label class="text-xs font-semibold text-gray-500">{{ 'COMMON.NOTES_OPTIONAL' | translate }}</label>
+          <input type="text" [(ngModel)]="newServiceNotizen" class="form-input text-sm" [placeholder]="'BIKE_DETAIL.NOTES_PLACEHOLDER' | translate" />
         </div>
         <div class="flex items-center gap-2">
           <button class="btn-primary text-xs py-1.5 px-3" (click)="saveServiceEntry()">
             <lucide-icon name="check" [size]="12" aria-hidden="true"></lucide-icon>
-            Speichern
+            {{ 'BIKE_DETAIL.SAVE' | translate }}
           </button>
-          <button class="btn-secondary text-xs py-1.5 px-3" (click)="cancelAddService()">Abbrechen</button>
+          <button class="btn-secondary text-xs py-1.5 px-3" (click)="cancelAddService()">{{ 'COMMON.CANCEL' | translate }}</button>
         </div>
       </div>
 
-      <!-- Service entries list -->
-      <div *ngIf="(serviceEntriesMap[detailWearPart.id] ?? []).length > 0; else noServices"
-           class="space-y-2">
+      <div *ngIf="(serviceEntriesMap[detailWearPart.id] ?? []).length > 0; else noServices" class="space-y-2">
         <div *ngFor="let entry of serviceEntriesMap[detailWearPart.id]"
              class="flex items-center justify-between p-2.5 bg-gray-50 dark:bg-gray-800/50 rounded-lg text-sm">
           <div class="flex items-center gap-2">
@@ -908,44 +869,42 @@
                     'bg-accent/10 text-accent': entry.serviceTyp === ServiceTyp.GrosserService,
                     'bg-primary/10 text-primary dark:text-text-dark': entry.serviceTyp === ServiceTyp.KleinerService
                   }">
-              {{ entry.serviceTyp === ServiceTyp.KleinerService ? 'Klein' : 'Groß' }}
+              {{ entry.serviceTyp === ServiceTyp.KleinerService ? ('BIKE_DETAIL.SMALL_SERVICE' | translate) : ('BIKE_DETAIL.BIG_SERVICE' | translate) }}
             </span>
             <div>
               <span class="text-gray-800 dark:text-text-dark">{{ entry.datum | date:'dd.MM.yyyy' }}</span>
               <span class="text-gray-400 text-xs ml-1.5">bei {{ entry.beiFahrstunden | number:'1.1-1' }} h</span>
             </div>
           </div>
-          <button class="btn-secondary !p-1" aria-label="Löschen" (click)="deleteServiceEntry(entry.id, detailWearPart.id)">
+          <button class="btn-secondary !p-1" [attr.aria-label]="'COMMON.DELETE' | translate" (click)="deleteServiceEntry(entry.id, detailWearPart.id)">
             <lucide-icon name="trash-2" [size]="12" aria-hidden="true"></lucide-icon>
           </button>
         </div>
       </div>
       <ng-template #noServices>
-        <p class="text-sm text-gray-400 italic">Noch kein Service durchgeführt.</p>
+        <p class="text-sm text-gray-400 italic">{{ 'BIKE_DETAIL.NO_SERVICE' | translate }}</p>
       </ng-template>
     </div>
 
-    <!-- Group display -->
     <div *ngIf="getGruppeName(detailWearPart.gruppeId)" class="mb-5">
-      <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Gruppe</span>
+      <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ 'BIKE_DETAIL.GROUP_LABEL' | translate }}</span>
       <p class="text-sm text-gray-700 dark:text-text-dark mt-1 flex items-center gap-1.5">
         <lucide-icon name="folder-open" [size]="14" class="text-gray-400" aria-hidden="true"></lucide-icon>
         {{ getGruppeName(detailWearPart.gruppeId) }}
       </p>
     </div>
 
-    <!-- Footer actions -->
     <div class="flex items-center justify-between gap-2 pt-4 border-t border-gray-100 dark:border-gray-700">
       <button *ngIf="detailWearPart.vorgaengerId != null" class="btn-secondary text-xs" (click)="openHistory(detailWearPart)">
         <lucide-icon name="history" [size]="13" aria-hidden="true"></lucide-icon>
-        Historie
+        {{ 'BIKE_DETAIL.HISTORY_LINK' | translate }}
       </button>
       <div *ngIf="detailWearPart.vorgaengerId == null"></div>
       <div class="flex items-center gap-2">
-        <button class="btn-secondary" (click)="closeWearPartDetail()">Schließen</button>
+        <button class="btn-secondary" (click)="closeWearPartDetail()">{{ 'BIKE_DETAIL.CLOSE' | translate }}</button>
         <button class="btn-primary" (click)="startEditWearPart(detailWearPart!); closeWearPartDetail()">
           <lucide-icon name="pencil" [size]="14" aria-hidden="true"></lucide-icon>
-          Bearbeiten
+          {{ 'BIKE_DETAIL.EDIT' | translate }}
         </button>
       </div>
     </div>
@@ -963,15 +922,15 @@
         <lucide-icon name="trash-2" [size]="18" class="text-error" aria-hidden="true"></lucide-icon>
       </div>
       <div>
-        <h3 class="text-base font-semibold text-gray-900 dark:text-text-dark">Verschleißteil löschen</h3>
-        <p class="text-sm text-gray-500 mt-0.5">Diese Aktion kann nicht rückgängig gemacht werden.</p>
+        <h3 class="text-base font-semibold text-gray-900 dark:text-text-dark">{{ 'BIKE_DETAIL.DELETE_CONFIRM_TITLE' | translate }}</h3>
+        <p class="text-sm text-gray-500 mt-0.5">{{ 'BIKE_DETAIL.DELETE_CONFIRM_BODY' | translate }}</p>
       </div>
     </div>
     <div class="flex items-center justify-end gap-2 mt-5">
-      <button class="btn-secondary" (click)="cancelDelete()">Abbrechen</button>
+      <button class="btn-secondary" (click)="cancelDelete()">{{ 'COMMON.CANCEL' | translate }}</button>
       <button class="btn-danger" (click)="confirmDeleteWearPart()">
         <lucide-icon name="trash-2" [size]="14" aria-hidden="true"></lucide-icon>
-        Löschen
+        {{ 'COMMON.DELETE' | translate }}
       </button>
     </div>
   </div>
@@ -986,38 +945,32 @@
     <div class="flex items-center justify-between mb-5">
       <h3 class="text-base font-semibold text-primary dark:text-text-dark flex items-center gap-2">
         <lucide-icon name="move-right" [size]="14" class="text-accent" aria-hidden="true"></lucide-icon>
-        "{{ movePartName }}" umbauen
+        "{{ movePartName }}" {{ 'BIKE_DETAIL.MOVE' | translate }}
       </h3>
-      <button class="btn-secondary !p-1.5" aria-label="Schließen" (click)="closeMoveModal()">
+      <button class="btn-secondary !p-1.5" [attr.aria-label]="'BIKE_DETAIL.ARIA_CLOSE' | translate" (click)="closeMoveModal()">
         <lucide-icon name="x" [size]="15" aria-hidden="true"></lucide-icon>
       </button>
     </div>
 
-    <p class="text-sm text-gray-500 mb-4">
-      Das Teil wird vom aktuellen Rad ausgebaut und auf ein anderes Rad eingebaut. Die Einbauhistorie bleibt erhalten.
-    </p>
+    <p class="text-sm text-gray-500 mb-4">{{ 'BIKE_DETAIL.MOVE_DESCRIPTION' | translate }}</p>
 
-    <!-- Target bike -->
     <div class="flex flex-col gap-1 mb-4">
-      <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Zielrad</label>
+      <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.TARGET_BIKE' | translate }}</label>
       <select [(ngModel)]="moveZielRadId" (ngModelChange)="onMoveZielRadChange()" class="form-input">
-        <option [ngValue]="null">– Rad auswählen –</option>
+        <option [ngValue]="null">{{ 'BIKE_DETAIL.SELECT_BIKE' | translate }}</option>
         <option *ngFor="let b of userBikes" [ngValue]="b.id">{{ b.name }} ({{ b.kilometerstand | number:'1.0-0' }} km)</option>
       </select>
     </div>
 
-    <!-- Ausbau section -->
-    <p class="text-xs font-semibold text-gray-500 dark:text-text-dark mb-2 uppercase tracking-wider">Ausbau (aktuelles Rad)</p>
+    <p class="text-xs font-semibold text-gray-500 dark:text-text-dark mb-2 uppercase tracking-wider">{{ 'BIKE_DETAIL.REMOVAL_SECTION' | translate }}</p>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div class="flex flex-col gap-1">
-        <label class="text-xs font-semibold text-gray-500 dark:text-text-dark flex items-center gap-1.5">
-          Ausbau Datum
-        </label>
+        <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.REMOVAL_DATE_LABEL' | translate }}</label>
         <input type="date" [(ngModel)]="moveAusbauDatumStr" (ngModelChange)="onMoveAusbauDatumChange()" class="form-input" />
       </div>
       <div class="flex flex-col gap-1">
         <label class="text-xs font-semibold text-gray-500 dark:text-text-dark flex items-center gap-1.5">
-          Ausbau km
+          {{ 'BIKE_DETAIL.REMOVAL_KM_LABEL' | translate }}
           <lucide-icon *ngIf="loadingMoveAusbauOdometer" name="loader-2" [size]="12" class="animate-spin text-accent" aria-hidden="true"></lucide-icon>
         </label>
         <input type="number" [(ngModel)]="moveAusbauKm" min="0" class="form-input" />
@@ -1025,20 +978,19 @@
     </div>
 
     <div *ngIf="moveIsFederung" class="flex flex-col gap-1 mb-4">
-      <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Ausbau Fahrstunden <span class="font-normal text-gray-400">(optional)</span></label>
+      <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.FEDERUNG_REMOVAL_HOURS' | translate }} <span class="font-normal text-gray-400">{{ 'BIKE_DETAIL.OPTIONAL' | translate }}</span></label>
       <input type="number" [(ngModel)]="moveAusbauFahrstunden" min="0" step="0.1" class="form-input" />
     </div>
 
-    <!-- Einbau section -->
-    <p class="text-xs font-semibold text-gray-500 dark:text-text-dark mb-2 uppercase tracking-wider">Einbau (Zielrad)</p>
+    <p class="text-xs font-semibold text-gray-500 dark:text-text-dark mb-2 uppercase tracking-wider">{{ 'BIKE_DETAIL.INSTALL_SECTION' | translate }}</p>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div class="flex flex-col gap-1">
-        <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Einbau Datum</label>
+        <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.INSTALL_DATE_LABEL' | translate }}</label>
         <input type="date" [(ngModel)]="moveEinbauDatumStr" (ngModelChange)="onMoveEinbauDatumChange()" class="form-input" />
       </div>
       <div class="flex flex-col gap-1">
         <label class="text-xs font-semibold text-gray-500 dark:text-text-dark flex items-center gap-1.5">
-          Einbau km
+          {{ 'BIKE_DETAIL.INSTALL_KM_LABEL' | translate }}
           <lucide-icon *ngIf="loadingMoveEinbauOdometer" name="loader-2" [size]="12" class="animate-spin text-accent" aria-hidden="true"></lucide-icon>
         </label>
         <input type="number" [(ngModel)]="moveEinbauKm" min="0" class="form-input" />
@@ -1046,15 +998,15 @@
     </div>
 
     <div *ngIf="moveIsFederung" class="flex flex-col gap-1 mb-4">
-      <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">Einbau Fahrstunden <span class="font-normal text-gray-400">(optional)</span></label>
+      <label class="text-xs font-semibold text-gray-500 dark:text-text-dark">{{ 'BIKE_DETAIL.FEDERUNG_INSTALL_HOURS' | translate }} <span class="font-normal text-gray-400">{{ 'BIKE_DETAIL.OPTIONAL' | translate }}</span></label>
       <input type="number" [(ngModel)]="moveEinbauFahrstunden" min="0" step="0.1" class="form-input" />
     </div>
 
     <div class="flex items-center justify-end gap-2 pt-4 border-t border-gray-100 dark:border-gray-700">
-      <button class="btn-secondary" (click)="closeMoveModal()">Abbrechen</button>
+      <button class="btn-secondary" (click)="closeMoveModal()">{{ 'COMMON.CANCEL' | translate }}</button>
       <button class="btn-primary" (click)="confirmMove()" [disabled]="moveZielRadId == null">
         <lucide-icon name="move-right" [size]="14" aria-hidden="true"></lucide-icon>
-        Umbauen
+        {{ 'BIKE_DETAIL.MOVE' | translate }}
       </button>
     </div>
   </div>
@@ -1069,14 +1021,14 @@
     <div class="flex items-center justify-between mb-5">
       <h3 class="text-base font-semibold text-primary dark:text-text-dark flex items-center gap-2">
         <lucide-icon name="history" [size]="14" class="text-accent" aria-hidden="true"></lucide-icon>
-        Einbauhistorie: {{ historyPartName }}
+        {{ 'BIKE_DETAIL.HISTORY_TITLE' | translate }}: {{ historyPartName }}
       </h3>
-      <button class="btn-secondary !p-1.5" aria-label="Schließen" (click)="closeHistory()">
+      <button class="btn-secondary !p-1.5" [attr.aria-label]="'BIKE_DETAIL.ARIA_CLOSE' | translate" (click)="closeHistory()">
         <lucide-icon name="x" [size]="15" aria-hidden="true"></lucide-icon>
       </button>
     </div>
 
-    <div *ngIf="historyParts.length === 0" class="text-sm text-gray-400 italic">Lade Historie...</div>
+    <div *ngIf="historyParts.length === 0" class="text-sm text-gray-400 italic">{{ 'BIKE_DETAIL.HISTORY_LOADING' | translate }}</div>
 
     <div class="space-y-3">
       <div *ngFor="let hp of historyParts; let i = index"
@@ -1092,25 +1044,24 @@
             <span class="text-sm font-medium text-gray-800 dark:text-text-dark">
               {{ historyBikes[hp.radId]?.name ?? ('Rad #' + hp.radId) }}
             </span>
-            <span *ngIf="hp.radId === bike?.id" class="badge text-xs bg-accent/10 text-accent">aktuell</span>
+            <span *ngIf="hp.radId === bike?.id" class="badge text-xs bg-accent/10 text-accent">{{ 'BIKE_DETAIL.CURRENT_BADGE' | translate }}</span>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-2 text-xs text-gray-500">
           <div>
-            <span class="font-semibold">Einbau:</span>
+            <span class="font-semibold">{{ 'BIKE_DETAIL.INSTALL_LABEL' | translate }}</span>
             {{ hp.einbauDatum | date:'dd.MM.yyyy' }}
             ({{ hp.einbauKilometerstand | number:'1.0-0' }} km)
           </div>
           <div *ngIf="hp.ausbauDatum">
-            <span class="font-semibold">Ausbau:</span>
+            <span class="font-semibold">{{ 'BIKE_DETAIL.REMOVAL_LABEL' | translate }}</span>
             {{ hp.ausbauDatum | date:'dd.MM.yyyy' }}
             <span *ngIf="hp.ausbauKilometerstand">({{ hp.ausbauKilometerstand | number:'1.0-0' }} km)</span>
           </div>
           <div *ngIf="!hp.ausbauDatum" class="text-success font-medium">
-            Aktuell eingebaut
+            {{ 'BIKE_DETAIL.CURRENTLY_INSTALLED' | translate }}
           </div>
         </div>
-        <!-- Arrow between entries -->
         <div *ngIf="i < historyParts.length - 1" class="flex justify-center mt-2 -mb-5">
           <lucide-icon name="arrow-right" [size]="16" class="text-gray-300 rotate-90" aria-hidden="true"></lucide-icon>
         </div>
@@ -1118,7 +1069,7 @@
     </div>
 
     <div class="flex items-center justify-end gap-2 pt-4 mt-4 border-t border-gray-100 dark:border-gray-700">
-      <button class="btn-secondary" (click)="closeHistory()">Schließen</button>
+      <button class="btn-secondary" (click)="closeHistory()">{{ 'BIKE_DETAIL.CLOSE' | translate }}</button>
     </div>
   </div>
 </div>

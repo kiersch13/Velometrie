@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { SettingsComponent } from './settings.component';
 import { LifetimeSettingsService } from '../../services/lifetime-settings.service';
@@ -29,7 +30,7 @@ describe('SettingsComponent – resetLifetimeSettings', () => {
 
     await TestBed.configureTestingModule({
       declarations: [SettingsComponent],
-      imports: [FormsModule],
+      imports: [FormsModule, TranslateModule.forRoot()],
       providers: [
         { provide: LifetimeSettingsService, useValue: lifetimeServiceMock },
         { provide: AuthService, useValue: authServiceMock },

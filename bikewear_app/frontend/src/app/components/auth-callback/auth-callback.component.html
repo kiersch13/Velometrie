@@ -6,8 +6,8 @@
       <div class="flex justify-center mb-4">
         <lucide-icon name="loader-2" [size]="36" class="text-accent animate-spin" aria-hidden="true"></lucide-icon>
       </div>
-      <h2 class="text-lg font-semibold text-primary dark:text-text-dark mb-1">Verbinde mit Strava</h2>
-      <p class="text-sm text-gray-400">Einen Moment bitte...</p>
+      <h2 class="text-lg font-semibold text-primary dark:text-text-dark mb-1">{{ 'AUTH_CALLBACK.CONNECTING' | translate }}</h2>
+      <p class="text-sm text-gray-400">{{ 'AUTH_CALLBACK.WAIT' | translate }}</p>
     </ng-container>
 
     <!-- Error state -->
@@ -15,11 +15,11 @@
       <div class="flex justify-center mb-4">
         <lucide-icon name="x-circle" [size]="36" class="text-error" aria-hidden="true"></lucide-icon>
       </div>
-      <h2 class="text-lg font-semibold text-primary dark:text-text-dark mb-1">Verbindung fehlgeschlagen</h2>
+      <h2 class="text-lg font-semibold text-primary dark:text-text-dark mb-1">{{ 'AUTH_CALLBACK.FAILED' | translate }}</h2>
       <p class="text-sm text-gray-400 mb-6">{{ error }}</p>
       <button class="btn-primary" (click)="retry()">
         <lucide-icon name="arrow-left" [size]="14" aria-hidden="true"></lucide-icon>
-        Zurück zur Startseite
+        {{ 'AUTH_CALLBACK.BACK' | translate }}
       </button>
     </ng-container>
 

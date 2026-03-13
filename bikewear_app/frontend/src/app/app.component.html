@@ -10,18 +10,18 @@
          routerLinkActive="bg-white/15 text-white"
          [routerLinkActiveOptions]="{exact: false}"
          class="text-white/70 hover:text-white hover:bg-white/10 text-sm px-3 py-1.5 rounded-lg transition-colors duration-150">
-        Räder
+        {{ 'NAV.BIKES' | translate }}
       </a>
       <a routerLink="/teilbibliothek"
          routerLinkActive="bg-white/15 text-white"
          [routerLinkActiveOptions]="{exact: false}"
          class="text-white/70 hover:text-white hover:bg-white/10 text-sm px-3 py-1.5 rounded-lg transition-colors duration-150">
-        Bibliothek
+        {{ 'NAV.LIBRARY' | translate }}
       </a>
       <a routerLink="/settings"
          routerLinkActive="bg-white/15 text-white"
-         aria-label="Einstellungen"
-         title="Einstellungen"
+         [attr.aria-label]="'NAV.SETTINGS_ARIA' | translate"
+         [title]="'NAV.SETTINGS_TITLE' | translate"
          class="text-white/70 hover:text-white hover:bg-white/10 p-1.5 rounded-lg transition-colors duration-150 flex items-center">
         <lucide-icon name="settings" [size]="18" aria-hidden="true"></lucide-icon>
       </a>

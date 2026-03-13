@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { of, throwError } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { WearPartFormComponent } from './wear-part-form.component';
 import { WearPartService } from '../../services/wear-part.service';
@@ -20,6 +21,7 @@ describe('WearPartFormComponent – Reifen-Konvertierung', () => {
 
     await TestBed.configureTestingModule({
       declarations: [WearPartFormComponent],
+      imports: [TranslateModule.forRoot()],
       providers: [
         { provide: WearPartService, useValue: wearPartServiceMock },
         { provide: BikeService, useValue: bikeServiceMock },

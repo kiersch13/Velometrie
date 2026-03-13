@@ -1,30 +1,30 @@
 <!-- Page header -->
 <div class="flex justify-between items-start mb-6 flex-wrap gap-4">
   <div>
-    <h2 class="page-title">Teilebibliothek</h2>
-    <p class="text-sm text-gray-400 mt-0.5">Verschleißteile nach Kategorie und Hersteller durchsuchen</p>
+    <h2 class="page-title">{{ 'LIBRARY.TITLE' | translate }}</h2>
+    <p class="text-sm text-gray-400 mt-0.5">{{ 'LIBRARY.SUBTITLE' | translate }}</p>
   </div>
   <button class="btn-primary flex items-center gap-2" (click)="toggleAddForm()">
     <lucide-icon [name]="showAddForm ? 'x' : 'plus'" [size]="16" aria-hidden="true"></lucide-icon>
-    {{ showAddForm ? 'Abbrechen' : 'Teil hinzufügen' }}
+    {{ showAddForm ? ('LIBRARY.CANCEL' | translate) : ('LIBRARY.ADD_PART' | translate) }}
   </button>
 </div>
 
 <!-- Add form -->
 <div *ngIf="showAddForm" class="card p-5 mb-6">
-  <h3 class="text-sm font-semibold text-primary dark:text-text-dark mb-4">Neues Teil hinzufügen</h3>
+  <h3 class="text-sm font-semibold text-primary dark:text-text-dark mb-4">{{ 'LIBRARY.NEW_PART_TITLE' | translate }}</h3>
 
   <!-- AI enrich hint + button -->
   <div class="flex items-center gap-3 mb-4 p-3 bg-accent/5 border border-accent/20 rounded-lg">
     <lucide-icon name="sparkles" [size]="16" class="text-accent shrink-0" aria-hidden="true"></lucide-icon>
-    <p class="text-xs text-gray-500 dark:text-gray-400 flex-1">Gib einen Teilenamen ein und lass die KI die restlichen Felder automatisch ausfüllen.</p>
+    <p class="text-xs text-gray-500 dark:text-gray-400 flex-1">{{ 'LIBRARY.AI_HINT' | translate }}</p>
     <button
       class="btn-secondary text-xs flex items-center gap-1.5 shrink-0"
       [disabled]="enriching"
       (click)="enrichTeil()">
       <lucide-icon *ngIf="!enriching" name="sparkles" [size]="13" aria-hidden="true"></lucide-icon>
       <lucide-icon *ngIf="enriching"  name="loader-2" [size]="13" class="animate-spin" aria-hidden="true"></lucide-icon>
-      {{ enriching ? 'Wird angereichert...' : 'KI-Anreicherung' }}
+      {{ enriching ? ('LIBRARY.ENRICHING' | translate) : ('LIBRARY.AI_ENRICH' | translate) }}
     </button>
   </div>
 
@@ -37,52 +37,52 @@
   <!-- Support request confirmation -->
   <div *ngIf="supportRequestSent" class="flex items-center gap-2 mb-3 p-3 bg-warning/10 border border-warning/20 rounded-lg text-warning text-xs">
     <lucide-icon name="check-circle-2" [size]="14" aria-hidden="true"></lucide-icon>
-    Deine Anfrage wurde entgegengenommen und wird untersucht.
+    {{ 'LIBRARY.SUPPORT_REQUEST_SENT' | translate }}
   </div>
 
   <!-- Form fields -->
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <!-- Name -->
     <div>
-      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Name <span class="text-error">*</span></label>
-      <input type="text" class="form-input w-full text-sm" placeholder="z. B. Shimano Ultegra 12s Kette"
+      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ 'LIBRARY.LABEL_NAME' | translate }} <span class="text-error">*</span></label>
+      <input type="text" class="form-input w-full text-sm" [placeholder]="'LIBRARY.NAME_PLACEHOLDER' | translate"
              [(ngModel)]="newTeil.name" />
     </div>
     <!-- Hersteller -->
     <div>
-      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Hersteller <span class="text-error">*</span></label>
-      <input type="text" class="form-input w-full text-sm" placeholder="z. B. Shimano"
+      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ 'LIBRARY.LABEL_MANUFACTURER' | translate }} <span class="text-error">*</span></label>
+      <input type="text" class="form-input w-full text-sm" [placeholder]="'LIBRARY.MANUFACTURER_PLACEHOLDER' | translate"
              [(ngModel)]="newTeil.hersteller" />
     </div>
     <!-- Kategorie -->
     <div>
-      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Kategorie</label>
+      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ 'LIBRARY.LABEL_CATEGORY' | translate }}</label>
       <select class="form-input w-full text-sm" [(ngModel)]="newTeil.kategorie">
         <option *ngFor="let k of kategorien" [value]="k">{{ k }}</option>
       </select>
     </div>
     <!-- Gruppe -->
     <div>
-      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Gruppe</label>
-      <input type="text" class="form-input w-full text-sm" placeholder="z. B. Ultegra, GRX, Eagle"
+      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ 'LIBRARY.LABEL_GROUP' | translate }}</label>
+      <input type="text" class="form-input w-full text-sm" [placeholder]="'LIBRARY.GROUP_PLACEHOLDER' | translate"
              [ngModel]="newTeil.gruppe" (ngModelChange)="newTeil.gruppe = $event || null" />
     </div>
     <!-- Geschwindigkeiten -->
     <div>
-      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Geschwindigkeiten</label>
-      <input type="number" class="form-input w-full text-sm" placeholder="z. B. 11, 12"
+      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ 'LIBRARY.LABEL_SPEEDS' | translate }}</label>
+      <input type="number" class="form-input w-full text-sm" [placeholder]="'LIBRARY.SPEEDS_PLACEHOLDER' | translate"
              [ngModel]="newTeil.geschwindigkeiten" (ngModelChange)="newTeil.geschwindigkeiten = $event ? +$event : null" />
     </div>
     <!-- FahrradKategorien -->
     <div>
-      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Fahrradkategorien <span class="text-error">*</span></label>
-      <input type="text" class="form-input w-full text-sm" placeholder="z. B. Rennrad,Gravel"
+      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ 'LIBRARY.LABEL_BIKE_CATS' | translate }} <span class="text-error">*</span></label>
+      <input type="text" class="form-input w-full text-sm" [placeholder]="'LIBRARY.BIKE_CATS_PLACEHOLDER' | translate"
              [(ngModel)]="newTeil.fahrradKategorien" />
     </div>
     <!-- Beschreibung (full width) -->
     <div class="sm:col-span-2">
-      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Beschreibung</label>
-      <textarea rows="2" class="form-input w-full text-sm" placeholder="Kurze Produktbeschreibung auf Deutsch"
+      <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ 'LIBRARY.LABEL_DESCRIPTION' | translate }}</label>
+      <textarea rows="2" class="form-input w-full text-sm" [placeholder]="'LIBRARY.DESCRIPTION_PLACEHOLDER' | translate"
                 [ngModel]="newTeil.beschreibung" (ngModelChange)="newTeil.beschreibung = $event || null"></textarea>
     </div>
   </div>
@@ -96,24 +96,24 @@
   <!-- Save success -->
   <div *ngIf="addSuccess" class="flex items-center gap-2 mt-3 p-3 bg-success/10 border border-success/20 rounded-lg text-success text-xs">
     <lucide-icon name="check-circle-2" [size]="14" aria-hidden="true"></lucide-icon>
-    Teil erfolgreich gespeichert.
+    {{ 'LIBRARY.SAVED' | translate }}
   </div>
 
   <!-- Actions -->
   <div class="flex justify-end gap-3 mt-4">
-    <button class="btn-secondary text-sm" (click)="toggleAddForm()">Abbrechen</button>
+    <button class="btn-secondary text-sm" (click)="toggleAddForm()">{{ 'LIBRARY.CANCEL' | translate }}</button>
     <button class="btn-primary text-sm flex items-center gap-2" [disabled]="addLoading || enriching" (click)="saveTeil()">
       <lucide-icon *ngIf="addLoading || enriching" name="loader-2" [size]="14" class="animate-spin" aria-hidden="true"></lucide-icon>
       <lucide-icon *ngIf="!addLoading && !enriching && isEnriched" name="check" [size]="14" aria-hidden="true"></lucide-icon>
       <lucide-icon *ngIf="!addLoading && !enriching && !isEnriched" name="sparkles" [size]="14" aria-hidden="true"></lucide-icon>
-      {{ addLoading ? 'Speichert...' : (enriching ? 'Wird angereichert...' : (isEnriched ? 'Speichern' : 'KI-Anreicherung & Speichern')) }}
+      {{ addLoading ? ('LIBRARY.SAVING' | translate) : (enriching ? ('LIBRARY.ENRICHING' | translate) : (isEnriched ? ('LIBRARY.SAVE' | translate) : ('LIBRARY.AI_SAVE' | translate))) }}
     </button>
   </div>
 </div>
 
 <!-- Search bar with autocomplete -->
 <div class="card p-4 mb-4 relative">
-  <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Suche</label>
+  <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ 'LIBRARY.SEARCH_LABEL' | translate }}</label>
   <div class="relative">
     <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-400">
       <lucide-icon name="search" [size]="15" aria-hidden="true"></lucide-icon>
@@ -121,19 +121,19 @@
     <input
       type="text"
       class="form-input w-full text-sm pl-8 pr-8"
-      placeholder="Teilname oder Hersteller ..."
+      [placeholder]="'LIBRARY.SEARCH_PLACEHOLDER' | translate"
       [(ngModel)]="suchbegriff"
       (ngModelChange)="onSuchbegriffChange()"
       (focus)="onSuchbegriffChange()"
       autocomplete="off"
-      aria-label="Teile suchen"
+      [attr.aria-label]="'LIBRARY.SEARCH_ARIA' | translate"
       aria-autocomplete="list"
       [attr.aria-expanded]="showAutocomplete" />
     <button
       *ngIf="suchbegriff"
       class="absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-gray-600"
       (click)="suchbegriff = ''; onSuchbegriffChange()"
-      aria-label="Suche zurücksetzen">
+      [attr.aria-label]="'LIBRARY.SEARCH_RESET_ARIA' | translate">
       <lucide-icon name="x" [size]="14" aria-hidden="true"></lucide-icon>
     </button>
     <!-- Autocomplete dropdown -->
@@ -228,7 +228,7 @@
 <!-- Loading -->
 <div *ngIf="loading" class="flex flex-col items-center justify-center mt-20 text-gray-400 gap-3">
   <lucide-icon name="loader-2" [size]="36" class="animate-spin" aria-hidden="true"></lucide-icon>
-  <span class="text-sm">Lädt...</span>
+  <span class="text-sm">{{ 'COMMON.LOADING' | translate }}</span>
 </div>
 
 <!-- Error -->
@@ -392,17 +392,17 @@
 
       <!-- Kategorie (read-only badge) -->
       <div>
-        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Kategorie</label>
+        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ 'BIKE_DETAIL.CATEGORY' | translate }}</label>
         <span class="badge text-xs">{{ addToBikePart.kategorie }}</span>
       </div>
 
       <!-- Position (conditional) -->
       <div *ngIf="addToBikeShowPositionDropdown">
         <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-          Position <span class="font-normal text-gray-400">(optional)</span>
+          {{ 'BIKE_DETAIL.POSITION' | translate }} <span class="font-normal text-gray-400">{{ 'COMMON.OPTIONAL' | translate }}</span>
         </label>
         <select class="form-input w-full text-sm" [(ngModel)]="addToBikePart.position">
-          <option [ngValue]="null">– keine Angabe –</option>
+          <option [ngValue]="null">{{ 'BIKE_DETAIL.NO_POSITION' | translate }}</option>
           <option *ngFor="let pos of addToBikePositions" [value]="pos">{{ pos }}</option>
         </select>
       </div>
@@ -410,7 +410,7 @@
       <!-- Einbau Datum -->
       <div>
         <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-          Einbau Datum <span class="text-error">*</span>
+          {{ 'BIKE_DETAIL.INSTALL_DATE' | translate }} <span class="text-error">*</span>
         </label>
         <input type="date" class="form-input w-full text-sm"
                [(ngModel)]="addToBikeEinbauDatumStr" />
@@ -419,7 +419,7 @@
       <!-- Einbau Kilometerstand -->
       <div>
         <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-          Einbau Kilometerstand
+          {{ 'BIKE_DETAIL.INSTALL_KM' | translate }}
           <lucide-icon *ngIf="loadingOdometerBibliothek" name="loader-2" [size]="12" class="animate-spin text-accent" aria-hidden="true"></lucide-icon>
         </label>
         <input type="number" class="form-input w-full text-sm" min="0"
@@ -430,10 +430,10 @@
       <!-- Notizen -->
       <div>
         <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-          Notizen <span class="font-normal text-gray-400">(optional)</span>
+          {{ 'COMMON.NOTES' | translate }} <span class="font-normal text-gray-400">{{ 'COMMON.OPTIONAL' | translate }}</span>
         </label>
         <textarea rows="2" class="form-input w-full text-sm resize-none"
-                  placeholder="Notizen zum Teil…"
+                  [placeholder]="'BIKE_DETAIL.NOTES_TEXTAREA_PLACEHOLDER' | translate"
                   [ngModel]="addToBikePart.notizen"
                   (ngModelChange)="addToBikePart.notizen = $event || null"></textarea>
       </div>
@@ -442,7 +442,7 @@
 
     <!-- Actions -->
     <div class="flex justify-end gap-3 mt-5 pt-4 border-t border-gray-100 dark:border-gray-700">
-      <button class="btn-secondary text-sm" (click)="closeAddToBikeDialog()">Abbrechen</button>
+      <button class="btn-secondary text-sm" (click)="closeAddToBikeDialog()">{{ 'COMMON.CANCEL' | translate }}</button>
       <button
         *ngIf="!addToBikeSuccess"
         class="btn-primary text-sm flex items-center gap-2"
@@ -450,7 +450,7 @@
         (click)="saveAddToBike()">
         <lucide-icon *ngIf="addToBikeLoading" name="loader-2" [size]="14" class="animate-spin" aria-hidden="true"></lucide-icon>
         <lucide-icon *ngIf="!addToBikeLoading" name="check" [size]="14" aria-hidden="true"></lucide-icon>
-        {{ addToBikeLoading ? 'Speichert...' : 'Hinzufügen' }}
+        {{ addToBikeLoading ? ('COMMON.LOADING' | translate) : ('ADD_BIKE.SAVE' | translate) }}
       </button>
     </div>
 

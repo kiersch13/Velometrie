@@ -1,7 +1,7 @@
 <div class="min-h-screen bg-bg-light dark:bg-bg-dark flex items-center justify-center px-4">
   <div class="card max-w-sm w-full p-8">
 
-    <h1 class="page-title text-center mb-6">Anmelden</h1>
+    <h1 class="page-title text-center mb-6">{{ 'LOGIN.TITLE' | translate }}</h1>
 
     <!-- Error -->
     <div *ngIf="error" class="mb-4 flex items-center gap-2 rounded-lg bg-error/10 px-4 py-3 text-sm text-error">
@@ -13,7 +13,7 @@
 
       <div>
         <label for="email" class="block text-sm font-medium text-text-light dark:text-text-dark mb-1">
-          E-Mail
+          {{ 'LOGIN.EMAIL' | translate }}
         </label>
         <input
           id="email"
@@ -22,14 +22,14 @@
           [(ngModel)]="email"
           name="email"
           autocomplete="email"
-          placeholder="du@beispiel.de"
+          [placeholder]="'LOGIN.EMAIL_PLACEHOLDER' | translate"
           required
         />
       </div>
 
       <div>
         <label for="password" class="block text-sm font-medium text-text-light dark:text-text-dark mb-1">
-          Passwort
+          {{ 'LOGIN.PASSWORD' | translate }}
         </label>
         <input
           id="password"
@@ -49,14 +49,14 @@
         [disabled]="loading"
       >
         <lucide-icon *ngIf="loading" name="loader-2" [size]="16" class="animate-spin" aria-hidden="true"></lucide-icon>
-        <span>{{ loading ? 'Einen Moment...' : 'Anmelden' }}</span>
+        <span>{{ loading ? ('LOGIN.LOADING' | translate) : ('LOGIN.SUBMIT' | translate) }}</span>
       </button>
 
     </form>
 
     <p class="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
-      Noch kein Konto?
-      <a routerLink="/register" class="text-accent hover:underline font-medium">Jetzt registrieren</a>
+      {{ 'LOGIN.NO_ACCOUNT' | translate }}
+      <a routerLink="/register" class="text-accent hover:underline font-medium">{{ 'LOGIN.REGISTER_LINK' | translate }}</a>
     </p>
 
   </div>

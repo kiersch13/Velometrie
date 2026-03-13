@@ -106,7 +106,7 @@ export class BikeDetailComponent implements OnInit {
   // History modal
   showHistoryModal = false;
   historyParts: WearPart[] = [];
-  historyBikes: { [radId: number]: Bike } = {};
+  historyBikes: { [radId: number]: Bike | undefined } = {};
   historyPartName = '';
 
   constructor(

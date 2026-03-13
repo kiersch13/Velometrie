@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { BikeDetailComponent } from './bike-detail.component';
 import { BikeService } from '../../services/bike.service';
@@ -79,6 +80,7 @@ describe('BikeDetailComponent – Reifen-Edit & getPartConfigSummary', () => {
 
     await TestBed.configureTestingModule({
       declarations: [BikeDetailComponent],
+      imports: [TranslateModule.forRoot()],
       providers: [
         { provide: ActivatedRoute, useValue: activatedRouteMock },
         { provide: Router, useValue: routerMock },
